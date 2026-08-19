@@ -1,0 +1,7 @@
+# 复制为 .dev.vars 并修改。生产环境请用 `wrangler secret put` 设置，勿提交本文件
+ADMIN_PASSWORD=change-me
+SESSION_SECRET=change-me-32-chars-min
+API_KEYS=sk-your-key-1,sk-your-key-2
+SITE_URL=http://localhost:8787
+# ADSENSE_CLIENT_ID=ca-pub-xxxxxxxxxxxxxxxx
+# ADSENSE_AD_UNITS={"footer":"1234567890","home-top":"1234567891","article-bottom":"1234567892"}
