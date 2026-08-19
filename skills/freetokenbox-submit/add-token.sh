@@ -13,7 +13,8 @@ set -euo pipefail
 API_BASE="${API_BASE:-http://localhost:8787}"
 : "${API_KEY:?请设置 API_KEY 环境变量}"
 
-# 本机地址直连（避免被全局代理劫持）
+# 本机地址直连（避免被全局代理劫持）；远程地址保持空数组
+# 注意：空数组在 set -u 下展开需用 ${arr[@]+...} 惯用法
 NOPROXY=()
 case "$API_BASE" in
   *localhost*|*127.0.0.1*|*::1*) NOPROXY=(--noproxy '*') ;;
@@ -73,13 +74,13 @@ PYEOF
 if [[ "$UPDATE_MODE" == "true" ]]; then
   if [[ -z "$SLUG" ]]; then echo "错误: --update 模式需要 --slug" >&2; exit 1; fi
   echo ">>> PATCH /api/tokens/$SLUG"
-  curl -sS "${NOPROXY[@]}" -X PATCH "$API_BASE/api/tokens/$SLUG" \
+  curl -sS ${NOPROXY[@]+"${NOPROXY[@]}"} -X PATCH "$API_BASE/api/tokens/$SLUG" \
     -H "Content-Type: application/json" \
     -H "X-API-Key: $API_KEY" \
     -d "$PAYLOAD"
 else
   echo ">>> POST /api/tokens"
-  curl -sS "${NOPROXY[@]}" -X POST "$API_BASE/api/tokens" \
+  curl -sS ${NOPROXY[@]+"${NOPROXY[@]}"} -X POST "$API_BASE/api/tokens" \
     -H "Content-Type: application/json" \
     -H "X-API-Key: $API_KEY" \
     -d "$PAYLOAD"
