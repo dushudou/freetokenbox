@@ -8,8 +8,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "freetokenbox"
-# 占位 ID：先运行 `wrangler d1 create freetokenbox` 获取真实 database_id 后替换
-database_id = "1c8c113d-9e6e-4243-9e65-fbdfdd643582"
+database_id = "830a4c5a-5a54-4f09-ba65-b50cf1798470"
 
 # KV for optional caching (currently unused; reserved for future use)
 # [[kv_namespaces]]
