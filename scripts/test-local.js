@@ -275,7 +275,8 @@ async function run() {
   let text = await res.text()
   assert(res.status === 200, 'GET / -> 200', `got ${res.status}`)
   assert(text.includes('DeepSeek-V4-Flash') && text.includes('FreeTokenBox'), 'home contains seed title & brand')
-  assert(text.includes('设置 ADSENSE_CLIENT_ID 后展示真实广告'), 'home contains ad placeholder (no AdSense configured)')
+  assert(!text.includes('adsbygoogle'), 'home does NOT load AdSense script when unconfigured')
+  assert(text.includes('<div class="ad-slot">'), 'home renders ad placeholder div (no AdSense configured)')
 
   res = await app.request('/token/deepseek-v4-flash-api-free', {}, env)
   text = await res.text()

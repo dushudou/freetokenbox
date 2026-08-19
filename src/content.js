@@ -347,4 +347,202 @@ export const SEED_TOKENS = [
 
 适合欧洲数据合规要求高的场景。`,
   },
+  {
+    name: '智谱 AI 开放平台（GLM）新用户送 Tokens',
+    slug: 'zhipu-glm-free-tokens',
+    description: '智谱 AI 开放平台新用户注册赠送 token 额度，可调用 GLM 系列模型 API，另有长期免费的 Flash 模型。',
+    provider: '智谱 AI',
+    url: 'https://open.bigmodel.cn',
+    category: 'free-api',
+    tags: ['api', 'llm', 'glm', 'china', 'free-token'],
+    is_featured: 0,
+    sort_weight: 45,
+    content: `**智谱 AI 开放平台**（bigmodel.cn）面向开发者提供 GLM 系列模型 API。
+
+- 新用户注册即赠送 token 额度，可用于调用 GLM 系列模型
+- 提供长期免费的 Flash 模型，适合学习与小流量应用
+- 网页端（智谱清言）+ API Key 两种使用方式
+
+**使用方法**：注册后在开放平台创建 API Key，按官方文档调用即可。具体赠送额度与免费模型以官方页面为准。`,
+  },
+  {
+    name: 'Moonshot（Kimi）开放平台送新用户额度',
+    slug: 'moonshot-kimi-free-credit',
+    description: 'Moonshot AI 开放平台（Kimi）新用户注册赠送 API 调用额度，可调用 Kimi 系列长上下文模型。',
+    provider: 'Moonshot AI',
+    url: 'https://platform.moonshot.cn',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'kimi', 'china', 'free-token'],
+    is_featured: 0,
+    sort_weight: 44,
+    content: `**Moonshot AI**（Kimi）开放平台面向开发者提供 Kimi 系列模型 API。
+
+- 新用户注册赠送 API 调用额度
+- Kimi 模型以超长上下文（128K+）见长，适合长文档处理
+- 提供 OpenAI 兼容接口，迁移成本低
+
+**使用方法**：注册后在控制台创建 API Key，按文档调用。赠送额度与规则以官方页面为准。`,
+  },
+  {
+    name: '阿里云百炼（通义千问 Qwen）免费额度',
+    slug: 'aliyun-bailian-qwen-free',
+    description: '阿里云百炼平台新用户赠送 tokens，可调用通义千问 Qwen 系列模型，含长期免费额度。',
+    provider: '阿里云',
+    url: 'https://bailian.console.aliyun.com',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'qwen', 'china', 'free-token'],
+    is_featured: 0,
+    sort_weight: 43,
+    content: `**阿里云百炼**（通义千问 Qwen）是阿里云的一站式大模型服务平台。
+
+- 新用户注册赠送 tokens，可调用 qwen-turbo / qwen-plus 等模型
+- 提供长期免费额度与免费模型，适合个人开发者与学习
+- 支持 OpenAI 兼容接口与多语言 SDK
+
+**使用方法**：注册阿里云并开通百炼，获取 API Key 即可调用。具体赠送与免费规则以官方页面为准。`,
+  },
+  {
+    name: '百度智能云千帆（文心一言）免费额度',
+    slug: 'baidu-qianfan-free',
+    description: '百度智能云千帆平台新用户赠送免费调用额度，可调用文心（ERNIE）系列大模型 API。',
+    provider: '百度智能云',
+    url: 'https://qianfan.cloud.baidu.com',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'ernie', 'china', 'free-token'],
+    is_featured: 0,
+    sort_weight: 42,
+    content: `**百度智能云千帆** 是百度的一站式大模型平台，提供文心（ERNIE）系列模型 API。
+
+- 新用户注册赠送免费调用额度
+- 提供文心一言等模型接口，以及模型训练/部署能力
+- 支持多种编程语言 SDK
+
+**使用方法**：注册百度智能云并开通千帆，创建应用获取 API Key 即可调用。赠送额度以官方页面为准。`,
+  },
+  {
+    name: '讯飞星火（Spark）开放平台送 Tokens',
+    slug: 'iflytek-spark-free-tokens',
+    description: '讯飞星火认知大模型开放平台新用户注册赠送 tokens，可调用星火系列模型 API。',
+    provider: '讯飞',
+    url: 'https://xinghuo.xfyun.cn',
+    category: 'free-api',
+    tags: ['api', 'llm', 'spark', 'china', 'free-token'],
+    is_featured: 0,
+    sort_weight: 41,
+    content: `**讯飞星火开放平台** 提供星火认知大模型 API。
+
+- 新用户注册赠送 tokens，可调用星火系列模型
+- 覆盖文本生成、语音识别/合成等多模态能力
+- 提供网页端 + API 两种使用方式
+
+**使用方法**：注册开放平台，创建应用获取 API Key 后按文档调用。赠送额度以官方页面为准。`,
+  },
+  {
+    name: 'GitHub Models 免费体验多家模型',
+    slug: 'github-models-free',
+    description: 'GitHub Models 提供 OpenAI、Anthropic、Google、Meta 等多家前沿模型的免费限速体验，适合原型开发与学习。',
+    provider: 'GitHub',
+    url: 'https://github.com/marketplace/models',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'github', 'multi-model', 'free-token'],
+    is_featured: 0,
+    sort_weight: 40,
+    content: `**GitHub Models**（github.com/marketplace/models）让开发者免费体验多家前沿大模型。
+
+- 覆盖 OpenAI、Anthropic、Google、Meta（Llama）、Mistral、DeepSeek 等
+- 在 Playground 网页体验，或生成 API Key 接入自己的应用
+- 免费额度受速率限制，适合原型开发、学习与测试
+
+**使用方法**：登录 GitHub，进入 Models 市场选择模型，生成令牌即可调用。额度与限制以官方页面为准。`,
+  },
+  {
+    name: 'Together AI 免费额度与免费模型',
+    slug: 'together-ai-free',
+    description: 'Together AI 新用户注册赠送 credits，并提供免费模型额度（限速），可调用 Llama 等开源模型 API。',
+    provider: 'Together AI',
+    url: 'https://www.together.ai',
+    category: 'free-api',
+    tags: ['api', 'llm', 'together', 'open-source'],
+    is_featured: 0,
+    sort_weight: 39,
+    content: `**Together AI** 提供开源大模型的托管推理服务。
+
+- 新用户注册赠送 credits
+- 提供免费模型额度（带速率限制），可调用 Llama、DeepSeek 等
+- 支持 OpenAI 兼容接口，部署与扩展简单
+
+**使用方法**：注册后在控制台获取 API Key，选择免费模型调用即可。具体额度以官方页面为准。`,
+  },
+  {
+    name: 'Replicate 新用户送 Credits',
+    slug: 'replicate-free-credit',
+    description: 'Replicate 新用户注册赠送 credits，可调用图像、视频、音频、文本等多种开源模型。',
+    provider: 'Replicate',
+    url: 'https://replicate.com',
+    category: 'free-plan',
+    tags: ['api', 'image', 'video', 'open-source'],
+    is_featured: 0,
+    sort_weight: 38,
+    content: `**Replicate** 是一个开源模型托管平台，一行代码即可调用社区模型。
+
+- 新用户注册赠送 credits
+- 覆盖图像生成（Stable Diffusion 等）、视频、音频、文本模型
+- 支持 Python / Node.js / cURL 调用
+
+**使用方法**：注册后在账号设置生成 API Token 即可调用。赠送 credits 以官方页面为准。`,
+  },
+  {
+    name: 'Pollinations 完全免费生成式 AI API',
+    slug: 'pollinations-free-api',
+    description: 'Pollinations 提供完全免费、无需 API Key 的文本与图像生成 API，适合学习、原型与低流量应用。',
+    provider: 'Pollinations',
+    url: 'https://pollinations.ai',
+    category: 'free-api',
+    tags: ['api', 'image', 'text', 'no-key'],
+    is_featured: 0,
+    sort_weight: 37,
+    content: `**Pollinations** 提供无需注册、无需 API Key 的生成式 AI API。
+
+- 文本生成与图像生成接口，直接 HTTP 调用即可
+- 完全免费（按公平使用策略），适合学习与原型
+- 提供多种模型可选
+
+**使用方法**：直接拼接 URL 调用（如 \`https://image.pollinations.ai/prompt/...\`），详见官方文档。免费策略可能调整，请以官方页面为准。`,
+  },
+  {
+    name: 'Cohere 免费试用 API',
+    slug: 'cohere-free-trial',
+    description: 'Cohere 提供免费试用 API（有限 token），可调用 Command 系列大模型，支持多语言与检索增强。',
+    provider: 'Cohere',
+    url: 'https://cohere.com',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'cohere', 'enterprise'],
+    is_featured: 0,
+    sort_weight: 36,
+    content: `**Cohere** 面向企业提供多语言大模型 API。
+
+- 注册即获得免费试用 API（有限 token 额度）
+- 主打 Command 系列模型、RAG（检索增强）与企业级能力
+- 提供多种语言 SDK
+
+**使用方法**：注册后在 Dashboard 获取 Trial Key 调用。免费试用额度与规则以官方页面为准。`,
+  },
+  {
+    name: 'MiniMax 开放平台送 Tokens',
+    slug: 'minimax-free-tokens',
+    description: 'MiniMax 开放平台新用户注册赠送 tokens，可调用 MiniMax 文本、语音等多模态模型 API。',
+    provider: 'MiniMax',
+    url: 'https://platform.minimaxi.com',
+    category: 'free-api',
+    tags: ['api', 'llm', 'minimax', 'multimodal', 'free-token'],
+    is_featured: 0,
+    sort_weight: 35,
+    content: `**MiniMax** 开放平台提供文本、语音等多模态大模型 API。
+
+- 新用户注册赠送 tokens
+- 覆盖文本生成、语音合成/识别等能力
+- 提供 OpenAI 兼容接口与多语言 SDK
+
+**使用方法**：注册后创建 API Key 调用。赠送额度以官方页面为准。`,
+  },
 ]
