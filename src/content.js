@@ -117,29 +117,53 @@ export function siteUrl(env) {
   return (env.SITE_URL || '').replace(/\/+$/, '')
 }
 
-export function siteTitle() {
-  return 'FreeTokenBox · 免费送 Token 合集'
+export function siteTitle(lang = 'zh') {
+  return lang === 'en'
+    ? 'FreeTokenBox · Free AI Tokens & API Credits'
+    : 'FreeTokenBox · 免费送 Token 合集'
 }
 
-export function siteDescription() {
-  return 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集。收录 DeepSeek、OpenRouter、Google Gemini、Groq、Cloudflare Workers AI、Mistral 等平台免费 API 额度活动，一站式发现并领取免费 AI 资源。'
+export function siteDescription(lang = 'zh') {
+  return lang === 'en'
+    ? 'FreeTokenBox is a curated directory of free AI tokens, API credits and compute — free offers from DeepSeek, OpenRouter, Google Gemini, Groq, Cloudflare Workers AI, Mistral and more.'
+    : 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集。收录 DeepSeek、OpenRouter、Google Gemini、Groq、Cloudflare Workers AI、Mistral 等平台免费 API 额度活动，一站式发现并领取免费 AI 资源。'
+}
+
+/** 语言路径前缀（en 时加 /en） */
+function lp(lang, path) {
+  return lang === 'en' ? '/en' + path : path
+}
+
+/** 组织 JSON-LD（Organization，用于站点/关于页，增强信任度信号） */
+export function organizationJsonLd(env) {
+  const base = siteUrl(env)
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'FreeTokenBox',
+    alternateName: '免费送 Token 合集',
+    url: base ? base + '/' : '/',
+    description: 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集。',
+    logo: base ? `${base}/logo.svg` : '/logo.svg',
+    sameAs: ['https://github.com/dushudou/freetokenbox'],
+  }
 }
 
 /** 网站 JSON-LD（WebSite + SearchAction） */
-export function websiteJsonLd(env) {
-  const base = siteUrl(env)
+export function websiteJsonLd(env, lang = 'zh') {  const base = siteUrl(env)
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'FreeTokenBox',
-    alternateName: '免费送 Token 合集',
-    url: base || '/',
-    description: siteDescription(),
+    alternateName: lang === 'en' ? 'Free AI Token Deals' : '免费送 Token 合集',
+    url: base ? base + lp(lang, '/') : '/',
+    description: siteDescription(lang),
+    inLanguage: lang === 'en' ? 'en' : 'zh-CN',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${base}/?q={search_term_string}`,
+        urlTemplate: `${base}${lp(lang, '/')}?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -147,7 +171,7 @@ export function websiteJsonLd(env) {
 }
 
 /** 面包屑 JSON-LD */
-export function breadcrumbJsonLd(items, env) {
+export function breadcrumbJsonLd(items, env, lang = 'zh') {
   const base = siteUrl(env)
   return {
     '@context': 'https://schema.org',
@@ -156,33 +180,35 @@ export function breadcrumbJsonLd(items, env) {
       '@type': 'ListItem',
       position: i + 1,
       name: item.name,
-      item: item.url ? `${base}${item.url}` : undefined,
+      item: item.url ? `${base}${lp(lang, item.url)}` : undefined,
     })),
   }
 }
 
 /** ItemList JSON-LD（用于列表页） */
-export function itemListJsonLd(items, env) {
+export function itemListJsonLd(items, env, lang = 'zh') {
   const base = siteUrl(env)
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: '免费送 Token 合集',
-    description: '收集所有免费赠送 AI Token / API 额度的网站与活动',
+    name: lang === 'en' ? 'Free AI Token Deals' : '免费送 Token 合集',
+    description: lang === 'en'
+      ? 'Free AI tokens, API credits and compute offers'
+      : '收集所有免费赠送 AI Token / API 额度的网站与活动',
     itemListElement: items.map((t, i) => ({
       '@type': 'ListItem',
       position: i + 1,
       name: t.name,
-      url: `${base}/token/${t.slug}`,
+      url: `${base}${lp(lang, `/token/${t.slug}`)}`,
       description: t.description,
     })),
   }
 }
 
 /** 根据 token 生成 JSON-LD（SEO / 广告投放友好） */
-export function tokenJsonLd(token, env) {
+export function tokenJsonLd(token, env, lang = 'zh') {
   const base = siteUrl(env)
-  const url = `${base}/token/${token.slug}`
+  const url = `${base}${lp(lang, `/token/${token.slug}`)}`
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -203,24 +229,21 @@ export function tokenJsonLd(token, env) {
   }
 }
 
-/** FAQ JSON-LD（详情页自动生成常见问题） */
-export function faqJsonLd(token) {
-  const faqs = [
-    {
-      q: `${token.name} 是免费的吗？`,
-      a: `是的，${token.name} 是完全免费的。${token.description} 你可以直接前往${token.provider || '官方'}页面领取。`,
-    },
-    {
-      q: `如何领取 ${token.name}？`,
-      a: `点击本页面上的"前往领取"按钮，即可跳转到${token.provider || '官方'}页面获取免费额度。整个过程无需付费。`,
-    },
-    ...(token.expiry_date
-      ? [{
-          q: `${token.name} 的活动截止时间是什么时候？`,
-          a: `${token.name} 的活动截止日期为 ${formatDate(token.expiry_date)}，建议尽早领取。`,
-        }]
-      : []),
-  ]
+/** FAQ JSON-LD（详情页自动生成常见问题，中英双语） */
+export function faqJsonLd(token, lang = 'zh') {
+  const p = token.provider || (lang === 'en' ? 'the official site' : '官方')
+  const d = formatDate(token.expiry_date || '')
+  const faqs = lang === 'en'
+    ? [
+        { q: `Is ${token.name} really free?`, a: `Yes. ${token.name} is given away for free by ${p}. Claiming and using it costs nothing — see the official page for exact terms.` },
+        { q: 'How do I claim it?', a: `Click the claim button on this page. It takes you to the offer page on ${p} — follow the instructions there.` },
+        ...(token.expiry_date ? [{ q: 'When does it end?', a: `This offer ends on ${d}. Claim it early — it stops once the quota runs out.` }] : []),
+      ]
+    : [
+        { q: `${token.name} 收费吗？`, a: `不收费。${token.name} 由 ${p} 免费发放，领取和使用均不产生费用，具体细则以官方页面为准。` },
+        { q: '怎么领取？', a: `点击本页面上的「前往领取」按钮，即可跳转到 ${p} 页面获取免费额度，按提示完成领取即可。` },
+        ...(token.expiry_date ? [{ q: '什么时候结束？', a: `本次活动截止到 ${d}，建议尽早领取，额度发完即止。` }] : []),
+      ]
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -544,5 +567,203 @@ export const SEED_TOKENS = [
 - 提供 OpenAI 兼容接口与多语言 SDK
 
 **使用方法**：注册后创建 API Key 调用。赠送额度以官方页面为准。`,
+  },
+  {
+    name: '硅基流动 SiliconFlow 新用户送 Tokens',
+    slug: 'siliconflow-free-tokens',
+    description: '硅基流动 SiliconFlow 新用户注册赠送 tokens，提供众多开源模型的一站式 API 托管服务。',
+    provider: '硅基流动',
+    url: 'https://siliconflow.cn',
+    category: 'free-api',
+    tags: ['api', 'llm', 'siliconflow', 'open-source', 'free-token'],
+    is_featured: 0,
+    sort_weight: 34,
+    content: `**硅基流动（SiliconFlow）** 是国内主流的一站式开源模型 API 平台。
+
+- 新用户注册赠送 tokens，可调用 DeepSeek、Qwen、GLM 等众多开源模型
+- 提供文本、图像、语音等多种模型 API
+- 支持 OpenAI 兼容接口，国内直连速度快
+
+**使用方法**：注册后在控制台创建 API Key 即可调用。赠送额度以官方页面为准。`,
+  },
+  {
+    name: '火山引擎豆包（Doubao）免费 Tokens',
+    slug: 'volcengine-doubao-free',
+    description: '火山引擎豆包大模型新用户可获取免费 tokens，提供 Doubao 系列模型 API 与多模态能力。',
+    provider: '火山引擎',
+    url: 'https://www.volcengine.com/product/doubao',
+    category: 'free-api',
+    tags: ['api', 'llm', 'doubao', 'volcengine', 'free-token'],
+    is_featured: 0,
+    sort_weight: 33,
+    content: `**火山引擎豆包（Doubao）** 是字节跳动旗下的大模型服务平台。
+
+- 新用户可获取免费 tokens 体验 Doubao 系列模型
+- 覆盖文本对话、图像生成、语音等多模态 API
+- 提供 OpenAI 兼容接口与丰富的配套工具链
+
+**使用方法**：注册火山引擎并开通方舟（Ark）平台，领取免费 tokens 后创建 API Key 调用。活动额度以官方页面为准。`,
+  },
+  {
+    name: '腾讯云混元（Hunyuan）免费体验',
+    slug: 'tencent-hunyuan-free',
+    description: '腾讯云混元大模型提供免费体验与 API 额度活动，可调用 Hunyuan 系列模型。',
+    provider: '腾讯云',
+    url: 'https://cloud.tencent.com/product/hunyuan',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'hunyuan', 'tencent', 'free-token'],
+    is_featured: 0,
+    sort_weight: 32,
+    content: `**腾讯云混元（Hunyuan）** 提供腾讯自研大模型 API。
+
+- 提供免费体验与新人额度活动
+- 覆盖对话、检索增强、多模态等能力
+- 与腾讯云生态（知识引擎、向量数据库等）深度集成
+
+**使用方法**：注册腾讯云并开通混元大模型服务，按活动领取免费额度后调用。具体规则以官方页面为准。`,
+  },
+  {
+    name: '阶跃星辰（StepFun）送 Tokens',
+    slug: 'stepfun-free-tokens',
+    description: '阶跃星辰开放平台新用户注册赠送 tokens，可调用 Step 系列多模态大模型 API。',
+    provider: '阶跃星辰',
+    url: 'https://platform.stepfun.com',
+    category: 'free-api',
+    tags: ['api', 'llm', 'stepfun', 'multimodal', 'free-token'],
+    is_featured: 0,
+    sort_weight: 31,
+    content: `**阶跃星辰（StepFun）** 提供 Step 系列多模态大模型 API。
+
+- 新用户注册赠送 tokens
+- Step 系列覆盖文本、图像理解与生成等多模态能力
+- 提供 OpenAI 兼容接口与多语言 SDK
+
+**使用方法**：注册开放平台创建 API Key 调用。赠送额度以官方页面为准。`,
+  },
+  {
+    name: '百川智能（Baichuan）送 Tokens',
+    slug: 'baichuan-free-tokens',
+    description: '百川智能开放平台新用户注册赠送 tokens，可调用 Baichuan 系列大模型 API。',
+    provider: '百川智能',
+    url: 'https://platform.baichuan-ai.com',
+    category: 'free-api',
+    tags: ['api', 'llm', 'baichuan', 'free-token'],
+    is_featured: 0,
+    sort_weight: 30,
+    content: `**百川智能（Baichuan）** 开放平台提供 Baichuan 系列大模型 API。
+
+- 新用户注册赠送 tokens
+- 覆盖通用对话、长上下文等场景
+- 提供 OpenAI 兼容接口
+
+**使用方法**：注册后创建 API Key 调用。赠送额度以官方页面为准。`,
+  },
+  {
+    name: 'NVIDIA NIM（build.nvidia.com）免费 Credits',
+    slug: 'nvidia-nim-free',
+    description: 'NVIDIA NIM 平台（build.nvidia.com）注册即送 credits，可试用 Llama、Qwen、DeepSeek 等主流模型的推理 API。',
+    provider: 'NVIDIA',
+    url: 'https://build.nvidia.com',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'nvidia', 'open-source'],
+    is_featured: 0,
+    sort_weight: 29,
+    content: `**NVIDIA NIM**（build.nvidia.com）提供官方模型推理 API。
+
+- 注册即送 credits，可试用 Llama、Qwen、DeepSeek 等主流开源模型
+- 提供 Playground 网页体验与 API 调用两种方式
+- 基于 NVIDIA 加速基础设施，性能稳定
+
+**使用方法**：注册后在 build.nvidia.com 选择模型生成 API Key 调用。赠送 credits 与额度以官方页面为准。`,
+  },
+  {
+    name: 'Hyperbolic 免费 API 与算力',
+    slug: 'hyperbolic-free',
+    description: 'Hyperbolic 提供免费 API credits 与去中心化 GPU 算力，可试用 Llama、Qwen 等开源模型。',
+    provider: 'Hyperbolic',
+    url: 'https://hyperbolic.xyz',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'gpu', 'decentralized', 'open-source'],
+    is_featured: 0,
+    sort_weight: 28,
+    content: `**Hyperbolic** 提供去中心化的 GPU 算力与开源模型推理 API。
+
+- 新用户可获得免费 API credits，试用 Llama、Qwen 等模型
+- 平台聚合全球 GPU 算力，按需租用
+- 提供 OpenAI 兼容接口
+
+**使用方法**：注册后在控制台获取 API Key 调用。免费额度与价格以官方页面为准。`,
+  },
+  {
+    name: 'Fireworks AI 免费模型额度',
+    slug: 'fireworks-ai-free',
+    description: 'Fireworks AI 提供免费模型额度（限速），可高速调用 Llama、Qwen、DeepSeek 等开源模型 API。',
+    provider: 'Fireworks AI',
+    url: 'https://fireworks.ai',
+    category: 'free-api',
+    tags: ['api', 'llm', 'fireworks', 'open-source'],
+    is_featured: 0,
+    sort_weight: 27,
+    content: `**Fireworks AI** 专注开源模型的高性能推理。
+
+- 提供免费模型额度（带速率限制）
+- 主打 Llama、Qwen、DeepSeek 等开源模型的高速推理
+- 提供 OpenAI 兼容接口，主打低延迟
+
+**使用方法**：注册后在控制台获取 API Key，选择免费模型调用即可。免费额度以官方页面为准。`,
+  },
+  {
+    name: 'Perplexity API 新用户送 Credits',
+    slug: 'perplexity-api-free',
+    description: 'Perplexity API 新用户注册赠送 credits，可调用 Sonar 等搜索增强大模型接口。',
+    provider: 'Perplexity',
+    url: 'https://docs.perplexity.ai',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'perplexity', 'search'],
+    is_featured: 0,
+    sort_weight: 26,
+    content: `**Perplexity API** 提供带联网搜索能力的大模型接口。
+
+- 新用户注册赠送 credits
+- Sonar 系列模型支持实时联网检索与引用
+- 适合问答、信息检索类应用
+
+**使用方法**：注册后在控制台生成 API Key 调用。赠送 credits 与额度以官方页面为准。`,
+  },
+  {
+    name: '360 智脑免费 API',
+    slug: 'qihoo-360-free-api',
+    description: '360 智脑开放平台提供免费大模型 API，可调用 360 智脑系列模型。',
+    provider: '360',
+    url: 'https://ai.360.cn',
+    category: 'free-api',
+    tags: ['api', 'llm', '360', 'free-token'],
+    is_featured: 0,
+    sort_weight: 25,
+    content: `**360 智脑** 开放平台面向开发者提供大模型 API。
+
+- 提供免费 API 额度，可调用 360 智脑系列模型
+- 网页端 + API 两种使用方式
+- 与 360 搜索生态结合
+
+**使用方法**：注册开放平台，创建应用获取 API Key 后按文档调用。免费额度以官方页面为准。`,
+  },
+  {
+    name: 'Cerebras 免费推理 API',
+    slug: 'cerebras-free-api',
+    description: 'Cerebras 提供基于自研 Wafer Scale 芯片的免费推理 API（限速），可极速调用 Llama 等模型。',
+    provider: 'Cerebras',
+    url: 'https://cloud.cerebras.ai',
+    category: 'free-api',
+    tags: ['api', 'llm', 'cerebras', 'open-source'],
+    is_featured: 0,
+    sort_weight: 24,
+    content: `**Cerebras** 提供基于 Wafer Scale Engine 的超高速模型推理 API。
+
+- 提供免费推理额度（带速率限制）
+- 可调用 Llama 系列模型，主打极低延迟
+- 提供 OpenAI 兼容接口
+
+**使用方法**：注册后在控制台生成 API Key 调用。免费额度与速率限制以官方页面为准。`,
   },
 ]

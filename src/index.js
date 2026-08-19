@@ -38,8 +38,63 @@ import {
   adminPage,
   adminFormPage,
 } from './templates.js'
+import { T, lp, langFromPath } from './i18n.js'
 
 const app = new Hono()
+
+// ---------- 域名规范化中间件（SEO）----------
+// 仅对线上域名：1) www→裸域 2) workers.dev 预览域→裸域 3) http→https（301）
+// localhost 本地开发直通，不做任何跳转
+const CANONICAL_HOST = 'freetokenbox.com'
+const DEV_HOST = 'freetokenbox.mergedao.workers.dev'
+const isProdHost = (host) =>
+  host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}` || host === DEV_HOST
+
+app.use('*', async (c, next) => {
+  const url = new URL(c.req.url)
+  const host = (c.req.header('host') || url.host).toLowerCase().split(':')[0]
+  const proto = (c.req.header('x-forwarded-proto') || url.protocol.replace(':', '')).toLowerCase()
+
+  if (!isProdHost(host)) return next()
+
+  let target = null
+  if (host === `www.${CANONICAL_HOST}`) target = CANONICAL_HOST
+  else if (host === DEV_HOST) target = CANONICAL_HOST
+
+  if (target) return c.redirect(`https://${target}${url.pathname}${url.search}`, 301)
+  if (proto === 'http') return c.redirect(`https://${host}${url.pathname}${url.search}`, 301)
+  await next()
+})
+
+// ---------- 缓存与安全头中间件（SEO / 性能）----------
+// - HTML 页面：短缓存 + stale-while-revalidate，利于爬虫与回访
+// - /api/* 与 /admin/*：no-store（动态数据）+ X-Robots-Tag noindex
+// - 静态/机器可读文件（sitemap/robots/llms/ai.json/rss/tokens.md）：较长缓存
+app.use('*', async (c, next) => {
+  const path = c.req.path
+  const isApi = path.startsWith('/api/')
+  const isAdmin = path.startsWith('/admin')
+  const isStatic =
+    path === '/sitemap.xml' || path === '/robots.txt' || path === '/rss.xml' ||
+    path === '/llms.txt' || path === '/llms-full.txt' || path === '/ai.json' ||
+    path === '/tokens.md' || path === '/.well-known/ai-plugin.json'
+  const isAsset = /\.(txt|xml|json|md|rss|png|svg|ico|webp|css|js)$/.test(path)
+
+  // 安全头（所有响应）
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
+  c.header('X-Frame-Options', 'DENY')
+
+  if (isApi || isAdmin) {
+    c.header('Cache-Control', 'no-store, max-age=0')
+    c.header('X-Robots-Tag', 'noindex, nofollow')
+  } else if (isStatic || isAsset) {
+    c.header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400')
+  } else {
+    c.header('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400')
+  }
+  await next()
+})
 
 // ---------- 工具 ----------
 const isAdminAuthed = async (c) => {
@@ -71,8 +126,8 @@ async function readForm(c) {
   }
 }
 
-// ---------- 公开页面 ----------
-app.get('/', async (c) => {
+// ---------- 公开页面（zh 原路径 + /en 前缀镜像） ----------
+const renderHome = async (c, lang) => {
   const page = Math.max(1, Number(c.req.query('page')) || 1)
   const pageSize = 12
   const searchQuery = c.req.query('q') || ''
@@ -101,11 +156,16 @@ app.get('/', async (c) => {
       query,
       searchQuery,
       stats,
+      lang,
     })
   )
-})
+}
 
-app.get('/token/:slug', async (c) => {
+app.get('/', (c) => renderHome(c, 'zh'))
+app.get('/en', (c) => renderHome(c, 'en'))
+app.get('/en/', (c) => renderHome(c, 'en'))
+
+const renderToken = async (c, lang) => {
   const token = await getTokenBySlug(c.env, c.req.param('slug'))
   if (!token || token.status !== 'published') {
     return c.notFound()
@@ -126,71 +186,106 @@ app.get('/token/:slug', async (c) => {
       }
     }
   }
-  return c.html(tokenPage(token, c.env, related))
-})
+  return c.html(tokenPage(token, c.env, related, lang))
+}
 
-app.get('/category/:category', async (c) => {
+app.get('/token/:slug', (c) => renderToken(c, 'zh'))
+app.get('/en/token/:slug', (c) => renderToken(c, 'en'))
+
+const renderCategory = async (c, lang) => {
   const category = c.req.param('category')
+  const s = T(lang)
   const page = Math.max(1, Number(c.req.query('page')) || 1)
   const result = await listTokens(c.env, { status: 'published', category, page, pageSize: 24 })
   const query = c.req.raw.url.split('?')[1] || ''
   return c.html(
     listPage({
-      title: `${category} 分类 · 免费 Token`,
-      description: `「${category}」分类下的免费送 Token 合集。收录 ${result.total} 个${category}分类的免费 AI Token / API 额度活动，全部可免费领取。`,
+      title: s.categoryTitle(category),
+      description: s.categoryDesc(category, result.total),
       items: result.items,
       categories: [],
       page,
       totalPages: result.totalPages,
       env: c.env,
+      lang,
       path: `/category/${category}`,
       query,
       breadcrumbs: [
-        { name: '首页', url: '/' },
+        { name: s.crumbHome, url: '/' },
         { name: category, url: `/category/${category}` },
       ],
-      badge: html`<span class="badge"><span class="dot"></span> 分类：${category} · 共 ${result.total} 条</span>`,
     })
   )
-})
+}
 
-app.get('/tags/:tag', async (c) => {
+app.get('/category/:category', (c) => renderCategory(c, 'zh'))
+app.get('/en/category/:category', (c) => renderCategory(c, 'en'))
+
+const renderTag = async (c, lang) => {
   const tag = c.req.param('tag')
+  const s = T(lang)
   const page = Math.max(1, Number(c.req.query('page')) || 1)
   const result = await listTokens(c.env, { status: 'published', tag, page, pageSize: 24 })
   const query = c.req.raw.url.split('?')[1] || ''
   return c.html(
     listPage({
-      title: `#${tag} 标签 · 免费 Token`,
-      description: `带有标签 #${tag} 的免费送 Token 条目。共收录 ${result.total} 个相关免费 AI Token / API 活动。`,
+      title: s.tagTitle(tag),
+      description: s.tagDesc(tag, result.total),
       items: result.items,
       categories: [],
       page,
       totalPages: result.totalPages,
       env: c.env,
+      lang,
       path: `/tags/${tag}`,
       query,
       breadcrumbs: [
-        { name: '首页', url: '/' },
+        { name: s.crumbHome, url: '/' },
         { name: `#${tag}`, url: `/tags/${tag}` },
       ],
-      badge: html`<span class="badge"><span class="dot"></span> #${tag} · 共 ${result.total} 条</span>`,
     })
   )
-})
+}
 
-app.get('/about', (c) =>
-  c.html(
-    layout({
-      title: '关于 FreeTokenBox · 免费 AI Token 聚合平台',
-      description: 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集公益项目。收录 DeepSeek、OpenRouter、Google Gemini、Groq、Cloudflare Workers AI 等平台免费资源。',
-      path: '/about',
-      env: c.env,
-      breadcrumbs: [
-        { name: '首页', url: '/' },
-        { name: '关于', url: '/about' },
-      ],
-      body: html`<article class="article">
+app.get('/tags/:tag', (c) => renderTag(c, 'zh'))
+app.get('/en/tags/:tag', (c) => renderTag(c, 'en'))
+
+const renderAbout = (lang) => (c) => {
+  const s = T(lang)
+  const isEn = lang === 'en'
+  const body = isEn
+    ? html`<article class="article">
+        <h1>About FreeTokenBox</h1>
+        <div class="body">
+          <p><strong>FreeTokenBox</strong> is a directory of every site and campaign giving away <strong>AI tokens, API credits, compute and coupons</strong> for free.</p>
+          <p>Platforms we track include:</p>
+          <ul>
+            <li><strong>DeepSeek</strong> — DeepSeek-V4-Flash API free for a limited time</li>
+            <li><strong>OpenRouter</strong> — many free models (<code>:free</code> suffix), incl. Gemini / DeepSeek / Llama</li>
+            <li><strong>Google AI Studio</strong> — free Gemini API credits</li>
+            <li><strong>Groq</strong> — free API with blazing-fast inference</li>
+            <li><strong>Cloudflare Workers AI</strong> — 10,000 free neurons per month</li>
+            <li><strong>Mistral</strong> — free trial credits for European open models</li>
+          </ul>
+          <h2>What makes us different</h2>
+          <ul>
+            <li>Every entry is a <strong>free resource</strong>, with the provider and official claim link attached</li>
+            <li>Curated by hand via the admin panel; an <strong>open API</strong> and Agent Skill support automatic submissions</li>
+            <li>SEO-friendly with rich structured data — easy for search engines and AI crawlers to index</li>
+            <li>Content is for reference only; always check the official page</li>
+          </ul>
+          <h2>Open API</h2>
+          <ul>
+            <li><code>GET /api/tokens</code> — list all published free token offers</li>
+            <li><code>GET /api/tokens/:slug</code> — get a single offer</li>
+            <li><code>GET /api/stats</code> — site statistics</li>
+          </ul>
+          <h2>AI friendly</h2>
+          <p>We publish <code>/llms.txt</code> and <code>/llms-full.txt</code> for AI crawlers and LLM tools, and every page ships with JSON-LD structured data.</p>
+          <p>Never spend a token on what you can get for free.</p>
+        </div>
+      </article>`
+    : html`<article class="article">
         <h1>关于 FreeTokenBox</h1>
         <div class="body">
           <p><strong>FreeTokenBox</strong>（免费送 Token 合集）致力于收集所有免费赠送 <strong>AI Token / API 额度 / 算力 / 优惠券</strong> 的网站与活动。</p>
@@ -221,32 +316,116 @@ app.get('/about', (c) =>
           <p>本站提供 <code>/llms.txt</code> 和 <code>/llms-full.txt</code> 供 AI 爬虫和 LLM 工具索引，所有内容均有 JSON-LD 结构化数据标注。</p>
           <p>能免费解决的事情，绝不多花一个 Token！</p>
         </div>
-      </article>`,
+      </article>`
+  return c.html(
+    layout({
+      title: isEn ? 'About FreeTokenBox · Free AI Tokens & API Credits' : '关于 FreeTokenBox · 免费 AI Token 聚合平台',
+      description: isEn
+        ? 'FreeTokenBox is a public directory of free AI tokens, API credits and compute — free resources from DeepSeek, OpenRouter, Google Gemini, Groq, Cloudflare Workers AI and more.'
+        : 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集公益项目。收录 DeepSeek、OpenRouter、Google Gemini、Groq、Cloudflare Workers AI 等平台免费资源。',
+      path: '/about',
+      env: c.env,
+      lang,
+      breadcrumbs: [
+        { name: s.crumbHome, url: '/' },
+        { name: isEn ? 'About' : '关于', url: '/about' },
+      ],
+      body,
     })
   )
-)
+}
 
-const staticTextPage = (path, title, lines) => (c) =>
-  c.html(
+app.get('/about', renderAbout('zh'))
+app.get('/en/about', renderAbout('en'))
+
+const staticTextPage = (path, zh, en) => (c) => {
+  const lang = langFromPath(c.req.path)
+  const p = lang === 'en' ? en : zh
+  return c.html(
     layout({
-      title: `${title} · FreeTokenBox`,
-      description: title,
+      title: `${p.title} · FreeTokenBox`,
+      description: p.title,
       path,
       env: c.env,
-      body: html`<article class="article"><h1>${title}</h1><div class="body">${lines.map((l) => html`<p>${l}</p>`)}</div></article>`,
+      lang,
+      breadcrumbs: [
+        { name: T(lang).crumbHome, url: '/' },
+        { name: p.title, url: path },
+      ],
+      body: html`<article class="article"><h1>${p.title}</h1><div class="body">${p.lines.map((l) => html`<p>${l}</p>`)}</div></article>`,
     })
   )
+}
 
-app.get('/privacy', staticTextPage('/privacy', '隐私政策', [
-  'FreeTokenBox 尊重并保护访客隐私。',
-  '本站不主动收集个人身份信息；如未来接入 Google AdSense，广告服务可能使用 Cookie 提供个性化广告，详情见 Google 隐私政策。',
-  '本政策如有更新，将在本页面发布。',
-]))
-app.get('/terms', staticTextPage('/terms', '使用条款', [
-  'FreeTokenBox 收录的信息来自公开渠道，仅供学习参考，不构成任何建议。',
-  '各平台免费额度与活动规则可能随时变化，请以官方页面为准。',
-  '本站对链接指向的第三方内容不承担责任。',
-]))
+app.get('/privacy', staticTextPage('/privacy', {
+  title: '隐私政策',
+  lines: [
+    'FreeTokenBox 尊重并保护访客隐私。',
+    '本站不主动收集个人身份信息；如未来接入 Google AdSense，广告服务可能使用 Cookie 提供个性化广告，详情见 Google 隐私政策。',
+    '本政策如有更新，将在本页面发布。',
+  ],
+}, {
+  title: 'Privacy Policy',
+  lines: [
+    'FreeTokenBox respects and protects visitor privacy.',
+    'We do not collect personal information. If Google AdSense is enabled in the future, the ad service may use cookies for personalized ads — see Google\'s privacy policy for details.',
+    'Any update to this policy will be published on this page.',
+  ],
+}))
+app.get('/terms', staticTextPage('/terms', {
+  title: '使用条款',
+  lines: [
+    'FreeTokenBox 收录的信息来自公开渠道，仅供学习参考，不构成任何建议。',
+    '各平台免费额度与活动规则可能随时变化，请以官方页面为准。',
+    '本站对链接指向的第三方内容不承担责任。',
+  ],
+}, {
+  title: 'Terms of Use',
+  lines: [
+    'Information on FreeTokenBox comes from public sources and is for reference only; it does not constitute advice of any kind.',
+    'Free quotas and campaign rules may change at any time — always check the official page.',
+    'We are not responsible for content on third-party sites we link to.',
+  ],
+}))
+app.get('/en/privacy', staticTextPage('/privacy', {
+  title: '隐私政策',
+  lines: [
+    'FreeTokenBox 尊重并保护访客隐私。',
+    '本站不主动收集个人身份信息；如未来接入 Google AdSense，广告服务可能使用 Cookie 提供个性化广告，详情见 Google 隐私政策。',
+    '本政策如有更新，将在本页面发布。',
+  ],
+}, {
+  title: 'Privacy Policy',
+  lines: [
+    'FreeTokenBox respects and protects visitor privacy.',
+    'We do not collect personal information. If Google AdSense is enabled in the future, the ad service may use cookies for personalized ads — see Google\'s privacy policy for details.',
+    'Any update to this policy will be published on this page.',
+  ],
+}))
+app.get('/en/terms', staticTextPage('/terms', {
+  title: '使用条款',
+  lines: [
+    'FreeTokenBox 收录的信息来自公开渠道，仅供学习参考，不构成任何建议。',
+    '各平台免费额度与活动规则可能随时变化，请以官方页面为准。',
+    '本站对链接指向的第三方内容不承担责任。',
+  ],
+}, {
+  title: 'Terms of Use',
+  lines: [
+    'Information on FreeTokenBox comes from public sources and is for reference only; it does not constitute advice of any kind.',
+    'Free quotas and campaign rules may change at any time — always check the official page.',
+    'We are not responsible for content on third-party sites we link to.',
+  ],
+}))
+
+// ---------- 品牌标识（logo.svg，ai-plugin.json 引用） ----------
+app.get('/logo.svg', (c) =>
+  c.text(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8.7" fill="#059669"/><circle cx="16" cy="7.9" r="2.4" fill="#fff"/><path d="M7.6 13.3h16.8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><rect x="9.9" y="13.3" width="12.2" height="10.1" rx="2.1" fill="none" stroke="#fff" stroke-width="2.5"/></svg>',
+    200,
+    { 'Content-Type': 'image/svg+xml' }
+  )
+)
 
 // ---------- SEO 文件 ----------
 app.get('/robots.txt', async (c) => {
@@ -256,8 +435,13 @@ app.get('/robots.txt', async (c) => {
 Allow: /
 Allow: /llms.txt
 Allow: /llms-full.txt
+Allow: /ai.json
+Allow: /tokens.md
+Allow: /api/docs
+Allow: /api/openapi.json
 Disallow: /admin
-Disallow: /api/
+Disallow: /api/tokens
+Disallow: /api/stats
 
 ${sitemap}
 `)
@@ -277,7 +461,14 @@ app.get('/llms.txt', async (c) => {
     ``,
     `- [首页](${base}/): 免费送 Token 合集首页，浏览全部免费条目`,
     `- [关于页面](${base}/about): 项目介绍与开放 API 说明`,
-    `- [API 文档](${base}/api/tokens): RESTful API，获取全部已发布条目的 JSON 数据`,
+    `- [API 文档](${base}/api/docs): RESTful API 文档（含字段说明）`,
+    ``,
+    `## 机器可读接口（Agent / LLM 推荐）`,
+    ``,
+    `- [JSON 数据](${base}/ai.json): 全部条目结构化 JSON`,
+    `- [OpenAPI 规范](${base}/api/openapi.json): 标准 OpenAPI 3.0 规范`,
+    `- [Markdown 导出](${base}/tokens.md): 全部条目 Markdown 文本`,
+    `- [REST API](${base}/api/tokens): 分页/分类/标签/搜索 JSON 接口`,
     ``,
     `## 免费 Token 列表`,
     ``,
@@ -374,6 +565,135 @@ app.get('/ai.json', async (c) => {
       updated_at: t.updated_at,
     })),
   })
+})
+
+// ---------- AI Agent 插件清单（OpenAI plugin manifest，便于 Agent 发现 API） ----------
+app.get('/.well-known/ai-plugin.json', async (c) => {
+  const base = siteUrl(c.env)
+  const result = await listTokens(c.env, { status: 'published', includeAll: true, pageSize: 1 })
+  return c.json({
+    schema_version: 'v1',
+    name_for_human: 'FreeTokenBox',
+    name_for_model: 'freetokenbox',
+    description_for_human: '免费送 Token 合集：查找并录入免费 AI token / API 额度。',
+    description_for_model:
+      'FreeTokenBox is a directory of free AI tokens, API credits and compute offers. ' +
+      'Use GET /api/tokens to list free offers, GET /api/tokens/:slug for details. ' +
+      'Admins can POST/PATCH/DELETE /api/tokens with X-API-Key to add, update or remove entries. ' +
+      'Fetched data may help answer questions about free AI API offers.',
+    auth: { type: 'none' },
+    api: { type: 'openapi', url: `${base}/api/openapi.json`, has_user_authentication: false },
+    logo_url: `${base}/logo.svg`,
+    contact_email: 'admin@freetokenbox.com',
+    legal_info_url: `${base}/terms`,
+  })
+})
+
+// ---------- OpenAPI 规范（Agent / 工具自动发现） ----------
+app.get('/api/openapi.json', async (c) => {
+  const base = siteUrl(c.env)
+  return c.json({
+    openapi: '3.0.0',
+    info: { title: 'FreeTokenBox API', version: '1.0.0', description: '免费送 Token 合集开放接口' },
+    servers: [{ url: base }],
+    paths: {
+      '/api/tokens': {
+        get: {
+          summary: '列出免费 Token 条目',
+          parameters: [
+            { name: 'category', in: 'query', schema: { type: 'string' } },
+            { name: 'tag', in: 'query', schema: { type: 'string' } },
+            { name: 'q', in: 'query', schema: { type: 'string' } },
+            { name: 'page', in: 'query', schema: { type: 'integer' } },
+            { name: 'pageSize', in: 'query', schema: { type: 'integer' } },
+          ],
+          responses: { '200': { description: 'OK' } },
+        },
+        post: {
+          summary: '新增条目（需 X-API-Key）',
+          security: [{ apiKey: [] }],
+          responses: { '201': { description: 'Created' }, '401': { description: 'Unauthorized' } },
+        },
+      },
+      '/api/tokens/{slug}': {
+        get: { summary: '获取单条详情', parameters: [{ name: 'slug', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' } } },
+        patch: { summary: '更新条目（需 X-API-Key）', security: [{ apiKey: [] }], responses: { '200': { description: 'OK' } } },
+        delete: { summary: '删除条目（需 X-API-Key）', security: [{ apiKey: [] }], responses: { '200': { description: 'OK' } } },
+      },
+      '/api/stats': { get: { summary: '站点统计', responses: { '200': { description: 'OK' } } } },
+    },
+    components: { securitySchemes: { apiKey: { type: 'apiKey', in: 'header', name: 'X-API-Key' } } },
+  })
+})
+
+// ---------- API 文档页（人类 + Agent 友好） ----------
+app.get('/api/docs', async (c) => {
+  const base = siteUrl(c.env)
+  const body = html`<article class="article">
+    <h1>API 文档</h1>
+    <div class="body">
+      <p>FreeTokenBox 开放接口，供第三方与 AI Agent 消费。所有读接口无需鉴权；写接口需 <code>X-API-Key</code>（环境变量 <code>API_KEYS</code> 中的任意一个）。</p>
+      <h2>读取</h2>
+      <pre><code>GET ${base}/api/tokens?category=free-api&tag=llm&q=deepseek&page=1&pageSize=50
+GET ${base}/api/tokens/:slug
+GET ${base}/api/stats
+GET ${base}/ai.json</code></pre>
+      <h2>写入（需鉴权）</h2>
+      <pre><code>POST   ${base}/api/tokens          # 新增
+PATCH  ${base}/api/tokens/:slug     # 更新（部分字段）
+DELETE ${base}/api/tokens/:slug     # 删除</code></pre>
+      <h2>字段</h2>
+      <table class="list">
+        <thead><tr><th>字段</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>name</td><td>名称（必填）</td></tr>
+          <tr><td>description</td><td>一句话简介（必填）</td></tr>
+          <tr><td>content</td><td>Markdown 长文</td></tr>
+          <tr><td>provider / url</td><td>提供方 / 领取地址</td></tr>
+          <tr><td>category</td><td>free-api | free-plan | giveaways | coupons | other</td></tr>
+          <tr><td>tags</td><td>字符串数组</td></tr>
+          <tr><td>status</td><td>published | draft</td></tr>
+          <tr><td>is_featured</td><td>是否精选</td></tr>
+        </tbody>
+      </table>
+      <h2>机器可读</h2>
+      <ul>
+        <li><a href="${base}/api/openapi.json">OpenAPI 规范（/api/openapi.json）</a></li>
+        <li><a href="${base}/.well-known/ai-plugin.json">AI 插件清单</a></li>
+        <li><a href="${base}/tokens.md">Markdown 导出（/tokens.md）</a></li>
+        <li><a href="${base}/llms.txt">llms.txt</a></li>
+      </ul>
+    </div>
+  </article>`
+  return c.html(layout({ title: 'API 文档 · FreeTokenBox', description: 'FreeTokenBox 开放接口文档', path: '/api/docs', env: c.env, body }))
+})
+
+// ---------- 全量 Markdown 导出（LLM / Agent 友好） ----------
+app.get('/tokens.md', async (c) => {
+  const base = siteUrl(c.env)
+  const result = await listTokens(c.env, { status: 'published', includeAll: true, pageSize: 500 })
+  const items = result.items
+  const lines = [
+    '# FreeTokenBox — 免费送 Token 合集（Markdown 导出）',
+    '',
+    `共 ${result.total} 条免费资源，更新时间：${new Date().toISOString().slice(0, 10)}。`,
+    '',
+    ...items.map((t) => {
+      const tags = (t.tags || []).join(', ')
+      return [
+        `## ${t.name}`,
+        '',
+        `- 提供方：${t.provider || '-'}`,
+        `- 领取地址：${t.url || '-'}`,
+        `- 分类：${t.category}${tags ? `｜标签：${tags}` : ''}${t.expiry_date ? `｜截止：${t.expiry_date}` : ''}`,
+        `- 详情页：${base}/token/${t.slug}`,
+        '',
+        t.description || '',
+        '',
+      ].join('\n')
+    }),
+  ]
+  return c.text(lines.join('\n'), 200, { 'Content-Type': 'text/markdown; charset=utf-8' })
 })
 
 app.get('/sitemap.xml', async (c) => {

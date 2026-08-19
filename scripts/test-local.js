@@ -299,6 +299,16 @@ async function run() {
   text = await res.text()
   assert(res.status === 200 && text.includes('DeepSeek-V4-Flash'), 'search /?q=deepseek works')
 
+  // 域名规范化跳转（仅线上域名；localhost 直通）
+  res = await app.request('http://www.freetokenbox.com/', { headers: { Host: 'www.freetokenbox.com' } }, env)
+  assert(res.status === 301 && (res.headers.get('location') || '').startsWith('https://freetokenbox.com'), 'www -> bare 301', `loc=${res.headers.get('location')}`)
+  res = await app.request('http://freetokenbox.com/api/tokens', { headers: { Host: 'freetokenbox.com', 'x-forwarded-proto': 'http' } }, env)
+  assert(res.status === 301 && (res.headers.get('location') || '').startsWith('https://freetokenbox.com/api/tokens'), 'http -> https 301', `loc=${res.headers.get('location')}`)
+  res = await app.request('https://freetokenbox.mergedao.workers.dev/', { headers: { Host: 'freetokenbox.mergedao.workers.dev', 'x-forwarded-proto': 'https' } }, env)
+  assert(res.status === 301 && (res.headers.get('location') || '').startsWith('https://freetokenbox.com'), 'workers.dev -> bare 301', `loc=${res.headers.get('location')}`)
+  res = await app.request('http://localhost/', { headers: { Host: 'localhost' } }, env)
+  assert(res.status === 200, 'localhost passes through (no redirect)')
+
   // 3. SEO 文件
   res = await app.request('/robots.txt', {}, env)
   text = await res.text()
@@ -323,6 +333,28 @@ async function run() {
   res = await app.request('/ai.json', {}, env)
   const ai = await res.json()
   assert(res.status === 200 && Array.isArray(ai.tokens) && ai.tokens.length >= 6, 'ai.json lists tokens')
+
+  // Agent/LLM 友好端点
+  res = await app.request('/.well-known/ai-plugin.json', {}, env)
+  const plugin = await res.json()
+  assert(res.status === 200 && plugin.name_for_model === 'freetokenbox', 'ai-plugin.json manifest works')
+
+  res = await app.request('/api/openapi.json', {}, env)
+  const spec = await res.json()
+  assert(res.status === 200 && spec.openapi === '3.0.0', 'openapi.json spec works')
+
+  res = await app.request('/tokens.md', {}, env)
+  text = await res.text()
+  assert(res.status === 200 && text.includes('## DeepSeek-V4-Flash'), 'tokens.md markdown export works')
+
+  res = await app.request('/api/docs', {}, env)
+  text = await res.text()
+  assert(res.status === 200 && text.includes('API 文档'), 'api docs page works')
+
+  // 安全/缓存头
+  res = await app.request('/api/tokens', {}, env)
+  assert((res.headers.get('x-robots-tag') || '').includes('noindex'), 'api has noindex robots tag')
+  assert((res.headers.get('cache-control') || '').includes('no-store'), 'api has no-store cache header')
 
   // 4. 公开 API
   res = await app.request('/api/tokens', {}, env)

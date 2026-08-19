@@ -4,6 +4,12 @@ compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
+# 自定义域名（Cloudflare 自动创建 DNS 记录 + 颁发证书）
+routes = [
+  { pattern = "freetokenbox.com", custom_domain = true },
+  { pattern = "www.freetokenbox.com", custom_domain = true },
+]
+
 # D1 database for token entries
 [[d1_databases]]
 binding = "DB"
