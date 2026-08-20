@@ -301,7 +301,7 @@ const renderAbout = (lang) => (c) => {
           <h2>我们的特色</h2>
           <ul>
             <li>所有条目均为<strong>免费资源</strong>，标注提供方与官方领取地址</li>
-            <li>支持通过后台手工录入，也提供<strong>开放 API</strong> 与 Agent Skill 自动录入</li>
+            <li>提供<strong>开放 API</strong> 与 Agent Skill 自动录入，也可人工维护</li>
             <li>SEO 友好，结构化数据完善，方便搜索引擎和 AI 爬虫索引</li>
             <li>站内内容仅供学习参考，请以官方页面为准</li>
           </ul>
@@ -357,66 +357,43 @@ const staticTextPage = (path, zh, en) => (c) => {
   )
 }
 
-app.get('/privacy', staticTextPage('/privacy', {
+const PRIVACY_ZH = {
   title: '隐私政策',
   lines: [
     'FreeTokenBox 尊重并保护访客隐私。',
     '本站不主动收集个人身份信息；如未来接入 Google AdSense，广告服务可能使用 Cookie 提供个性化广告，详情见 Google 隐私政策。',
     '本政策如有更新，将在本页面发布。',
   ],
-}, {
+}
+const PRIVACY_EN = {
   title: 'Privacy Policy',
   lines: [
     'FreeTokenBox respects and protects visitor privacy.',
     'We do not collect personal information. If Google AdSense is enabled in the future, the ad service may use cookies for personalized ads — see Google\'s privacy policy for details.',
     'Any update to this policy will be published on this page.',
   ],
-}))
-app.get('/terms', staticTextPage('/terms', {
+}
+const TERMS_ZH = {
   title: '使用条款',
   lines: [
     'FreeTokenBox 收录的信息来自公开渠道，仅供学习参考，不构成任何建议。',
     '各平台免费额度与活动规则可能随时变化，请以官方页面为准。',
     '本站对链接指向的第三方内容不承担责任。',
   ],
-}, {
+}
+const TERMS_EN = {
   title: 'Terms of Use',
   lines: [
     'Information on FreeTokenBox comes from public sources and is for reference only; it does not constitute advice of any kind.',
     'Free quotas and campaign rules may change at any time — always check the official page.',
     'We are not responsible for content on third-party sites we link to.',
   ],
-}))
-app.get('/en/privacy', staticTextPage('/privacy', {
-  title: '隐私政策',
-  lines: [
-    'FreeTokenBox 尊重并保护访客隐私。',
-    '本站不主动收集个人身份信息；如未来接入 Google AdSense，广告服务可能使用 Cookie 提供个性化广告，详情见 Google 隐私政策。',
-    '本政策如有更新，将在本页面发布。',
-  ],
-}, {
-  title: 'Privacy Policy',
-  lines: [
-    'FreeTokenBox respects and protects visitor privacy.',
-    'We do not collect personal information. If Google AdSense is enabled in the future, the ad service may use cookies for personalized ads — see Google\'s privacy policy for details.',
-    'Any update to this policy will be published on this page.',
-  ],
-}))
-app.get('/en/terms', staticTextPage('/terms', {
-  title: '使用条款',
-  lines: [
-    'FreeTokenBox 收录的信息来自公开渠道，仅供学习参考，不构成任何建议。',
-    '各平台免费额度与活动规则可能随时变化，请以官方页面为准。',
-    '本站对链接指向的第三方内容不承担责任。',
-  ],
-}, {
-  title: 'Terms of Use',
-  lines: [
-    'Information on FreeTokenBox comes from public sources and is for reference only; it does not constitute advice of any kind.',
-    'Free quotas and campaign rules may change at any time — always check the official page.',
-    'We are not responsible for content on third-party sites we link to.',
-  ],
-}))
+}
+
+app.get('/privacy', staticTextPage('/privacy', PRIVACY_ZH, PRIVACY_EN))
+app.get('/terms', staticTextPage('/terms', TERMS_ZH, TERMS_EN))
+app.get('/en/privacy', staticTextPage('/privacy', PRIVACY_ZH, PRIVACY_EN))
+app.get('/en/terms', staticTextPage('/terms', TERMS_ZH, TERMS_EN))
 
 // ---------- 品牌标识（logo.svg，ai-plugin.json 引用） ----------
 app.get('/logo.svg', (c) =>
@@ -709,12 +686,16 @@ app.get('/sitemap.xml', async (c) => {
 
   const urls = [
     { loc: `${base}/`, priority: '1.0', changefreq: 'daily' },
+    { loc: `${base}/en`, priority: '0.9', changefreq: 'daily' },
     { loc: `${base}/about`, priority: '0.6', changefreq: 'monthly' },
+    { loc: `${base}/en/about`, priority: '0.6', changefreq: 'monthly' },
     { loc: `${base}/privacy`, priority: '0.3', changefreq: 'yearly' },
     { loc: `${base}/terms`, priority: '0.3', changefreq: 'yearly' },
     ...categories.map((c2) => ({ loc: `${base}/category/${c2.name}`, priority: '0.7', changefreq: 'daily' })),
+    ...categories.map((c2) => ({ loc: `${base}/en/category/${c2.name}`, priority: '0.6', changefreq: 'daily' })),
     ...[...allTags].map((tag) => ({ loc: `${base}/tags/${tag}`, priority: '0.5', changefreq: 'weekly' })),
     ...items.map((t) => ({ loc: `${base}/token/${t.slug}`, priority: '0.8', changefreq: 'weekly', lastmod: formatDate(t.updated_at) })),
+    ...items.map((t) => ({ loc: `${base}/en/token/${t.slug}`, priority: '0.7', changefreq: 'weekly', lastmod: formatDate(t.updated_at) })),
   ]
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -923,18 +904,21 @@ app.post('/admin/seed', adminGuard, async (c) => {
 })
 
 // ---------- 404 / 错误 ----------
-app.notFound((c) =>
-  c.html(
+app.notFound((c) => {
+  const lang = langFromPath(c.req.path)
+  const s = T(lang)
+  return c.html(
     layout({
-      title: '404 · FreeTokenBox',
-      description: '页面不存在',
+      title: s.notFoundTitle,
+      description: s.notFoundDesc,
       path: c.req.path,
       env: c.env,
-      body: html`<div class="article" style="text-align:center"><h1>404</h1><p>页面不存在或已下线。</p><p><a class="btn" href="/">返回首页</a></p></div>`,
+      lang,
+      body: html`<div class="article" style="text-align:center"><h1>404</h1><p>${s.notFoundBody}</p><p><a class="btn" href="${lp(lang, '/')}">${s.backHome}</a></p></div>`,
     }),
     404
   )
-)
+})
 
 app.onError((err, c) => {
   console.error('FreeTokenBox error:', err)

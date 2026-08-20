@@ -343,7 +343,6 @@ export function layout({ title, description, path, env, body, extraHead = '', br
         <a href="${lp(lang, '/')}">${t.navHome}</a>
         <a href="${lp(lang, '/about')}">${t.navAbout}</a>
         <a href="/api/tokens">API</a>
-        <a href="/admin">${t.navAdmin}</a>
         <a class="lang-switch" href="${lang === 'zh' ? '/en' + cleanPath : cleanPath}" hreflang="${lang === 'zh' ? 'en' : 'zh-CN'}">${t.switchLabel}</a>
       </div>
     </div>
