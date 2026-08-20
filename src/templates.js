@@ -245,9 +245,13 @@ export function layout({ title, description, path, env, body, extraHead = '', br
     .sec .n { font-size: 13.5px; color: var(--faint); }
 
     /* ---- 目录式条目列表 ---- */
-    .list { display: flex; flex-direction: column; }
-    .entry { display: flex; align-items: center; gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--border); }
-    .entry.pick { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: var(--radius); padding: 20px 22px; margin: 12px 0; }
+    .list { display: flex; flex-direction: column; gap: 12px; }
+    .entry { display: flex; align-items: center; gap: 18px; padding: 16px 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); transition: border-color .15s ease, box-shadow .15s ease; }
+    .entry:hover { border-color: var(--border-strong); box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+    .entry.pick { border-color: var(--accent-border); background: var(--accent-soft); }
+    .e-logo { width: 40px; height: 40px; flex: none; border-radius: 9px; border: 1px solid var(--border); background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='17' r='6' fill='none' stroke='%23a1a1aa' stroke-width='2.4'/%3E%3Cpath d='M11 30c2.4-6.4 5-9.5 9-9.5s6.6 3.1 9 9.5' fill='none' stroke='%23a1a1aa' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center/24px no-repeat; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .e-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .e-logo.lg { width: 56px; height: 56px; border-radius: 12px; }
     .e-main { flex: 1; min-width: 0; }
     .e-main h3 { margin: 0 0 5px; font-size: 17px; font-weight: 600; line-height: 1.45; }
     .e-main h3 a { color: var(--text); }
@@ -285,6 +289,10 @@ export function layout({ title, description, path, env, body, extraHead = '', br
     .article .body blockquote { border-left: 2px solid var(--accent); margin: 16px 0; padding: 4px 18px; color: var(--muted); }
     .article .body code { background: var(--code-bg); padding: 2px 7px; border-radius: 4px; font-size: .88em; font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; }
     .article .body a { text-decoration: underline; text-underline-offset: 3px; }
+    .article .body img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); margin: 14px 0; }
+    .article .headline { display: flex; align-items: flex-start; gap: 18px; margin: 0 0 8px; }
+    .article .headline h1 { font-size: 28px; margin: 0 0 8px; line-height: 1.3; font-weight: 700; letter-spacing: -0.01em; }
+    .article .headline .standfirst { margin: 0; }
     .cta { margin-top: 32px; padding-top: 26px; border-top: 1px solid var(--border); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
     .btn { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: #fff; font-weight: 600; padding: 11px 18px; border-radius: 6px; font-size: 15px; border: 1px solid var(--accent); cursor: pointer; font-family: inherit; }
     .btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; text-decoration: none; }
@@ -398,12 +406,46 @@ export function layout({ title, description, path, env, body, extraHead = '', br
 </html>`
 }
 
+// ---------- 外链 UTM 来源（跳转其他网站时带上我们的来源） ----------
+function withUtm(url, slug) {
+  if (!url || !/^https?:\/\//i.test(url)) return url // 仅外链；内部链接原样返回
+  try {
+    const u = new URL(url)
+    if (!u.searchParams.has('utm_source')) {
+      u.searchParams.set('utm_source', 'freetokenbox')
+      u.searchParams.set('utm_medium', 'referral')
+      u.searchParams.set('utm_campaign', slug || 'free-token')
+    }
+    return u.toString()
+  } catch (e) {
+    const sep = url.includes('?') ? '&' : '?'
+    return `${url}${sep}utm_source=freetokenbox&utm_medium=referral&utm_campaign=${encodeURIComponent(slug || 'free-token')}`
+  }
+}
+
+// ---------- 站点 logo：显式 logo > favicon 服务 > 默认图标（CSS 背景兜底） ----------
+function siteLogo(t) {
+  if (t.logo) return t.logo
+  if (t.url) {
+    try {
+      const host = new URL(t.url).hostname
+      if (host) return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64`
+    } catch (e) {}
+  }
+  return null
+}
+function logoImg(t) {
+  const src = siteLogo(t)
+  return src ? html`<img src="${src}" alt="" width="40" height="40" loading="lazy" onerror="this.remove()" />` : ''
+}
+
 // ---------- 条目行 ----------
 function entryRow(t, lang, opts = {}) {
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
   const pick = opts.pick || t.is_featured
   return html`<article class="entry${pick ? ' pick' : ''}">
+    <div class="e-logo">${logoImg(t)}</div>
     <div class="e-main">
       <h3>${pick ? html`<span class="flag">${s.flag}</span>` : ''}<a href="${pre}/token/${t.slug}">${t.name}</a></h3>
       <p class="e-desc">${excerpt(t.description, 110)}</p>
@@ -413,7 +455,7 @@ function entryRow(t, lang, opts = {}) {
         ${(t.tags || []).slice(0, 4).map((tag) => html`<a class="tg" href="${pre}/tags/${tag}">#${tag}</a>`)}
       </div>
     </div>
-    <a class="claim${pick ? ' solid' : ''}" href="${t.url || `${pre}/token/${t.slug}`}" rel="noopener nofollow" target="_blank">${s.claim}<span class="ic">${raw(ICON.external)}</span></a>
+    <a class="claim${pick ? ' solid' : ''}" href="${withUtm(t.url || `${pre}/token/${t.slug}`, t.slug)}" rel="noopener nofollow" target="_blank">${s.claim}<span class="ic">${raw(ICON.external)}</span></a>
   </article>`
 }
 
@@ -558,11 +600,14 @@ export function tokenPage(token, env, related = [], lang = 'zh') {
         ${token.expiry_date ? html`<span class="sep">·</span><span>${s.deadline(formatDate(token.expiry_date))}</span>` : ''}
         <span class="sep">·</span><span>${s.collectedAt(formatDate(token.created_at))}</span>
       </div>
-      <h1>${token.name}</h1>
-      <p class="standfirst">${token.description}</p>
+      <div class="headline">
+        <div class="e-logo lg">${logoImg(token)}</div>
+        <div><h1>${token.name}</h1>
+        <p class="standfirst">${token.description}</p></div>
+      </div>
       <div class="body">${raw(renderMarkdown(token.content))}</div>
       <div class="cta">
-        <a class="btn" href="${token.url || canonical}" rel="noopener nofollow" target="_blank">${s.goClaim(provider)}<span class="ic">${raw(ICON.external)}</span></a>
+        <a class="btn" href="${withUtm(token.url, token.slug) || canonical}" rel="noopener nofollow" target="_blank">${s.goClaim(provider)}<span class="ic">${raw(ICON.external)}</span></a>
         <a class="btn btn-quiet" href="${lp(lang, '/')}">${s.back}</a>
       </div>
       ${adSlot(env, 'article-bottom', lang === 'en' ? 'Ad slot' : '文章底部广告位')}

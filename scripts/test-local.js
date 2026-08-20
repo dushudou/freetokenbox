@@ -3,6 +3,7 @@
 // 说明: 仅实现本项目用到的 SQL 子集（见 src/db.js），用于无 Cloudflare 环境的快速回归。
 
 import app from '../src/index.js'
+import { renderMarkdown } from '../src/content.js'
 
 // ---------- 极简 D1 内存 mock ----------
 class MockDB {
@@ -281,6 +282,15 @@ async function run() {
   assert(text.includes('class="banner"') && text.includes('class="sidebar"'), 'home has banner + sidebar layout')
   assert(text.includes('最新收录') && text.includes('热门精选'), 'home sidebar has latest & hot widgets')
   assert((text.match(/class="crumbs"/g) || []).length === 0, 'home has NO breadcrumb (info-site home)')
+  assert(text.includes('class="e-logo"'), 'home entries show site logo container')
+  assert(text.includes('utm_source=freetokenbox'), 'home claim links carry UTM source')
+
+  // Markdown 图片支持
+  const md = '![示意图](https://example.com/demo.png)\n\n正文 **加粗** [链接](https://example.com)'
+  const mdHtml = renderMarkdown(md)
+  assert(mdHtml.includes('<img src="https://example.com/demo.png"'), 'markdown image renders <img>')
+  assert(mdHtml.includes('loading="lazy"'), 'markdown image is lazy-loaded')
+  assert(!mdHtml.includes('https://example.com/demo.png"></a>'), 'image is not wrapped as a link')
 
   res = await app.request('/token/deepseek-v4-flash-api-free', {}, env)
   text = await res.text()
