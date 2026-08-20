@@ -280,9 +280,12 @@ async function run() {
   assert(text.includes('<div class="ad-slot">'), 'home renders ad placeholder div (no AdSense configured)')
   assert(!text.includes('form class="search"'), 'home has NO content-area search form')
   assert(text.includes('class="banner"') && text.includes('class="sidebar"'), 'home has banner + sidebar layout')
+  assert(text.includes('class="kicker"'), 'home banner has editorial kicker')
   assert(text.includes('最新收录') && text.includes('热门精选'), 'home sidebar has latest & hot widgets')
   assert((text.match(/class="crumbs"/g) || []).length === 0, 'home has NO breadcrumb (info-site home)')
   assert(text.includes('class="e-logo"'), 'home entries show site logo container')
+  assert(text.includes('chip free'), 'entries show 免费/Free status chip')
+  assert(text.includes('class="w-rank'), 'hot sidebar shows rank numbers')
   assert(text.includes('utm_source=freetokenbox'), 'home claim links carry UTM source')
 
   // Markdown 图片支持
@@ -298,6 +301,7 @@ async function run() {
   assert(text.includes('BaiClaw') && text.includes('chat.b.ai'), 'token page contains content')
   assert(text.includes('application/ld+json'), 'token page has JSON-LD')
   assert(text.includes('相关推荐') || text.includes('相关'), 'token page has related section')
+  assert(text.includes('class="article-chips"') && text.includes('chip free'), 'token page shows free/status chips')
   assert((text.match(/class="crumbs"/g) || []).length === 1, 'token page has EXACTLY ONE breadcrumb', `count=${(text.match(/class="crumbs"/g)||[]).length}`)
 
   res = await app.request('/token/not-exist', {}, env)

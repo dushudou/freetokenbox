@@ -106,6 +106,17 @@ export function formatDate(iso) {
   return d.toISOString().slice(0, 10)
 }
 
+/** 距截止日期的剩余天数；已过期返回负数 */
+export function daysUntil(iso) {
+  if (!iso) return null
+  const d = new Date(String(iso).includes('T') ? iso : iso.replace(' ', 'T') + 'Z')
+  if (Number.isNaN(d.getTime())) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  d.setHours(0, 0, 0, 0)
+  return Math.round((d - today) / 86400000)
+}
+
 /** 截断文本到 n 个字符 */
 export function excerpt(text, n = 120) {
   const t = String(text || '')

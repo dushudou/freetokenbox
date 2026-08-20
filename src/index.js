@@ -397,10 +397,10 @@ app.get('/terms', staticTextPage('/terms', TERMS_ZH, TERMS_EN))
 app.get('/en/privacy', staticTextPage('/privacy', PRIVACY_ZH, PRIVACY_EN))
 app.get('/en/terms', staticTextPage('/terms', TERMS_ZH, TERMS_EN))
 
-// ---------- 品牌标识（logo.svg，ai-plugin.json 引用） ----------
+// ---------- 品牌标识（logo.svg，ai-plugin.json 引用；内嵌明暗自适应） ----------
 app.get('/logo.svg', (c) =>
   c.text(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8.7" fill="#059669"/><circle cx="16" cy="7.9" r="2.4" fill="#fff"/><path d="M7.6 13.3h16.8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><rect x="9.9" y="13.3" width="12.2" height="10.1" rx="2.1" fill="none" stroke="#fff" stroke-width="2.5"/></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><style>.t{fill:#059669}@media (prefers-color-scheme: dark){.t{fill:#10b981}}</style><rect width="32" height="32" rx="8.7" class="t"/><circle cx="16" cy="16" r="9.9" fill="#fff"/><rect x="11.7" y="11.7" width="8.6" height="8.6" rx="1.7" class="t"/></svg>',
     200,
     { 'Content-Type': 'image/svg+xml' }
   )
