@@ -766,4 +766,148 @@ export const SEED_TOKENS = [
 
 **使用方法**：注册后在控制台生成 API Key 调用。免费额度与速率限制以官方页面为准。`,
   },
+  {
+    name: 'SambaNova Cloud 免费推理额度',
+    slug: 'sambanova-cloud-free',
+    description: 'SambaNova Cloud 提供免费推理额度（限速），可极速调用 Llama、Qwen、DeepSeek 等开源模型 API。',
+    provider: 'SambaNova',
+    url: 'https://cloud.sambanova.ai',
+    category: 'free-api',
+    tags: ['api', 'llm', 'sambanova', 'open-source'],
+    is_featured: 0,
+    sort_weight: 23,
+    content: `**SambaNova Cloud** 基于自研 RDU 芯片提供高性能开源模型推理。
+
+- 提供免费推理额度（带速率限制）
+- 可调用 Llama、Qwen、DeepSeek 等主流开源模型
+- 主打极低延迟与高吞吐，提供 OpenAI 兼容接口
+
+**使用方法**：注册后在控制台生成 API Key 调用。免费额度与速率限制以官方页面为准。`,
+  },
+  {
+    name: 'DeepInfra 免费 Token 额度',
+    slug: 'deepinfra-free-credit',
+    description: 'DeepInfra 提供免费 token 额度与免费模型层，可调用 Llama、Qwen、DeepSeek 等开源模型 API。',
+    provider: 'DeepInfra',
+    url: 'https://deepinfra.com',
+    category: 'free-api',
+    tags: ['api', 'llm', 'deepinfra', 'open-source'],
+    is_featured: 0,
+    sort_weight: 22,
+    content: `**DeepInfra** 提供开源模型的低成本托管推理。
+
+- 新用户可获得免费 token 额度，并常有免费模型层
+- 可调用 Llama、Qwen、DeepSeek、Mistral 等主流模型
+- 提供 OpenAI 兼容接口与 Python SDK
+
+**使用方法**：注册后生成 API Key 调用。免费额度与免费模型以官方页面为准。`,
+  },
+  {
+    name: 'Nebius AI Studio 送 Credits',
+    slug: 'nebius-ai-studio-free',
+    description: 'Nebius AI Studio（原 Nebius AI）新用户注册赠送 credits，可调用 Llama、Qwen 等开源模型 API。',
+    provider: 'Nebius',
+    url: 'https://studio.nebius.ai',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'nebius', 'open-source'],
+    is_featured: 0,
+    sort_weight: 21,
+    content: `**Nebius AI Studio** 基于欧洲云基础设施提供开源模型推理。
+
+- 新用户注册赠送 credits，可调用 Llama、Qwen 等模型
+- 依托高性能 GPU 集群，适合推理与微调
+- 提供 OpenAI 兼容接口
+
+**使用方法**：注册后在控制台生成 API Key 调用。赠送 credits 与额度以官方页面为准。`,
+  },
+  {
+    name: 'Modal 每月免费 GPU 算力',
+    slug: 'modal-free-gpu',
+    description: 'Modal 为开发者提供每月免费 GPU/CPU 算力额度，适合跑推理、批处理与 Serverless AI 应用。',
+    provider: 'Modal',
+    url: 'https://modal.com',
+    category: 'free-plan',
+    tags: ['gpu', 'compute', 'serverless', 'modal'],
+    is_featured: 0,
+    sort_weight: 20,
+    content: `**Modal** 提供 Serverless GPU/CPU 算力平台。
+
+- 每月赠送免费算力额度，可用于推理、批处理与 Web 服务
+- 支持按秒计费的 GPU（A100/H100 等）弹性扩缩
+- Python 优先，也支持 Docker 镜像
+
+**使用方法**：注册账号即可获得每月免费额度，按文档部署函数调用。免费额度以官方页面为准。`,
+  },
+  {
+    name: 'RunPod 新用户送 Credits',
+    slug: 'runpod-free-credit',
+    description: 'RunPod 新用户注册赠送 credits，可租用 GPU 跑推理、微调或部署开源模型。',
+    provider: 'RunPod',
+    url: 'https://runpod.io',
+    category: 'free-plan',
+    tags: ['gpu', 'compute', 'runpod', 'open-source'],
+    is_featured: 0,
+    sort_weight: 19,
+    content: `**RunPod** 提供按需 GPU 云服务。
+
+- 新用户注册赠送 credits
+- 支持 GPU Pod（按小时）与 Serverless 推理两种模式
+- 可一键部署 Llama、Stable Diffusion 等开源模型
+
+**使用方法**：注册后在控制台创建 GPU 实例或部署 Serverless 端点。赠送 credits 以官方页面为准。`,
+  },
+  {
+    name: 'Baseten 新用户送 Credits',
+    slug: 'baseten-free-credit',
+    description: 'Baseten 新用户注册赠送 credits，可部署与调用 Llama 等开源模型，主打低延迟推理。',
+    provider: 'Baseten',
+    url: 'https://baseten.co',
+    category: 'free-plan',
+    tags: ['api', 'llm', 'baseten', 'open-source'],
+    is_featured: 0,
+    sort_weight: 18,
+    content: `**Baseten** 提供开源模型的托管推理与部署平台。
+
+- 新用户注册赠送 credits
+- 可一键部署 Llama、Mistral 等模型，主打低延迟
+- 支持基础设施编排（GPU 自动扩缩）
+
+**使用方法**：注册后在控制台部署模型并获取 API Key 调用。赠送 credits 以官方页面为准。`,
+  },
+  {
+    name: 'Fal.ai 新用户送 Credits',
+    slug: 'fal-ai-free-credit',
+    description: 'Fal.ai 新用户注册赠送 credits，可调用图像、视频、音频等多种生成式 AI 模型 API。',
+    provider: 'Fal.ai',
+    url: 'https://fal.ai',
+    category: 'free-plan',
+    tags: ['api', 'image', 'video', 'fal'],
+    is_featured: 0,
+    sort_weight: 17,
+    content: `**Fal.ai** 提供生成式 AI 模型的托管 API。
+
+- 新用户注册赠送 credits
+- 覆盖图像、视频、音频、语音等多种生成模型
+- 提供低延迟 API 与 WebSocket 实时调用
+
+**使用方法**：注册后在控制台生成 API Key 调用。赠送 credits 以官方页面为准。`,
+  },
+  {
+    name: 'Hugging Face 免费推理额度',
+    slug: 'huggingface-inference-free',
+    description: 'Hugging Face Inference Providers 提供多家开源模型的免费推理额度（限速），适合测试与小流量应用。',
+    provider: 'Hugging Face',
+    url: 'https://huggingface.co',
+    category: 'free-api',
+    tags: ['api', 'llm', 'huggingface', 'open-source'],
+    is_featured: 0,
+    sort_weight: 16,
+    content: `**Hugging Face Inference Providers** 聚合多家推理服务商的免费额度。
+
+- 通过统一接口调用 Llama、Qwen、Mistral 等海量开源模型
+- 提供免费推理额度（带速率限制），适合测试与小流量
+- 支持 Serverless Inference API 与自建 Endpoint 付费扩容
+
+**使用方法**：注册后在 Settings 生成 Access Token 调用。免费额度与速率限制以官方页面为准。`,
+  },
 ]
