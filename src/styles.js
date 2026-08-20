@@ -227,9 +227,6 @@ export const siteCss = `
     .pager a:hover { border-color: var(--accent); color: var(--accent-strong); text-decoration: none; }
     .pager .cur { color: var(--text); font-weight: 600; border-color: var(--border-strong); }
 
-    /* ---- 广告位 ---- */
-    .ad-slot { border: 1px dashed var(--border-strong); border-radius: 14px; padding: 22px; text-align: center; color: var(--faint); font-size: 12px; margin: 28px 0; background: var(--surface-2); min-height: 90px; display: flex; align-items: center; justify-content: center; }
-
     /* ---- 页脚 ---- */
     footer { border-top: 1px solid var(--border); background: var(--surface-2); }
     .foot { max-width: 1120px; margin: 0 auto; padding: 26px 24px; color: var(--faint); font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }

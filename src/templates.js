@@ -47,26 +47,6 @@ function jsonScript(obj) {
   return raw(JSON.stringify(obj).replace(/</g, '\\u003c'))
 }
 
-// Google AdSense 广告位
-function adSlot(env, slotId, label) {
-  const adClient = env.ADSENSE_CLIENT_ID || ''
-  if (adClient) {
-    const adUnit = env.ADSENSE_AD_UNITS ? (JSON.parse(env.ADSENSE_AD_UNITS) || {}) : {}
-    const slot = adUnit[slotId] || adUnit.fallback || ''
-    return html`<div class="ad-slot">
-      <ins class="adsbygoogle" style="display:block" data-ad-client="${adClient}" data-ad-slot="${slot}" data-ad-format="auto" data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>`
-  }
-  return html`<div class="ad-slot"><span>${label}</span></div>`
-}
-
-function adLoaderHead(env) {
-  const adClient = env.ADSENSE_CLIENT_ID || ''
-  if (!adClient) return ''
-  return html`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adClient}" crossorigin="anonymous"></script>`
-}
-
 // 面包屑组件（item.url 传 zh 形式路径，渲染时按语言加前缀）
 function breadcrumb(items, lang) {
   return html`<nav class="crumbs" aria-label="${lang === 'en' ? 'Breadcrumb' : '面包屑导航'}">
@@ -124,7 +104,6 @@ export function layout({ title, description, path, env, body, hero = null, extra
   <meta name="application-name" content="FreeTokenBox" />
   <meta name="apple-mobile-web-app-title" content="FreeTokenBox" />
   ${extraHead}
-  ${adLoaderHead(env)}
   <script type="application/ld+json">${jsonScript(websiteJsonLd(env, lang))}</script>
   ${jsonLd ? html`<script type="application/ld+json">${jsonScript(jsonLd)}</script>` : ''}
   <style>
@@ -151,7 +130,6 @@ export function layout({ title, description, path, env, body, hero = null, extra
   <main>
     ${breadcrumbs ? breadcrumb(breadcrumbs, lang) : ''}
     ${body}
-    ${adSlot(env, 'footer', lang === 'en' ? 'Ad slot' : '广告位')}
   </main>
   <footer>
     <div class="foot">
@@ -273,7 +251,6 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
           <h2>${searchQuery ? s.searchResults : s.allEntries}</h2>
           <span class="n">${s.countTiao(items.length)}${totalPages > 1 ? ` · ${s.pageOf(page, totalPages)}` : ''}</span>
         </div>
-        ${adSlot(env, 'home-top', lang === 'en' ? 'Ad slot' : '列表上方广告位')}
         <div class="list">${items.map((t) => entryRow(t, lang))}</div>
 
         ${totalPages > 1 ? html`<nav class="pager" aria-label="${lang === 'en' ? 'Pagination' : '分页'}">
@@ -299,7 +276,6 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
             ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${c.name}<span class="n">${c.count}</span></a>`)}
           </div>
         </section>` : ''}
-        ${adSlot(env, 'sidebar', lang === 'en' ? 'Ad slot' : '侧边栏广告位')}
       </aside>
     </div>
   `
@@ -311,7 +287,7 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
     lang,
     hero,
     body,
-    jsonLd: [organizationJsonLd(env), itemListJsonLd(featured.length ? [...featured, ...items] : items, env, lang)],
+    jsonLd: [organizationJsonLd(env, lang), itemListJsonLd(featured.length ? [...featured, ...items] : items, env, lang)],
   })
 }
 
@@ -395,7 +371,6 @@ export function tokenPage(token, env, related = [], lang = 'zh') {
         <a class="btn" href="${withUtm(token.url, token.slug) || canonical}" rel="noopener nofollow" target="_blank">${s.goClaim(provider)}<span class="ic">${raw(ICON.external)}</span></a>
         <a class="btn btn-quiet" href="${lp(lang, '/')}">${s.back}</a>
       </div>
-      ${adSlot(env, 'article-bottom', lang === 'en' ? 'Ad slot' : '文章底部广告位')}
     </article>
 
     ${related.length ? html`

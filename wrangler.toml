@@ -25,5 +25,4 @@ database_id = "830a4c5a-5a54-4f09-ba65-b50cf1798470"
 # ADMIN_PASSWORD   — 后台登录密码（必填）
 # SESSION_SECRET   — 会话签名密钥（必填，可用 `openssl rand -hex 32` 生成）
 # API_KEYS         — 允许写接口的 API Key 列表，逗号分隔（可选）
-# ADSENSE_CLIENT_ID — Google AdSense publisher id，如 ca-pub-123456789 (可选)
 # SITE_URL         — 站点公开地址，用于 sitemap/canonical，如 https://freetokenbox.pages.dev (可选)

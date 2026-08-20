@@ -148,15 +148,17 @@ function lp(lang, path) {
 }
 
 /** 组织 JSON-LD（Organization，用于站点/关于页，增强信任度信号） */
-export function organizationJsonLd(env) {
+export function organizationJsonLd(env, lang = 'zh') {
   const base = siteUrl(env)
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'FreeTokenBox',
-    alternateName: '免费送 Token 合集',
+    alternateName: lang === 'en' ? 'Free AI Token Deals' : '免费送 Token 合集',
     url: base ? base + '/' : '/',
-    description: 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集。',
+    description: lang === 'en'
+      ? 'FreeTokenBox is a curated directory of free AI tokens, API credits and compute.'
+      : 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集。',
     logo: base ? `${base}/logo.svg` : '/logo.svg',
     sameAs: ['https://github.com/dushudou/freetokenbox'],
   }

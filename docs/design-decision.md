@@ -26,6 +26,6 @@ FreeTokenBox 是「免费额度目录」，首要任务是**可扫读 + 可信 +
 
 - 无 emoji（全部内联 SVG + `currentColor`）
 - 单一 `<h1>`、语义化结构，SEO / Agent / LLM 友好不退化
-- AdSense 占位 `<div class="ad-slot">` 保留，接入时不改结构
+- 广告位已全部移除（用户决策）；如需接入 Google AdSense，可在布局相应位置重新插入广告单元，不影响页面结构
 - 明暗自适应（`prefers-color-scheme`），移动端单列、侧栏移入主栏之后
 - 背景不做大面积渐变、不发光
