@@ -278,9 +278,12 @@ async function run() {
   assert(text.includes('DeepSeek-V4-Flash') && text.includes('FreeTokenBox'), 'home contains seed title & brand')
   assert(!text.includes('adsbygoogle'), 'home does NOT load AdSense script when unconfigured')
   assert(text.includes('<div class="ad-slot">'), 'home renders ad placeholder div (no AdSense configured)')
-  assert(!text.includes('form class="search"'), 'home has NO content-area search form')
-  assert(text.includes('class="banner"') && text.includes('class="sidebar"'), 'home has banner + sidebar layout')
-  assert(text.includes('class="kicker"'), 'home banner has editorial kicker')
+  assert(!text.includes('form class="search"'), 'home has NO legacy content-area search form')
+  assert(text.includes('class="hero"') && text.includes('class="sidebar"'), 'home has full-width hero + sidebar layout')
+  assert(text.indexOf('class="hero"') < text.indexOf('<main>'), 'hero banner renders OUTSIDE main container (full-bleed)')
+  assert(text.includes('form class="hero-search"'), 'hero contains search box (directory primary CTA)')
+  assert(text.includes('class="hero-mark"'), 'hero has brand watermark mark')
+  assert(text.includes('class="kicker"'), 'hero banner has editorial kicker')
   assert(text.includes('最新收录') && text.includes('热门精选'), 'home sidebar has latest & hot widgets')
   assert((text.match(/class="crumbs"/g) || []).length === 0, 'home has NO breadcrumb (info-site home)')
   assert(text.includes('class="e-logo"'), 'home entries show site logo container')
@@ -475,3 +478,6 @@ run().catch((err) => {
   console.error('测试运行出错:', err)
   process.exit(1)
 })
+
+// 供 gen-preview.js 复用（直接执行本文件时不受影响）
+export { MockDB, env, run }
