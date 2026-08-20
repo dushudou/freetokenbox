@@ -277,6 +277,10 @@ async function run() {
   assert(text.includes('DeepSeek-V4-Flash') && text.includes('FreeTokenBox'), 'home contains seed title & brand')
   assert(!text.includes('adsbygoogle'), 'home does NOT load AdSense script when unconfigured')
   assert(text.includes('<div class="ad-slot">'), 'home renders ad placeholder div (no AdSense configured)')
+  assert(!text.includes('form class="search"'), 'home has NO content-area search form')
+  assert(text.includes('class="banner"') && text.includes('class="sidebar"'), 'home has banner + sidebar layout')
+  assert(text.includes('最新收录') && text.includes('热门精选'), 'home sidebar has latest & hot widgets')
+  assert((text.match(/class="crumbs"/g) || []).length === 0, 'home has NO breadcrumb (info-site home)')
 
   res = await app.request('/token/deepseek-v4-flash-api-free', {}, env)
   text = await res.text()
@@ -284,12 +288,15 @@ async function run() {
   assert(text.includes('BaiClaw') && text.includes('chat.b.ai'), 'token page contains content')
   assert(text.includes('application/ld+json'), 'token page has JSON-LD')
   assert(text.includes('相关推荐') || text.includes('相关'), 'token page has related section')
+  assert((text.match(/class="crumbs"/g) || []).length === 1, 'token page has EXACTLY ONE breadcrumb', `count=${(text.match(/class="crumbs"/g)||[]).length}`)
 
   res = await app.request('/token/not-exist', {}, env)
   assert(res.status === 404, 'missing token -> 404', `got ${res.status}`)
 
   res = await app.request('/category/free-api', {}, env)
-  assert(res.status === 200 && (await res.text()).includes('分类'), 'category page 200')
+  text = await res.text()
+  assert(res.status === 200 && text.includes('分类'), 'category page 200')
+  assert((text.match(/class="crumbs"/g) || []).length === 1, 'list page has EXACTLY ONE breadcrumb', `count=${(text.match(/class="crumbs"/g)||[]).length}`)
 
   res = await app.request('/tags/llm', {}, env)
   assert(res.status === 200 && (await res.text()).includes('llm'), 'tag page 200')
@@ -342,6 +349,7 @@ async function run() {
   res = await app.request('/api/openapi.json', {}, env)
   const spec = await res.json()
   assert(res.status === 200 && spec.openapi === '3.0.0', 'openapi.json spec works')
+  assert(!spec.paths['/api/tokens'].post && !spec.paths['/api/tokens/{slug}'].patch, 'openapi.json is READ-ONLY (no write ops)')
 
   res = await app.request('/tokens.md', {}, env)
   text = await res.text()

@@ -131,13 +131,14 @@ const renderHome = async (c, lang) => {
   const page = Math.max(1, Number(c.req.query('page')) || 1)
   const pageSize = 12
   const searchQuery = c.req.query('q') || ''
-  const [result, featured, categories, statsResult] = await Promise.all([
+  const [result, featured, categories, statsResult, latestResult] = await Promise.all([
     listTokens(c.env, { status: 'published', page, pageSize, query: searchQuery || undefined }),
     listTokens(c.env, { status: 'published', includeAll: false, pageSize: 100 }).then((r) =>
       r.items.filter((t) => t.is_featured)
     ),
     listCategories(c.env),
     listTokens(c.env, { status: 'published', includeAll: true, pageSize: 1 }),
+    listTokens(c.env, { status: 'published', order: 'newest', pageSize: 8 }),
   ])
   const stats = {
     total: statsResult.total,
@@ -156,6 +157,7 @@ const renderHome = async (c, lang) => {
       query,
       searchQuery,
       stats,
+      latest: searchQuery ? [] : latestResult.items,
       lang,
     })
   )
@@ -301,7 +303,7 @@ const renderAbout = (lang) => (c) => {
           <h2>我们的特色</h2>
           <ul>
             <li>所有条目均为<strong>免费资源</strong>，标注提供方与官方领取地址</li>
-            <li>提供<strong>开放 API</strong> 与 Agent Skill 自动录入，也可人工维护</li>
+            <li>提供<strong>只读开放 API</strong> 与 llms/ai.json 供搜索引擎与 Agent 使用；条目由站方维护录入</li>
             <li>SEO 友好，结构化数据完善，方便搜索引擎和 AI 爬虫索引</li>
             <li>站内内容仅供学习参考，请以官方页面为准</li>
           </ul>
@@ -552,12 +554,11 @@ app.get('/.well-known/ai-plugin.json', async (c) => {
     schema_version: 'v1',
     name_for_human: 'FreeTokenBox',
     name_for_model: 'freetokenbox',
-    description_for_human: '免费送 Token 合集：查找并录入免费 AI token / API 额度。',
+    description_for_human: '免费送 Token 合集：查找免费 AI token / API 额度。',
     description_for_model:
       'FreeTokenBox is a directory of free AI tokens, API credits and compute offers. ' +
-      'Use GET /api/tokens to list free offers, GET /api/tokens/:slug for details. ' +
-      'Admins can POST/PATCH/DELETE /api/tokens with X-API-Key to add, update or remove entries. ' +
-      'Fetched data may help answer questions about free AI API offers.',
+      'Use GET /api/tokens to list free offers, GET /api/tokens/:slug for details, GET /api/stats for stats. ' +
+      'The public API is read-only. Fetched data may help answer questions about free AI API offers.',
     auth: { type: 'none' },
     api: { type: 'openapi', url: `${base}/api/openapi.json`, has_user_authentication: false },
     logo_url: `${base}/logo.svg`,
@@ -571,7 +572,7 @@ app.get('/api/openapi.json', async (c) => {
   const base = siteUrl(c.env)
   return c.json({
     openapi: '3.0.0',
-    info: { title: 'FreeTokenBox API', version: '1.0.0', description: '免费送 Token 合集开放接口' },
+    info: { title: 'FreeTokenBox API', version: '1.0.0', description: '免费送 Token 合集开放接口（公开只读）' },
     servers: [{ url: base }],
     paths: {
       '/api/tokens': {
@@ -586,20 +587,12 @@ app.get('/api/openapi.json', async (c) => {
           ],
           responses: { '200': { description: 'OK' } },
         },
-        post: {
-          summary: '新增条目（需 X-API-Key）',
-          security: [{ apiKey: [] }],
-          responses: { '201': { description: 'Created' }, '401': { description: 'Unauthorized' } },
-        },
       },
       '/api/tokens/{slug}': {
         get: { summary: '获取单条详情', parameters: [{ name: 'slug', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' } } },
-        patch: { summary: '更新条目（需 X-API-Key）', security: [{ apiKey: [] }], responses: { '200': { description: 'OK' } } },
-        delete: { summary: '删除条目（需 X-API-Key）', security: [{ apiKey: [] }], responses: { '200': { description: 'OK' } } },
       },
       '/api/stats': { get: { summary: '站点统计', responses: { '200': { description: 'OK' } } } },
     },
-    components: { securitySchemes: { apiKey: { type: 'apiKey', in: 'header', name: 'X-API-Key' } } },
   })
 })
 
@@ -609,27 +602,23 @@ app.get('/api/docs', async (c) => {
   const body = html`<article class="article">
     <h1>API 文档</h1>
     <div class="body">
-      <p>FreeTokenBox 开放接口，供第三方与 AI Agent 消费。所有读接口无需鉴权；写接口需 <code>X-API-Key</code>（环境变量 <code>API_KEYS</code> 中的任意一个）。</p>
-      <h2>读取</h2>
+      <p>FreeTokenBox 开放只读接口，供第三方与 AI Agent 消费公开的免费 Token 数据。公开接口无需鉴权；<strong>内容仅由站点管理员维护</strong>，不对外提供写入接口。</p>
+      <h2>读取接口</h2>
       <pre><code>GET ${base}/api/tokens?category=free-api&tag=llm&q=deepseek&page=1&pageSize=50
 GET ${base}/api/tokens/:slug
 GET ${base}/api/stats
 GET ${base}/ai.json</code></pre>
-      <h2>写入（需鉴权）</h2>
-      <pre><code>POST   ${base}/api/tokens          # 新增
-PATCH  ${base}/api/tokens/:slug     # 更新（部分字段）
-DELETE ${base}/api/tokens/:slug     # 删除</code></pre>
       <h2>字段</h2>
       <table class="list">
         <thead><tr><th>字段</th><th>说明</th></tr></thead>
         <tbody>
-          <tr><td>name</td><td>名称（必填）</td></tr>
-          <tr><td>description</td><td>一句话简介（必填）</td></tr>
+          <tr><td>name</td><td>名称</td></tr>
+          <tr><td>description</td><td>一句话简介</td></tr>
           <tr><td>content</td><td>Markdown 长文</td></tr>
           <tr><td>provider / url</td><td>提供方 / 领取地址</td></tr>
           <tr><td>category</td><td>free-api | free-plan | giveaways | coupons | other</td></tr>
           <tr><td>tags</td><td>字符串数组</td></tr>
-          <tr><td>status</td><td>published | draft</td></tr>
+          <tr><td>expiry_date</td><td>截止日期（可为空）</td></tr>
           <tr><td>is_featured</td><td>是否精选</td></tr>
         </tbody>
       </table>
@@ -640,6 +629,7 @@ DELETE ${base}/api/tokens/:slug     # 删除</code></pre>
         <li><a href="${base}/tokens.md">Markdown 导出（/tokens.md）</a></li>
         <li><a href="${base}/llms.txt">llms.txt</a></li>
       </ul>
+      <p style="color:var(--faint)">如需提交内容，请通过站内维护渠道联系管理员。</p>
     </div>
   </article>`
   return c.html(layout({ title: 'API 文档 · FreeTokenBox', description: 'FreeTokenBox 开放接口文档', path: '/api/docs', env: c.env, body }))

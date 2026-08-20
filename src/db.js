@@ -44,6 +44,7 @@ export async function listTokens(env, opts = {}) {
     page = 1,
     pageSize = 20,
     includeAll = false,
+    order = 'sort', // 'sort'（精选权重优先）| 'newest'（最新收录优先）
   } = opts
   const where = []
   const params = []
@@ -76,7 +77,7 @@ export async function listTokens(env, opts = {}) {
   const rows = await db
     .prepare(
       `SELECT * FROM tokens ${whereSql}
-       ORDER BY sort_weight DESC, id DESC LIMIT ? OFFSET ?`
+       ORDER BY ${order === 'newest' ? 'id DESC' : 'sort_weight DESC, id DESC'} LIMIT ? OFFSET ?`
     )
     .bind(...params, pageSize, offset)
     .all()

@@ -12,6 +12,7 @@ import {
   tokenJsonLd,
   faqJsonLd,
   websiteJsonLd,
+  organizationJsonLd,
   breadcrumbJsonLd,
   itemListJsonLd,
 } from './content.js'
@@ -196,12 +197,40 @@ export function layout({ title, description, path, env, body, extraHead = '', br
     .intro { padding: 8px 0 4px; }
     .intro h1 { font-size: clamp(28px, 5vw, 36px); margin: 0 0 12px; line-height: 1.25; font-weight: 700; letter-spacing: -0.015em; }
     .intro .lede { color: var(--muted); margin: 0 0 26px; max-width: 580px; font-size: 16px; }
-    .search { display: flex; align-items: center; position: relative; max-width: 480px; }
-    .search .ic { position: absolute; left: 14px; color: var(--faint); display: flex; pointer-events: none; }
-    .search input { width: 100%; background: var(--surface); border: 1px solid var(--border-strong); color: var(--text); border-radius: var(--radius); padding: 12px 16px 12px 42px; font-size: 15.5px; font-family: inherit; }
-    .search input::placeholder { color: var(--faint); }
-    .search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     .hint { color: var(--faint); font-size: 13.5px; margin: 14px 0 0; }
+
+    /* ---- 顶部 Banner（信息站风格） ---- */
+    .banner { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 30px 32px; margin-bottom: 30px; }
+    .banner-in h1 { font-size: clamp(26px, 4.6vw, 34px); margin: 0 0 10px; line-height: 1.25; font-weight: 700; letter-spacing: -0.015em; }
+    .banner-in .lede { color: var(--muted); margin: 0 0 14px; max-width: 620px; font-size: 15.5px; }
+    .banner-stats { color: var(--faint); font-size: 13.5px; margin: 0 0 18px; }
+    .banner-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .banner-actions .btn { padding: 9px 18px; font-size: 14px; }
+
+    /* ---- 首页双栏（主体 + 右侧侧边栏） ---- */
+    .layout-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
+    .col-main { min-width: 0; }
+    .sidebar { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 18px; }
+    .widget { border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 16px 18px; }
+    .widget h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: .01em; }
+    .w-item { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--border); }
+    .w-item:last-child { border-bottom: 0; }
+    .w-main { flex: 1; min-width: 0; }
+    .w-name { color: var(--text); font-size: 14px; font-weight: 600; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .w-name:hover { color: var(--accent-strong); text-decoration: none; }
+    .w-desc { margin: 3px 0 0; color: var(--faint); font-size: 12.5px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .w-go { flex: none; font-size: 13px; font-weight: 600; color: var(--accent-strong); }
+    .w-go:hover { text-decoration: none; }
+    .w-more { display: block; margin-top: 8px; font-size: 13px; color: var(--muted); }
+    .w-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+    .w-cats a { font-size: 13px; color: var(--muted); padding: 4px 9px; border: 1px solid var(--border); border-radius: 6px; }
+    .w-cats a .n { color: var(--faint); margin-left: 3px; }
+    .w-cats a:hover { color: var(--accent-strong); border-color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 860px) {
+      .layout-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
 
     /* ---- 分类导航 ---- */
     .cats { display: flex; gap: 4px; flex-wrap: wrap; margin: 32px 0 0; padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -389,44 +418,70 @@ function entryRow(t, lang, opts = {}) {
 }
 
 // ---------- 首页 ----------
-export function homePage({ featured, items, categories, page, totalPages, env, query, searchQuery, stats, lang = 'zh' }) {
+export function homePage({ featured, items, categories, page, totalPages, env, query, searchQuery, stats, lang = 'zh', latest = [] }) {
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
+  const showFeatured = featured.length && !searchQuery
   const body = html`
-    <section class="intro">
-      <h1>${s.h1}</h1>
-      <p class="lede">${s.lede}</p>
-      <form class="search" action="${lp(lang, '/')}" method="get">
-        <span class="ic">${raw(ICON.search)}</span>
-        <input type="search" name="q" placeholder="${s.searchPlaceholder}" aria-label="${s.searchLabel}" value="${escapeHtml(searchQuery || '')}" />
-      </form>
-      ${stats ? html`<p class="hint">${s.hintStats(stats)}</p>` : ''}
+    <section class="banner">
+      <div class="banner-in">
+        <h1>${s.h1}</h1>
+        <p class="lede">${s.lede}</p>
+        <p class="banner-stats">${stats ? s.bannerStats(stats) : ''}</p>
+        <div class="banner-actions">
+          <a class="btn" href="#list">${s.browseAll}</a>
+          <a class="btn btn-quiet" href="${lp(lang, '/about')}">${s.aboutLink}</a>
+        </div>
+      </div>
     </section>
 
-    ${categories.length ? html`
-      <nav class="cats" aria-label="${lang === 'en' ? 'Categories' : '分类导航'}">
-        <a href="${lp(lang, '/')}" class="${!searchQuery ? 'active' : ''}">${s.all}</a>
-        ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${c.name}<span class="n">${c.count}</span></a>`)}
-      </nav>
-    ` : ''}
+    <div class="layout-grid">
+      <main class="col-main" id="list">
+        ${categories.length ? html`
+          <nav class="cats" aria-label="${lang === 'en' ? 'Categories' : '分类导航'}">
+            <a href="${lp(lang, '/')}" class="${!searchQuery ? 'active' : ''}">${s.all}</a>
+            ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${c.name}<span class="n">${c.count}</span></a>`)}
+          </nav>
+        ` : ''}
 
-    ${featured.length ? html`
-      <div class="sec"><h2>${s.featuredSec}</h2><span class="n">${s.countGe(featured.length)}</span></div>
-      <div class="list">${featured.map((t) => entryRow(t, lang, { pick: true }))}</div>
-    ` : ''}
+        ${showFeatured ? html`
+          <div class="sec"><h2>${s.featuredSec}</h2><span class="n">${s.countGe(featured.length)}</span></div>
+          <div class="list">${featured.map((t) => entryRow(t, lang, { pick: true }))}</div>
+        ` : ''}
 
-    <div class="sec">
-      <h2>${searchQuery ? s.searchResults : s.allEntries}</h2>
-      <span class="n">${s.countTiao(items.length)}${totalPages > 1 ? ` · ${s.pageOf(page, totalPages)}` : ''}</span>
+        <div class="sec">
+          <h2>${searchQuery ? s.searchResults : s.allEntries}</h2>
+          <span class="n">${s.countTiao(items.length)}${totalPages > 1 ? ` · ${s.pageOf(page, totalPages)}` : ''}</span>
+        </div>
+        ${adSlot(env, 'home-top', lang === 'en' ? 'Ad slot' : '列表上方广告位')}
+        <div class="list">${items.map((t) => entryRow(t, lang))}</div>
+
+        ${totalPages > 1 ? html`<nav class="pager" aria-label="${lang === 'en' ? 'Pagination' : '分页'}">
+          ${page > 1 ? html`<a href="${lp(lang, '/')}?page=${page - 1}${searchQuery ? '&q=' + encodeURIComponent(searchQuery) : ''}">${s.prev}</a>` : ''}
+          <span class="cur">${page} / ${totalPages}</span>
+          ${page < totalPages ? html`<a href="${lp(lang, '/')}?page=${page + 1}${searchQuery ? '&q=' + encodeURIComponent(searchQuery) : ''}">${s.next}</a>` : ''}
+        </nav>` : ''}
+      </main>
+
+      <aside class="sidebar">
+        ${showFeatured ? html`<section class="widget">
+          <h3>${s.sidebarHot}</h3>
+          ${featured.slice(0, 5).map((t) => sideItem(t, lang, pre))}
+        </section>` : ''}
+        <section class="widget">
+          <h3>${s.sidebarLatest}</h3>
+          ${latest.slice(0, 8).map((t) => sideItem(t, lang, pre))}
+          <a class="w-more" href="${lp(lang, '/')}">${s.viewAll} →</a>
+        </section>
+        ${categories.length ? html`<section class="widget">
+          <h3>${s.sidebarCats}</h3>
+          <div class="w-cats">
+            ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${c.name}<span class="n">${c.count}</span></a>`)}
+          </div>
+        </section>` : ''}
+        ${adSlot(env, 'sidebar', lang === 'en' ? 'Ad slot' : '侧边栏广告位')}
+      </aside>
     </div>
-    ${adSlot(env, 'home-top', lang === 'en' ? 'Ad slot' : '列表上方广告位')}
-    <div class="list">${items.map((t) => entryRow(t, lang))}</div>
-
-    ${totalPages > 1 ? html`<nav class="pager" aria-label="${lang === 'en' ? 'Pagination' : '分页'}">
-      ${page > 1 ? html`<a href="${lp(lang, '/')}?page=${page - 1}${searchQuery ? '&q=' + encodeURIComponent(searchQuery) : ''}">${s.prev}</a>` : ''}
-      <span class="cur">${page} / ${totalPages}</span>
-      ${page < totalPages ? html`<a href="${lp(lang, '/')}?page=${page + 1}${searchQuery ? '&q=' + encodeURIComponent(searchQuery) : ''}">${s.next}</a>` : ''}
-    </nav>` : ''}
   `
   return layout({
     title: searchQuery ? s.searchTitleFor(searchQuery) : s.homeTitle,
@@ -435,9 +490,20 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
     env,
     lang,
     body,
-    breadcrumbs: [{ name: s.crumbHome, url: '/' }],
-    jsonLd: itemListJsonLd(featured.length ? [...featured, ...items] : items, env, lang),
+    jsonLd: [organizationJsonLd(env), itemListJsonLd(featured.length ? [...featured, ...items] : items, env, lang)],
   })
+}
+
+/** 侧边栏紧凑条目 */
+function sideItem(t, lang, pre) {
+  const s = T(lang)
+  return html`<div class="w-item">
+    <div class="w-main">
+      <a class="w-name" href="${pre}/token/${t.slug}">${t.name}</a>
+      <p class="w-desc">${excerpt(t.description, 52)}</p>
+    </div>
+    <a class="w-go" href="${pre}/token/${t.slug}" aria-label="${s.view}">${s.view}</a>
+  </div>`
 }
 
 // ---------- 列表页（分类/标签/搜索共用） ----------
@@ -445,7 +511,6 @@ export function listPage({ title, description, items, categories, page, totalPag
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
   const body = html`
-    ${breadcrumbs ? breadcrumb(breadcrumbs, lang) : ''}
     <section class="intro">
       <h1>${title}</h1>
       <p class="lede">${description}</p>
@@ -485,7 +550,6 @@ export function tokenPage(token, env, related = [], lang = 'zh') {
     { name: token.name },
   ]
   const body = html`
-    ${breadcrumb(crumbs, lang)}
     <article class="article">
       <div class="meta">
         ${token.category ? html`<a class="tg" href="${pre}/category/${token.category}">${token.category}</a>` : ''}
