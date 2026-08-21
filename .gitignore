@@ -9,5 +9,5 @@ dist/
 .workbuddy/
 preview/
 
-# AI 生成的轮播背景图（大文件，由 wrangler assets 在部署时带上）
-public/banners/
+# 轮播背景图已改为 jsDelivr 方案（[assets] 部署会破坏 D1，故提交图片到仓库经 CDN 引用）
+# 不再忽略 public/banners/
