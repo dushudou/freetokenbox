@@ -300,7 +300,7 @@ async function run() {
   for (const gone of ['Llama', 'Mistral', 'Ollama']) {
     assert(!text.includes(`slide-title">${gone}<`), `carousel no longer includes ${gone}`)
   }
-  assert((text.match(/url\(['"]?\/banners\//g) || []).length === 11, 'carousel has 11 banner background images')
+  assert((text.match(/banners\/[a-z]+\.webp/g) || []).length === 11, 'carousel has 11 banner background images')
   assert((text.match(/class="carousel-slide/g) || []).length === 11, 'carousel has exactly 11 slides')
   assert((text.match(/class="dot/g) || []).length === 11, 'carousel has exactly 11 dots')
   assert(text.includes('条相关福利'), 'slides show per-model related offer counts')
