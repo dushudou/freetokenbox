@@ -1,5 +1,5 @@
 // 全站样式（单一来源）。由 templates.js 的 layout() 通过 <style>${raw(siteCss)}</style> 内嵌输出。
-// 维护提示：变量/类名改动时同步检查 scripts/test-local.js 中的断言（class="banner"/"sidebar"/"e-logo"/"kicker"/"w-rank"/"chip free"/"ad-slot" 等）。
+// 维护提示：变量/类名改动时同步检查 scripts/test-local.js 中的断言（class="hero"/"sidebar"/"e-logo"/"kicker"/"w-rank"/"chip free" 等）。
 export const siteCss = `
     :root {
       --bg: #f6f6f7;
@@ -95,15 +95,15 @@ export const siteCss = `
     .hero .kicker { font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--accent-strong); margin: 0 0 14px; display: block; }
     .hero-in h1 { font-size: clamp(34px, 5.2vw + 10px, 56px); margin: 0 0 16px; line-height: 1.04; font-weight: 800; letter-spacing: -0.03em; }
     .hero-in .lede { color: var(--muted); margin: 0 0 24px; max-width: 640px; font-size: 17px; line-height: 1.65; }
-    .hero-search { display: flex; align-items: center; gap: 6px; max-width: 580px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 999px; padding: 6px 6px 6px 16px; margin: 0 0 22px; box-shadow: var(--shadow-card); transition: border-color .15s ease, box-shadow .15s ease; }
-    .hero-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-    .hero-search .ic { color: var(--faint); display: flex; flex: none; }
-    .hero-search input { flex: 1; min-width: 0; border: none; background: none; color: var(--text); font-size: 15.5px; font-family: inherit; padding: 9px 0; }
-    .hero-search input::placeholder { color: var(--faint); }
-    .hero-search input:focus { outline: none; border: none; box-shadow: none; }
-    .hero-search button { flex: none; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font-weight: 600; font-size: 14px; font-family: inherit; padding: 9px 22px; border-radius: 999px; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
-    .hero-search button:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
-    .banner-stats { color: var(--faint); font-size: 13px; margin: 0 0 22px; font-family: var(--font-mono); letter-spacing: .02em; }
+    /* ---- 主流大模型 Logo 墙（浅色底胶囊，品牌色 Logo 在明暗主题下均可读） ---- */
+    .model-wall { margin: 0 0 22px; max-width: 660px; }
+    .mw-label { color: var(--faint); font-size: 13px; margin: 0 0 12px; font-family: var(--font-mono); letter-spacing: .02em; }
+    .mw-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+    .mw-chip { display: inline-flex; align-items: center; gap: 9px; background: #ffffff; border: 1px solid var(--border-strong); border-radius: 999px; padding: 4px 14px 4px 5px; }
+    .mw-tile { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex: none; }
+    .mw-tile svg { display: block; }
+    .mw-name { font-size: 13px; font-weight: 600; color: #3f3f46; line-height: 1; }
+    .mw-chip:hover { border-color: var(--accent); }
     .banner-actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .hero-mark { position: absolute; right: -40px; top: 50%; transform: translateY(-50%); width: 360px; height: 360px; color: var(--accent); opacity: .08; pointer-events: none; }
     .hero-mark svg { width: 100%; height: 100%; display: block; }
@@ -264,6 +264,9 @@ export const siteCss = `
       .article { padding: 24px; }
       .hero-in { padding: 34px 16px 30px; }
       .hero-in h1 { font-size: 32px; }
+      .mw-name { display: none; }
+      .mw-chip { padding: 4px; }
+      .mw-label { margin-bottom: 10px; }
       .entry { flex-direction: column; align-items: stretch; gap: 14px; }
       .entry .claim { align-self: flex-start; }
       .foot { flex-direction: column; align-items: flex-start; gap: 8px; }

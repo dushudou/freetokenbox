@@ -281,9 +281,14 @@ async function run() {
   assert(!text.includes('form class="search"'), 'home has NO legacy content-area search form')
   assert(text.includes('class="hero"') && text.includes('class="sidebar"'), 'home has full-width hero + sidebar layout')
   assert(text.indexOf('class="hero"') < text.indexOf('<main>'), 'hero banner renders OUTSIDE main container (full-bleed)')
-  assert(text.includes('form class="hero-search"'), 'hero contains search box (directory primary CTA)')
+  assert(!text.includes('hero-search'), 'hero has NO search box (removed per user decision)')
   assert(text.includes('class="hero-mark"'), 'hero has brand watermark mark')
   assert(text.includes('class="kicker"'), 'hero banner has editorial kicker')
+  assert(text.includes('class="model-wall"'), 'hero has model logo wall')
+  assert(text.includes('mw-chip') && text.includes('mw-tile'), 'logo wall renders chips with tiles')
+  for (const brand of ['OpenAI', 'Claude', 'Gemini', 'DeepSeek', 'Qwen', 'Kimi', 'Grok', 'Llama', 'Mistral', 'Ollama']) {
+    assert(text.includes(`>${brand}</span>`), `logo wall includes ${brand}`)
+  }
   assert(text.includes('最新收录') && text.includes('热门精选'), 'home sidebar has latest & hot widgets')
   assert((text.match(/class="crumbs"/g) || []).length === 0, 'home has NO breadcrumb (info-site home)')
   assert(text.includes('class="e-logo"'), 'home entries show site logo container')

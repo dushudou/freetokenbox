@@ -18,6 +18,7 @@ import {
   breadcrumbJsonLd,
   itemListJsonLd,
 } from './content.js'
+import { MODEL_LOGOS, modelLogoSvg } from './logos.js'
 import { T, lp } from './i18n.js'
 
 // ---------- 图标体系（全部 SVG，禁止 emoji） ----------
@@ -219,12 +220,12 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
         <span class="kicker">${s.bannerKicker}</span>
         <h1>${s.h1}</h1>
         <p class="lede">${s.lede}</p>
-        <form class="hero-search" action="${lp(lang, '/')}" method="get" role="search">
-          <span class="ic">${raw(ICON.search)}</span>
-          <input type="search" name="q" placeholder="${s.searchPlaceholder}" aria-label="${s.searchLabel}" value="${searchQuery || ''}" />
-          <button type="submit">${s.searchBtn}</button>
-        </form>
-        ${stats ? html`<p class="banner-stats">${s.bannerStats(stats)}</p>` : ''}
+        <div class="model-wall">
+          <p class="mw-label">${s.modelWallLabel}${stats ? html` · ${s.bannerStats(stats)}` : ''}</p>
+          <ul class="mw-list">
+            ${MODEL_LOGOS.map((m) => html`<li class="mw-chip"><span class="mw-tile">${raw(modelLogoSvg(m, 17))}</span><span class="mw-name">${m.name}</span></li>`)}
+          </ul>
+        </div>
         <div class="banner-actions">
           <a class="btn" href="#list">${s.browseAll}</a>
           <a class="btn btn-quiet" href="${lp(lang, '/about')}">${s.aboutLink}</a>
