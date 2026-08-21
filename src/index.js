@@ -52,17 +52,20 @@ const isProdHost = (host) =>
 
 app.use('*', async (c, next) => {
   const url = new URL(c.req.url)
-  const host = (c.req.header('host') || url.host).toLowerCase().split(':')[0]
+  const headerHost = (c.req.header('host') || url.host).toLowerCase().split(':')[0]
   const proto = (c.req.header('x-forwarded-proto') || url.protocol.replace(':', '')).toLowerCase()
 
-  if (!isProdHost(host)) return next()
+  // wrangler dev 会把 Host 头和 c.req.url 都覆盖为 routes 里的域名（如 freetokenbox.com），
+  // 无法通过 host 区分本地/线上 —— 用 DEV_MODE 环境变量（仅 .dev.vars 设置）跳过重定向
+  if (c.env.DEV_MODE) return next()
+  if (!isProdHost(headerHost)) return next()
 
   let target = null
-  if (host === `www.${CANONICAL_HOST}`) target = CANONICAL_HOST
-  else if (host === DEV_HOST) target = CANONICAL_HOST
+  if (headerHost === `www.${CANONICAL_HOST}`) target = CANONICAL_HOST
+  else if (headerHost === DEV_HOST) target = CANONICAL_HOST
 
   if (target) return c.redirect(`https://${target}${url.pathname}${url.search}`, 301)
-  if (proto === 'http') return c.redirect(`https://${host}${url.pathname}${url.search}`, 301)
+  if (proto === 'http') return c.redirect(`https://${headerHost}${url.pathname}${url.search}`, 301)
   await next()
 })
 
