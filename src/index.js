@@ -38,6 +38,7 @@ import {
   adminPage,
   adminFormPage,
 } from './templates.js'
+import { MODEL_LOGOS } from './logos.js'
 import { T, lp, langFromPath } from './i18n.js'
 
 const app = new Hono()
@@ -148,6 +149,16 @@ const renderHome = async (c, lang) => {
     categories: categories.length,
     featured: featured.length,
   }
+  // 轮播每张 slide 的"相关福利数"：按品牌关键词在全量已发布条目里统计
+  const allPublished = await listTokens(c.env, { status: 'published', includeAll: false, pageSize: 500 })
+  const modelCounts = MODEL_LOGOS.map((m) => {
+    const kws = (m.keywords || []).map((k) => k.toLowerCase())
+    if (!kws.length) return 0
+    return allPublished.items.filter((t) => {
+      const hay = `${t.name} ${t.description} ${t.provider} ${(t.tags || []).join(' ')}`.toLowerCase()
+      return kws.some((k) => hay.includes(k))
+    }).length
+  })
   const query = c.req.raw.url.split('?')[1] || ''
   return c.html(
     homePage({
@@ -161,6 +172,7 @@ const renderHome = async (c, lang) => {
       searchQuery,
       stats,
       latest: searchQuery ? [] : latestResult.items,
+      modelCounts,
       lang,
     })
   )

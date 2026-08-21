@@ -17,7 +17,10 @@ const routes = [
 
 for (const [route, file] of routes) {
   const res = await app.request(route, {}, env)
-  const htmlText = await res.text()
+  let htmlText = await res.text()
+  // 本地预览文件在 preview/ 目录，把绝对路径 /banners/ 指回 ../public/banners/
+  htmlText = htmlText.replace(/url\(['"]\/banners\//g, "url('../public/banners/")
+                       .replace(/(["'])\/banners\//g, '$1../public/banners/')
   writeFileSync(new URL('../preview/' + file, import.meta.url), htmlText)
   console.log(`preview/${file} ← ${route} [${res.status}] ${htmlText.length} bytes`)
 }

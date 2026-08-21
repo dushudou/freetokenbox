@@ -4,6 +4,8 @@ compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
+# 注意：静态资源 [assets] 部署会破坏 D1 绑定（全站 500）。已临时移除，待配置正确后再启用。
+
 # 自定义域名（Cloudflare 自动创建 DNS 记录 + 颁发证书）
 routes = [
   { pattern = "freetokenbox.com", custom_domain = true },

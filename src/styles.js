@@ -1,5 +1,5 @@
 // 全站样式（单一来源）。由 templates.js 的 layout() 通过 <style>${raw(siteCss)}</style> 内嵌输出。
-// 维护提示：变量/类名改动时同步检查 scripts/test-local.js 中的断言（class="hero"/"sidebar"/"e-logo"/"kicker"/"w-rank"/"chip free" 等）。
+// 维护提示：变量/类名改动时同步检查 scripts/test-local.js 中的断言（class="hero-carousel"/"sidebar"/"e-logo"/"kicker"/"w-rank"/"chip free" 等）。
 export const siteCss = `
     :root {
       --bg: #f6f6f7;
@@ -89,24 +89,43 @@ export const siteCss = `
     .intro .lede { color: var(--muted); margin: 0 0 24px; max-width: 620px; font-size: 16px; }
     .hint { color: var(--faint); font-size: 13.5px; margin: 14px 0 0; }
 
-    /* ---- 首页 Hero（全宽横幅，紧贴顶栏，内容与主栏对齐） ---- */
-    .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); background: var(--hero-bg); }
-    .hero-in { max-width: 1120px; margin: 0 auto; padding: 54px 24px 46px; position: relative; }
-    .hero .kicker { font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--accent-strong); margin: 0 0 14px; display: block; }
-    .hero-in h1 { font-size: clamp(34px, 5.2vw + 10px, 56px); margin: 0 0 16px; line-height: 1.04; font-weight: 800; letter-spacing: -0.03em; }
-    .hero-in .lede { color: var(--muted); margin: 0 0 24px; max-width: 640px; font-size: 17px; line-height: 1.65; }
-    /* ---- 主流大模型 Logo 墙（浅色底胶囊，品牌色 Logo 在明暗主题下均可读） ---- */
-    .model-wall { margin: 0 0 22px; max-width: 660px; }
-    .mw-label { color: var(--faint); font-size: 13px; margin: 0 0 12px; font-family: var(--font-mono); letter-spacing: .02em; }
-    .mw-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
-    .mw-chip { display: inline-flex; align-items: center; gap: 9px; background: #ffffff; border: 1px solid var(--border-strong); border-radius: 999px; padding: 4px 14px 4px 5px; }
-    .mw-tile { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex: none; }
-    .mw-tile svg { display: block; }
-    .mw-name { font-size: 13px; font-weight: 600; color: #3f3f46; line-height: 1; }
-    .mw-chip:hover { border-color: var(--accent); }
-    .banner-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .hero-mark { position: absolute; right: -40px; top: 50%; transform: translateY(-50%); width: 360px; height: 360px; color: var(--accent); opacity: .08; pointer-events: none; }
-    .hero-mark svg { width: 100%; height: 100%; display: block; }
+    /* ---- 首页全宽轮播横幅 ---- */
+    .hero-carousel { position: relative; border-bottom: 1px solid var(--border); background: var(--hero-bg); overflow: hidden; }
+    .carousel-viewport { position: relative; overflow: hidden; }
+    .carousel-track { display: flex; transition: transform .65s cubic-bezier(.45,.05,.15,1); will-change: transform; }
+    .carousel-slide { flex: 0 0 100%; min-width: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; color: #fff; }
+    .slide-bg { position: absolute; inset: 0; background-image: var(--bg); background-size: cover; background-position: center; transform: scale(1.08); transition: transform 6.5s ease; }
+    .carousel-slide.active .slide-bg { transform: scale(1); }
+    .slide-bg::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,.46); }
+    .slide-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 75% at 50% 40%, color-mix(in srgb, var(--slide-color) 30%, transparent), transparent 72%); pointer-events: none; z-index: 1; }
+    .slide-inner { max-width: 720px; width: 100%; padding: 58px 24px 50px; text-align: center; position: relative; z-index: 2; text-shadow: 0 1px 10px rgba(0,0,0,.32); }
+    .slide-inner .kicker { font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; color: rgba(255,255,255,.82); margin: 0 0 24px; display: block; }
+    .slide-logo { width: 88px; height: 88px; margin: 0 auto 22px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 6px 26px rgba(0,0,0,.45)); }
+    .slide-logo svg { display: block; }
+    .slide-title { font-size: clamp(28px, 4.5vw, 42px); font-weight: 800; letter-spacing: -0.03em; margin: 0 0 10px; line-height: 1.1; color: #fff; }
+    .slide-desc { font-size: 16px; color: rgba(255,255,255,.88); margin: 0 0 14px; }
+    .slide-stats { font-family: var(--font-mono); font-size: 13px; color: rgba(255,255,255,.72); margin: 0; letter-spacing: .02em; }
+    /* slide content staggered entrance */
+    .carousel-slide .slide-inner > * { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+    .carousel-slide.active .slide-inner .kicker { transition-delay: .1s; opacity: 1; transform: none; }
+    .carousel-slide.active .slide-inner .slide-logo { transition-delay: .22s; opacity: 1; transform: none; }
+    .carousel-slide.active .slide-inner .slide-title { transition-delay: .32s; opacity: 1; transform: none; }
+    .carousel-slide.active .slide-inner .slide-desc { transition-delay: .42s; opacity: 1; transform: none; }
+    .carousel-slide.active .slide-inner .slide-stats { transition-delay: .52s; opacity: 1; transform: none; }
+    /* dots */
+    .carousel-dots { display: flex; gap: 7px; justify-content: center; padding: 0 0 24px; position: relative; z-index: 2; }
+    .carousel-dots .dot { width: 8px; height: 8px; border-radius: 50%; border: none; background: var(--border-strong); padding: 0; cursor: pointer; transition: all .25s ease; }
+    .carousel-dots .dot.active { width: 28px; border-radius: 999px; background: var(--accent); }
+    .carousel-dots .dot:hover:not(.active) { background: var(--muted); }
+    /* arrows */
+    .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-strong); background: color-mix(in srgb, var(--surface) 72%, transparent); backdrop-filter: blur(8px); color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s ease; }
+    .carousel-arrow:hover { color: var(--accent-strong); border-color: var(--accent); background: var(--surface); box-shadow: 0 2px 12px rgba(0,0,0,.12); }
+    .carousel-arrow.prev { left: 16px; }
+    .carousel-arrow.next { right: 16px; }
+    /* watermark */
+    .carousel-watermark { position: absolute; right: -40px; top: 50%; transform: translateY(-50%); width: 280px; height: 280px; color: var(--accent); opacity: .06; pointer-events: none; z-index: 0; }
+    .carousel-watermark svg { width: 100%; height: 100%; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     /* ---- 首页双栏（主体 + 右侧侧边栏） ---- */
     .layout-grid { display: grid; grid-template-columns: minmax(0, 1fr) 304px; gap: 30px; align-items: start; margin-top: 6px; }
@@ -255,18 +274,18 @@ export const siteCss = `
     @media (max-width: 980px) {
       .layout-grid { grid-template-columns: 1fr; }
       .sidebar { position: static; }
-      .hero-mark { display: none; }
+      .carousel-watermark { display: none; }
+      .carousel-arrow { display: none; }
     }
     @media (max-width: 640px) {
       .nav { padding: 0 16px; gap: 12px; }
       .nav-search { display: none; }
       main { padding: 26px 16px 60px; }
       .article { padding: 24px; }
-      .hero-in { padding: 34px 16px 30px; }
-      .hero-in h1 { font-size: 32px; }
-      .mw-name { display: none; }
-      .mw-chip { padding: 4px; }
-      .mw-label { margin-bottom: 10px; }
+      .slide-inner { padding: 38px 16px 32px; }
+      .slide-title { font-size: 26px; }
+      .slide-logo { width: 64px; height: 64px; }
+      .slide-inner .kicker { margin-bottom: 16px; }
       .entry { flex-direction: column; align-items: stretch; gap: 14px; }
       .entry .claim { align-self: flex-start; }
       .foot { flex-direction: column; align-items: flex-start; gap: 8px; }

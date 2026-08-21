@@ -32,6 +32,8 @@ const ICON = {
   brand: `<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6.5" class="brand-tile"/><circle cx="12" cy="12" r="7.4" fill="#fff"/><rect x="8.8" y="8.8" width="6.4" height="6.4" rx="1.3" class="brand-tile"/></svg>`,
   search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.6 16.6L21 21"/></svg>',
   external: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 15.5L15.5 8.5"/><path d="M10 8.5h6.5V15"/></svg>',
+  arrowL: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  arrowR: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
 }
 
 // favicon 内嵌 prefers-color-scheme：深色浏览器主题下自动换用亮一档的翡翠绿
@@ -47,6 +49,48 @@ const OG_IMAGE = encodeURIComponent(
 function jsonScript(obj) {
   return raw(JSON.stringify(obj).replace(/</g, '\\u003c'))
 }
+
+// 首页轮播交互脚本（纯 vanilla JS，通过 raw() 注入，不依赖外部库）
+const CAROUSEL_JS = `(function(){
+  var track=document.getElementById('carouselTrack');
+  if(!track)return;
+  var slides=track.children,dots=document.querySelectorAll('.carousel-dots .dot');
+  var current=0,timer=null,busy=false;
+  function go(n){
+    n=(n+slides.length)%slides.length;
+    if(n===current||busy)return;
+    busy=true;current=n;
+    track.style.transform='translateX(-'+(n*100)+'%)';
+    for(var i=0;i<slides.length;i++){
+      slides[i].classList.toggle('active',i===n);
+      if(dots[i])dots[i].classList.toggle('active',i===n);
+    }
+    setTimeout(function(){busy=false;},660);
+    restart();
+  }
+  window.carouselGo=function(d){go(current+d);};
+  window.carouselGoTo=function(n){go(n);};
+  function next(){go(current+1);}
+  function start(){timer=setInterval(next,4500);}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function restart(){stop();start();}
+  start();
+  var hero=document.querySelector('.hero-carousel');
+  if(hero){
+    hero.addEventListener('mouseenter',stop);
+    hero.addEventListener('mouseleave',start);
+    var tx=0;
+    hero.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;stop();},{passive:true});
+    hero.addEventListener('touchend',function(e){
+      var d=tx-e.changedTouches[0].clientX;
+      if(Math.abs(d)>50)go(current+(d>0?1:-1));else start();
+    });
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft')go(current-1);
+    if(e.key==='ArrowRight')go(current+1);
+  });
+})();`
 
 // 面包屑组件（item.url 传 zh 形式路径，渲染时按语言加前缀）
 function breadcrumb(items, lang) {
@@ -209,30 +253,39 @@ function entryRow(t, lang, opts = {}) {
 }
 
 // ---------- 首页 ----------
-export function homePage({ featured, items, categories, page, totalPages, env, query, searchQuery, stats, lang = 'zh', latest = [] }) {
+export function homePage({ featured, items, categories, page, totalPages, env, query, searchQuery, stats, lang = 'zh', latest = [], modelCounts = null }) {
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
   const showFeatured = featured.length && !searchQuery
-  // 全宽 Hero 横幅：渲染在 <main> 容器之外，横贯整个视口宽度
+  // 全宽轮播横幅：渲染在 <main> 容器之外，横贯整个视口宽度
   const hero = html`
-    <section class="hero">
-      <div class="hero-in">
-        <span class="kicker">${s.bannerKicker}</span>
-        <h1>${s.h1}</h1>
-        <p class="lede">${s.lede}</p>
-        <div class="model-wall">
-          <p class="mw-label">${s.modelWallLabel}${stats ? html` · ${s.bannerStats(stats)}` : ''}</p>
-          <ul class="mw-list">
-            ${MODEL_LOGOS.map((m) => html`<li class="mw-chip"><span class="mw-tile">${raw(modelLogoSvg(m, 17))}</span><span class="mw-name">${m.name}</span></li>`)}
-          </ul>
+    <section class="hero-carousel">
+      <h1 class="sr-only">${s.h1}</h1>
+      <div class="carousel-watermark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.4" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="8.8" y="8.8" width="6.4" height="6.4" rx="1.3" fill="currentColor"/></svg></div>
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="carouselTrack">
+          ${MODEL_LOGOS.map((m, i) => html`
+            <div class="carousel-slide${i === 0 ? ' active' : ''}" data-i="${i}" style="--slide-color: ${m.color}; --bg: url('${m.image}')">
+              <div class="slide-bg"></div>
+              <div class="slide-glow"></div>
+              <div class="slide-inner">
+                <span class="kicker">${s.carouselKicker}</span>
+                <div class="slide-logo">${raw(modelLogoSvg(m, 64))}</div>
+                <h2 class="slide-title">${m.name}</h2>
+                <p class="slide-desc">${s.carouselTaglines[i] || ''}</p>
+                ${modelCounts ? html`<p class="slide-stats">${s.slideStats(modelCounts[i] || 0)}</p>` : (stats && i === 0 ? html`<p class="slide-stats">${s.bannerStats(stats)}</p>` : '')}
+              </div>
+            </div>
+          `)}
         </div>
-        <div class="banner-actions">
-          <a class="btn" href="#list">${s.browseAll}</a>
-          <a class="btn btn-quiet" href="${lp(lang, '/about')}">${s.aboutLink}</a>
-        </div>
+        <button class="carousel-arrow prev" type="button" aria-label="${lang === 'en' ? 'Previous' : '上一个'}" onclick="carouselGo(-1)">${raw(ICON.arrowL)}</button>
+        <button class="carousel-arrow next" type="button" aria-label="${lang === 'en' ? 'Next' : '下一个'}" onclick="carouselGo(1)">${raw(ICON.arrowR)}</button>
       </div>
-      <div class="hero-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.4" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="8.8" y="8.8" width="6.4" height="6.4" rx="1.3" fill="currentColor"/></svg></div>
-    </section>`
+      <div class="carousel-dots">
+        ${MODEL_LOGOS.map((m, i) => html`<button class="dot${i === 0 ? ' active' : ''}" type="button" data-i="${i}" onclick="carouselGoTo(${i})" aria-label="${lang === 'en' ? 'Slide' : '幻灯片'} ${i + 1}"></button>`)}
+      </div>
+    </section>
+    <script>${raw(CAROUSEL_JS)}</script>`
   const body = html`
     <div class="layout-grid">
       <div class="col-main" id="list">

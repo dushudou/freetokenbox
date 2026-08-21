@@ -8,3 +8,6 @@ dist/
 # agent 工作产物（不入库）
 .workbuddy/
 preview/
+
+# AI 生成的轮播背景图（大文件，由 wrangler assets 在部署时带上）
+public/banners/
