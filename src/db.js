@@ -77,7 +77,7 @@ export async function listTokens(env, opts = {}) {
   const rows = await db
     .prepare(
       `SELECT * FROM tokens ${whereSql}
-       ORDER BY ${order === 'newest' ? 'id DESC' : 'sort_weight DESC, id DESC'} LIMIT ? OFFSET ?`
+       ORDER BY ${order === 'weighted' ? 'sort_weight DESC, id DESC' : 'id DESC'} LIMIT ? OFFSET ?`
     )
     .bind(...params, pageSize, offset)
     .all()
