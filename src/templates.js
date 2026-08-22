@@ -3,6 +3,7 @@
 import { html, raw } from 'hono/html'
 import { siteCss } from './styles.js'
 import { AFFILIATE, affiliateActive } from './affiliate.js'
+import { bookList } from './books.js'
 import {
   escapeHtml,
   renderMarkdown,
@@ -291,6 +292,8 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
   const showFeatured = featured.length && !searchQuery
+  // 书单（联盟返佣位）：仅在启用联盟且非搜索结果时展示
+  const books = affiliateActive() && !searchQuery ? bookList(lang) : []
   // 全宽轮播横幅：渲染在 <main> 容器之外，横贯整个视口宽度
   const hero = html`
     <section class="hero-carousel">
@@ -366,6 +369,26 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
         </section>` : ''}
       </aside>
     </div>
+    ${books.length ? html`
+    <section class="bookshelf">
+      <div class="sec">
+        <h2>${lang === 'en' ? 'AI Developer Bookshelf' : 'AI 开发者书单'}</h2>
+        <span class="n">${s.countTiao(books.length)}</span>
+      </div>
+      <p class="bs-sub">${lang === 'en' ? 'Essential AI and LLM books. Purchases through these links support this site at no extra cost to you.' : '精选 AI / LLM 经典书籍：通过链接购买不影响你的价格，同时可支持本站运营。'}</p>
+      <div class="bs-grid">
+        ${books.map((b) => html`
+        <a class="bs-card" href="${withUtm(b.url, 'bookshelf')}" rel="noopener nofollow sponsored" target="_blank">
+          <span class="bs-cover"><img src="${b.cover}" alt="${b.title}" loading="lazy" referrerpolicy="no-referrer" /></span>
+          <span class="bs-info">
+            <strong>${b.title}</strong>
+            <em>${b.author} · ${b.year}</em>
+            <p>${b.desc}</p>
+            <span class="bs-cta">${lang === 'en' ? 'View on Amazon' : '在 Amazon 查看'}<span class="ic">${raw(ICON.external)}</span></span>
+          </span>
+        </a>`)}
+      </div>
+    </section>` : ''}
   `
   return layout({
     title: searchQuery ? s.searchTitleFor(searchQuery) : s.homeTitle,
