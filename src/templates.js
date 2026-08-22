@@ -197,7 +197,8 @@ export function layout({ title, description, path, env, body, hero = null, extra
 }
 
 // ---------- 外链 UTM 来源（跳转其他网站时带上我们的来源） ----------
-// 联盟营销改写：命中配置的域名时替换/追加推广参数（未配置返回 null = 原样处理）
+// 联盟营销改写：命中配置的域名时替换/追加推广参数。
+// 只在「确实发生了改写」时返回新 URL；无改写/已带推广参数返回 null（避免递归）。
 function affiliateUrl(rawUrl) {
   try {
     const u = new URL(rawUrl)
@@ -209,7 +210,8 @@ function affiliateUrl(rawUrl) {
       AFFILIATE.amazonTag &&
       (host === 'amazon.com' || host === 'amazon.cn' || host.endsWith('.amazon.com') || host.endsWith('.amazon.cn'))
     ) {
-      if (!u.searchParams.has('tag')) u.searchParams.set('tag', AFFILIATE.amazonTag)
+      if (u.searchParams.has('tag')) return null // 已带 tag，无需改写
+      u.searchParams.set('tag', AFFILIATE.amazonTag)
       return u.toString()
     }
     // 3) OpenRouter 官方返佣：给 openrouter.ai 链接追加 ref
@@ -217,7 +219,8 @@ function affiliateUrl(rawUrl) {
       AFFILIATE.openrouterRef &&
       (host === 'openrouter.ai' || host.endsWith('.openrouter.ai'))
     ) {
-      if (!u.searchParams.has('ref')) u.searchParams.set('ref', AFFILIATE.openrouterRef)
+      if (u.searchParams.has('ref')) return null // 已带 ref，无需改写
+      u.searchParams.set('ref', AFFILIATE.openrouterRef)
       return u.toString()
     }
   } catch (e) {
@@ -228,11 +231,12 @@ function affiliateUrl(rawUrl) {
 
 function withUtm(url, slug) {
   if (!url || !/^https?:\/\//i.test(url)) return url // 仅外链；内部链接原样返回
-  // 先应用联盟改写（整体替换或追加推广参数），再补 UTM
-  const aff = affiliateUrl(url)
-  if (aff) return withUtm(aff, slug)
+  // 先应用联盟改写（单层：整体替换或追加推广参数），再补 UTM
+  let target = url
+  const aff = affiliateUrl(target)
+  if (aff) target = aff
   try {
-    const u = new URL(url)
+    const u = new URL(target)
     if (!u.searchParams.has('utm_source')) {
       u.searchParams.set('utm_source', 'freetokenbox')
       u.searchParams.set('utm_medium', 'referral')
@@ -240,8 +244,8 @@ function withUtm(url, slug) {
     }
     return u.toString()
   } catch (e) {
-    const sep = url.includes('?') ? '&' : '?'
-    return `${url}${sep}utm_source=freetokenbox&utm_medium=referral&utm_campaign=${encodeURIComponent(slug || 'free-token')}`
+    const sep = target.includes('?') ? '&' : '?'
+    return `${target}${sep}utm_source=freetokenbox&utm_medium=referral&utm_campaign=${encodeURIComponent(slug || 'free-token')}`
   }
 }
 
