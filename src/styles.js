@@ -252,7 +252,24 @@ export const siteCss = `
     .foot a { color: var(--muted); }
     .foot a:hover { color: var(--accent-strong); }
     .foot .right { margin-left: auto; }
-    .foot .aff-disclosure { width: 100%; flex-basis: 100%; margin: 4px 0 0; font-size: 12px; color: var(--faint); line-height: 1.6; }
+    .foot .aff-disclosure {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+      flex-basis: 100%;
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--accent) 7%, var(--surface-2));
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+    }
+    .foot .aff-disclosure .aff-ico { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 1px; color: var(--accent); }
+    .foot .aff-disclosure span { flex: 1 1 auto; min-width: 0; }
 
     /* ---- 书单（联盟推荐位） ---- */
     .bookshelf { margin-top: 44px; }

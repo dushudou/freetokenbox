@@ -190,7 +190,14 @@ export function layout({ title, description, path, env, body, hero = null, extra
       <a href="${lp(lang, '/terms')}">${lang === 'en' ? 'Terms' : '条款'}</a>
       <span class="right">${t.footerNote}</span>
     </div>
-    ${affiliateActive() ? html`<p class="aff-disclosure">${lang === 'en' ? 'Some links on this site are affiliate links — they don\'t affect your cost and help support the site.' : '本站部分外链为联盟推广链接：通过本站注册/购买不影响你的费用，同时可为本站带来佣金支持运营。'}</p>` : ''}
+    ${affiliateActive() ? html`<p class="aff-disclosure">
+      <svg class="aff-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M12 11v5" stroke-linecap="round"></path>
+        <circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"></circle>
+      </svg>
+      <span>${lang === 'en' ? 'Some links on this site are affiliate links — they don\'t affect your cost and help support the site.' : '本站部分外链为联盟推广链接：通过本站注册/购买不影响你的费用，同时可为本站带来佣金支持运营。'}</span>
+    </p>` : ''}
   </footer>
 </body>
 </html>`
