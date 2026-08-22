@@ -252,6 +252,7 @@ export const siteCss = `
     .foot a { color: var(--muted); }
     .foot a:hover { color: var(--accent-strong); }
     .foot .right { margin-left: auto; }
+    .foot .aff-disclosure { width: 100%; flex-basis: 100%; margin: 4px 0 0; font-size: 12px; color: var(--faint); line-height: 1.6; }
 
     /* ---- 后台 ---- */
     form.admin { display: flex; flex-direction: column; gap: 14px; max-width: 640px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px; }

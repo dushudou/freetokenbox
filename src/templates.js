@@ -2,6 +2,7 @@
 // 设计规范：中立 zinc 色板 + 单一 emerald 强调色，目录式列表布局，中英双语（/en 前缀）
 import { html, raw } from 'hono/html'
 import { siteCss } from './styles.js'
+import { AFFILIATE, affiliateActive } from './affiliate.js'
 import {
   escapeHtml,
   renderMarkdown,
@@ -188,14 +189,47 @@ export function layout({ title, description, path, env, body, hero = null, extra
       <a href="${lp(lang, '/terms')}">${lang === 'en' ? 'Terms' : '条款'}</a>
       <span class="right">${t.footerNote}</span>
     </div>
+    ${affiliateActive() ? html`<p class="aff-disclosure">${lang === 'en' ? 'Some links on this site are affiliate links — they don\'t affect your cost and help support the site.' : '本站部分外链为联盟推广链接：通过本站注册/购买不影响你的费用，同时可为本站带来佣金支持运营。'}</p>` : ''}
   </footer>
 </body>
 </html>`
 }
 
 // ---------- 外链 UTM 来源（跳转其他网站时带上我们的来源） ----------
+// 联盟营销改写：命中配置的域名时替换/追加推广参数（未配置返回 null = 原样处理）
+function affiliateUrl(rawUrl) {
+  try {
+    const u = new URL(rawUrl)
+    const host = u.hostname.toLowerCase()
+    // 1) 通用按域名整体替换（CJ / ShareASale 商家推广链接）
+    if (AFFILIATE.rewrite && AFFILIATE.rewrite[host]) return AFFILIATE.rewrite[host]
+    // 2) Amazon Associates：给 amazon.* 链接追加 tag
+    if (
+      AFFILIATE.amazonTag &&
+      (host === 'amazon.com' || host === 'amazon.cn' || host.endsWith('.amazon.com') || host.endsWith('.amazon.cn'))
+    ) {
+      if (!u.searchParams.has('tag')) u.searchParams.set('tag', AFFILIATE.amazonTag)
+      return u.toString()
+    }
+    // 3) OpenRouter 官方返佣：给 openrouter.ai 链接追加 ref
+    if (
+      AFFILIATE.openrouterRef &&
+      (host === 'openrouter.ai' || host.endsWith('.openrouter.ai'))
+    ) {
+      if (!u.searchParams.has('ref')) u.searchParams.set('ref', AFFILIATE.openrouterRef)
+      return u.toString()
+    }
+  } catch (e) {
+    /* 忽略无效 URL */
+  }
+  return null
+}
+
 function withUtm(url, slug) {
   if (!url || !/^https?:\/\//i.test(url)) return url // 仅外链；内部链接原样返回
+  // 先应用联盟改写（整体替换或追加推广参数），再补 UTM
+  const aff = affiliateUrl(url)
+  if (aff) return withUtm(aff, slug)
   try {
     const u = new URL(url)
     if (!u.searchParams.has('utm_source')) {
