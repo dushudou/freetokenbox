@@ -1,3 +1,4 @@
+import { reviewFor } from './reviews.js'
 // DB 访问层 —— 依赖 Cloudflare D1 绑定 env.DB（鸭子类型：prepare/bind/all/first/run）
 // 也兼容本地测试用 mock，见 scripts/test-local.js
 
@@ -11,6 +12,12 @@ export function normalizeToken(row) {
     tags = []
   }
   return {
+    review: reviewFor(row)?.status || 'pending',
+    checked_at: reviewFor(row)?.checked || null,
+    official_source: reviewFor(row)?.source || null,
+    access: reviewFor(row)?.access || null,
+    renewal: reviewFor(row)?.renewal || null,
+    content_notice: reviewFor(row) ? '' : '历史收录，当前条件待复核；不代表当前可用免费资源。',
     id: row.id,
     name: row.name,
     slug: row.slug,

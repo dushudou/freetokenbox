@@ -252,13 +252,22 @@ export const siteCss = `
     .foot a { color: var(--muted); }
     .foot a:hover { color: var(--accent-strong); }
     .foot .right { margin-left: auto; }
-    .foot .aff-disclosure {
+    footer .trademark-note {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px 22px;
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--faint);
+    }
+    footer .aff-disclosure {
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      width: 100%;
-      flex-basis: 100%;
-      margin: 10px 0 0;
+      width: calc(100% - 48px);
+      max-width: 1072px;
+      min-width: 0;
+      margin: 0 auto 24px;
       padding: 10px 12px;
       font-size: 12px;
       line-height: 1.65;
@@ -268,8 +277,8 @@ export const siteCss = `
       border-left: 3px solid var(--accent);
       border-radius: 10px;
     }
-    .foot .aff-disclosure .aff-ico { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 1px; color: var(--accent); }
-    .foot .aff-disclosure span { flex: 1 1 auto; min-width: 0; }
+    footer .aff-disclosure .aff-ico { display: block; flex: 0 0 15px; width: 15px; height: 15px; min-width: 15px; max-width: 15px; margin-top: 1px; color: var(--accent); }
+    footer .aff-disclosure span { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
 
     /* ---- 书单（联盟推荐位） ---- */
     .bookshelf { margin-top: 44px; }
@@ -305,6 +314,34 @@ export const siteCss = `
     .actions a,.actions form { display: inline-block; margin-right: 8px; font-size: 13.5px; }
     .danger { color: var(--danger); background: none; border: none; cursor: pointer; padding: 0; font-size: 13.5px; font-family: inherit; }
 
+    .editorial-intro { max-width: 820px; padding: 8px 0 20px; line-height: 1.8; }
+    .editorial-intro h2 { font-size: 26px; letter-spacing: -.02em; margin: 0 0 12px; }
+    .editorial-intro p, .guide-cards p { color: var(--muted); }
+    .tools-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 28px; }
+    .tool-card { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-card); color: inherit; transition: border-color .15s ease, transform .15s ease; }
+    .tool-card:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
+    .tool-kicker { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-ink); }
+    .tool-card strong { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.35; }
+    .tool-card span.tool-desc { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+    .tool-card span.tool-cta { margin-top: auto; padding-top: 6px; font-size: 13px; font-weight: 600; color: var(--accent-strong); }
+    .spec-table { width: 100%; border-collapse: collapse; margin: 18px 0 24px; font-size: 14px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .spec-table th, .spec-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; }
+    .spec-table th { width: 160px; color: var(--muted); background: var(--surface-2); font-weight: 600; }
+    .spec-table tr:last-child th, .spec-table tr:last-child td { border-bottom: none; }
+    .guide-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 36px 0; }
+    .guide-cards > h2 { grid-column: 1 / -1; margin: 0 0 4px; font-size: 20px; font-weight: 750; }
+    .guide-cards article { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 18px 20px; box-shadow: var(--shadow-card); }
+    .guide-cards h2, .guide-cards h3 { margin: 0 0 8px; font-size: 17px; line-height: 1.4; }
+    .guide-cards .g-date { display: block; font-family: var(--font-mono); font-size: 12px; color: var(--faint); margin-bottom: 6px; }
+    .guide-cards p { margin: 0; line-height: 1.7; font-size: 14px; }
+    .review-note { border-left: 3px solid var(--accent); padding: 14px 18px; background: var(--surface-2); margin: 20px 0; font-size: 14px; line-height: 1.8; border-radius: 0 10px 10px 0; }
+    .review-note p { margin: 8px 0; }
+    .article h1 { line-height: 1.35; }
+    .article .body pre { overflow-x: auto; padding: 18px; border: 1px solid var(--border); background: var(--code-bg); border-radius: 8px; font-size: 13px; line-height: 1.7; }
+    .article .body pre code { padding: 0; background: none; white-space: pre; }
+    .table-scroll { overflow-x: auto; }
+    .comparison td { line-height: 1.7; min-width: 180px; }
+    .related-guides { border-top: 1px solid var(--border); margin-top: 30px; padding-top: 16px; font-size: 14px; }
     /* ---- 响应式 ---- */
     @media (max-width: 980px) {
       .layout-grid { grid-template-columns: 1fr; }
@@ -312,9 +349,13 @@ export const siteCss = `
       .carousel-watermark { display: none; }
       .carousel-arrow { display: none; }
       .bs-grid { grid-template-columns: repeat(2, 1fr); }
+      .tools-strip { grid-template-columns: 1fr; }
+      .guide-cards { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
-      .nav { padding: 0 16px; gap: 12px; }
+      .nav { padding: 0 12px; gap: 8px; flex-wrap: wrap; height: auto; min-height: 64px; }
+      .nav-links { font-size: 12px; }
+      .nav-links a { padding: 6px; }
       .nav-search { display: none; }
       main { padding: 26px 16px 60px; }
       .article { padding: 24px; }

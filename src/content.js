@@ -1,3 +1,5 @@
+import { MEDIA_RESOURCES } from './media-resources.js'
+import { REVIEWS } from './reviews.js'
 // 内容工具：slug 生成、Markdown 极简渲染、HTML 转义、时间格式化、SEO 元信息
 
 export function escapeHtml(str) {
@@ -36,6 +38,8 @@ export function renderMarkdown(md) {
   const html = []
   let inList = false
   let listType = 'ul'
+  let inCode = false
+  let code = []
 
   const closeList = () => {
     if (inList) {
@@ -51,9 +55,38 @@ export function renderMarkdown(md) {
       // 图片（必须先于链接处理）：![alt](https://...)
       .replace(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy" referrerpolicy="no-referrer" />')
       .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" rel="noopener nofollow" target="_blank">$1</a>')
+      .replace(/\[([^\]]+)\]\((\/[a-zA-Z0-9/_-]+)\)/g, '<a href="$2">$1</a>')
+
+  let tableRows = []
+  const flushTable = () => {
+    if (!tableRows.length) return
+    const parseCells = (row) => row.replace(/^\||\|$/g, '').split('|').map((c) => c.trim())
+    const header = parseCells(tableRows[0])
+    const bodyStart = tableRows.length > 1 && /^\|?[\s:-]+(?:\|[\s:-]+)+\|?$/.test(tableRows[1]) ? 2 : 1
+    const bodyRows = tableRows.slice(bodyStart).map(parseCells)
+    html.push(
+      `<div class="table-scroll"><table class="list"><thead><tr>${header.map((c) => `<th>${inline(c)}</th>`).join('')}</tr></thead><tbody>${bodyRows.map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+    )
+    tableRows = []
+  }
 
   for (const raw of lines) {
     const line = raw.trimEnd()
+    if (/^```/.test(line)) {
+      closeList()
+      flushTable()
+      if (inCode) html.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`)
+      inCode = !inCode
+      code = []
+      continue
+    }
+    if (inCode) { code.push(raw); continue }
+    if (/^\|.+\|$/.test(line.trim())) {
+      closeList()
+      tableRows.push(line.trim())
+      continue
+    }
+    flushTable()
     if (!line.trim()) {
       closeList()
       continue
@@ -73,7 +106,8 @@ export function renderMarkdown(md) {
     }
     const ul = line.match(/^[-*]\s+(.*)$/)
     if (ul) {
-      if (!inList) {
+      if (!inList || listType !== 'ul') {
+        closeList()
         inList = true
         listType = 'ul'
         html.push('<ul>')
@@ -96,6 +130,8 @@ export function renderMarkdown(md) {
     html.push(`<p>${inline(line)}</p>`)
   }
   closeList()
+  flushTable()
+  if (inCode) html.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`)
   return html.join('\n')
 }
 
@@ -127,19 +163,19 @@ export function excerpt(text, n = 120) {
 
 /** 站点基地址（供 canonical / sitemap 使用） */
 export function siteUrl(env) {
-  return (env.SITE_URL || '').replace(/\/+$/, '')
+  return (env.SITE_URL || 'https://freetokenbox.com').replace(/\/+$/, '')
 }
 
 export function siteTitle(lang = 'zh') {
   return lang === 'en'
-    ? 'FreeTokenBox · Free AI Tokens & API Credits'
-    : 'FreeTokenBox · 免费送 Token 合集'
+    ? 'FreeTokenBox · Free AI Credits & Tools'
+    : 'FreeTokenBox · 免费 AI 额度与工具'
 }
 
 export function siteDescription(lang = 'zh') {
   return lang === 'en'
-    ? 'FreeTokenBox is a curated directory of free AI tokens, API credits and compute — free offers from DeepSeek, OpenRouter, Google Gemini, Groq, Cloudflare Workers AI, Mistral and more.'
-    : 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集。收录 DeepSeek、OpenRouter、Google Gemini、Groq、Cloudflare Workers AI、Mistral 等平台免费 API 额度活动，一站式发现并领取免费 AI 资源。'
+    ? 'Compare free AI text, image, audio, video, 3D and compute allowances with official sources and review dates.'
+    : 'FreeTokenBox 整理文本、图片、音频、视频、3D 和算力免费额度，提供官方来源、核查日期与使用限制。'
 }
 
 /** 语言路径前缀（en 时加 /en） */
@@ -157,8 +193,8 @@ export function organizationJsonLd(env, lang = 'zh') {
     alternateName: lang === 'en' ? 'Free AI Token Deals' : '免费送 Token 合集',
     url: base ? base + '/' : '/',
     description: lang === 'en'
-      ? 'FreeTokenBox is a curated directory of free AI tokens, API credits and compute.'
-      : 'FreeTokenBox 是一个收集所有免费赠送 AI Token / API 额度 / 算力的网站合集。',
+      ? 'FreeTokenBox documents free AI allowances for text, images, audio, video, 3D and compute.'
+      : 'FreeTokenBox 整理文本、图片、音视频、3D 与算力的 AI 免费额度和试用条件。',
     logo: base ? `${base}/logo.svg` : '/logo.svg',
     sameAs: ['https://github.com/dushudou/freetokenbox'],
   }
@@ -229,8 +265,9 @@ export function tokenJsonLd(token, env, lang = 'zh') {
     '@type': 'Article',
     headline: token.name,
     description: token.description,
-    datePublished: token.created_at,
-    dateModified: token.updated_at,
+    inLanguage: lang === 'en' ? 'en' : 'zh-CN',
+    datePublished: token.created_at ? new Date(token.created_at.replace(' ', 'T') + (token.created_at.includes('Z') ? '' : 'Z')).toISOString() : undefined,
+    dateModified: token.updated_at ? new Date(token.updated_at.replace(' ', 'T') + (token.updated_at.includes('Z') ? '' : 'Z')).toISOString() : undefined,
     author: { '@type': 'Organization', name: 'FreeTokenBox' },
     publisher: {
       '@type': 'Organization',
@@ -241,32 +278,6 @@ export function tokenJsonLd(token, env, lang = 'zh') {
     ...(token.provider ? { provider: { '@type': 'Organization', name: token.provider } } : {}),
     ...(token.url ? { isBasedOn: token.url } : {}),
     ...(token.tags && token.tags.length ? { keywords: token.tags.join(', ') } : {}),
-  }
-}
-
-/** FAQ JSON-LD（详情页自动生成常见问题，中英双语） */
-export function faqJsonLd(token, lang = 'zh') {
-  const p = token.provider || (lang === 'en' ? 'the official site' : '官方')
-  const d = formatDate(token.expiry_date || '')
-  const faqs = lang === 'en'
-    ? [
-        { q: `Is ${token.name} really free?`, a: `Yes. ${token.name} is given away for free by ${p}. Claiming and using it costs nothing — see the official page for exact terms.` },
-        { q: 'How do I claim it?', a: `Click the claim button on this page. It takes you to the offer page on ${p} — follow the instructions there.` },
-        ...(token.expiry_date ? [{ q: 'When does it end?', a: `This offer ends on ${d}. Claim it early — it stops once the quota runs out.` }] : []),
-      ]
-    : [
-        { q: `${token.name} 收费吗？`, a: `不收费。${token.name} 由 ${p} 免费发放，领取和使用均不产生费用，具体细则以官方页面为准。` },
-        { q: '怎么领取？', a: `点击本页面上的「前往领取」按钮，即可跳转到 ${p} 页面获取免费额度，按提示完成领取即可。` },
-        ...(token.expiry_date ? [{ q: '什么时候结束？', a: `本次活动截止到 ${d}，建议尽早领取，额度发完即止。` }] : []),
-      ]
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((f) => ({
-      '@type': 'Question',
-      name: f.q,
-      acceptedAnswer: { '@type': 'Answer', text: f.a },
-    })),
   }
 }
 
@@ -925,4 +936,25 @@ export const SEED_TOKENS = [
 
 **使用方法**：注册后在 Settings 生成 Access Token 调用。免费额度与速率限制以官方页面为准。`,
   },
-]
+
+  {
+    name: '100milionseek：邮箱领 API Key，每天 1 亿 Token（分时段放号）',
+    slug: '100milionseek-free-api',
+    description: '第三方推理中转，邮箱加人机验证领取 OpenAI 兼容 Key，基础每账号每天 1 亿 Token（00:00 UTC 重置）；1T 里程碑活动至 2026-12-03 提升至 5 亿/天，当前每小时限 200 个免费注册名额。',
+    provider: '100milionseek',
+    url: 'https://100milionseek.top',
+    category: 'free-api',
+    tags: ['api', 'llm', 'free-token', 'no-card', 'openai-compatible', 'deepseek'],
+    is_featured: 0,
+    sort_weight: 68,
+    content: `**100milionseek** 用邮箱注册、过 Cloudflare 人机验证，就能拿到一个 \`hms-\` 开头的 API Key。
+- 基础每账号每 UTC 日 100,000,000 tokens（prompt + completion 合并计算），00:00 UTC 重置，即北京时间 08:00
+- 2026-11-26 复查：此前 4 亿/天窗口已于 11-20 结束；现已达 1T 里程碑，临时提升至 5 亿 tokens/天至 2026-12-03 02:14 UTC（北京时间 10:14）
+- 无需绑卡，一邮箱一号；端点是 OpenAI 兼容的 \`https://100milionseek.top/v1\`，模型 \`deepseek-v4.1-flash-free\`（198K 上下文、64K 输出、5 并发）
+- 当前注册为每小时 200 个免费名额滚动放号，且 \`/api/status\` 显示高负载降级（\`degraded\`）
+**注意**：第三方中转服务，prompt 会经过它的服务器，别上传客户资料或密钥；不是 DeepSeek / OpenAI 官方，也没有 SLA，额度与放号状态以官方页面为准。`,
+  },
+].concat(MEDIA_RESOURCES.filter(t => !["fal-ai-free-credit", "replicate-free-credit"].includes(t.slug)).map(t => ({...t,status:"published",is_featured:false}))).map(token => {
+  const r = REVIEWS[token.slug]
+  return r ? { ...token, ...(r.category ? {category:r.category,provider:r.provider,url:r.url,tags:r.tags,sort_weight:r.sort_weight,expiry_date:r.expiry_date||null} : {}), name:r.name, description:r.description, content:r.content } : token
+})
