@@ -1,0 +1,160 @@
+{
+  "openrouter-free-models": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://openrouter.ai/docs/api_reference/limits",
+    "name": "OpenRouter 免费模型：限额与接入方法",
+    "description": "部分模型提供免费变体，但有请求配额与上游容量限制。先查看账户剩余额度，再选择免费模型。",
+    "content": "## 免费范围与限制\nOpenRouter 是模型聚合平台，免费模型不等于所有模型免费，也不等于无限调用。官方 Limits 文档区分免费模型请求限制、账户余额和预算限制；上游模型提供方也可能限流。\n## 如何开始\n1. 注册账户，在模型目录筛选免费变体，检查输入、输出以及工具调用的定价。\n2. 在控制台创建专用 API Key。把密钥保存在服务端环境变量，不要放进网页或公共仓库。\n3. 用少量、不含隐私的文本发起首次请求，确认模型 ID 与端点；不要直接运行有自动重试的长任务。\n4. 通过 GET /api/v1/key 查看 free_model_daily_requests 中的 used、limit、remaining。该字段比从旧教程抄来的日限额更适合判断自己的账户。\n## 选用建议\n适合比较模型与验证原型。若应用必须按时完成，请准备额度耗尽与上游无容量两种失败处理。不要把付费备用模型设为无预算的自动降级目标。\n## 遇到错误怎么办\n429 可能来自平台配额或上游容量，先查看错误元数据与 Retry-After；余额不足和预算限制需要检查账户设置，连续重试不会增加额度。批量创建密钥也不会增加账户容量。\n## 核查依据\n本页依据公开文档整理，未使用个人账户进行调用实测。模型清单与账户限制以控制台为准。",
+    "en": {
+      "name": "OpenRouter free models: quotas and setup",
+      "description": "Free model variants have request caps and upstream capacity limits. Inspect your account quota before starting a workload.",
+      "content": "## Scope\nFree variants are not unlimited access to every model. Account budgets, free-request quotas and upstream capacity are separate constraints.\n## Start safely\n1. Select a free variant in the model catalog and inspect its pricing.\n2. Create a dedicated server-side API key.\n3. Send a short, non-sensitive test request before starting an automated workflow.\n4. Inspect free_model_daily_requests via GET /api/v1/key for your daily counter and ceiling.\n## Practical choice\nUse it to compare models and prototype. Handle quota exhaustion separately from upstream capacity errors. Check Retry-After before retrying a 429, and keep a budget cap on any paid fallback.\n## Evidence\nThis is a public-document review, not an account-level benchmark."
+    }
+  },
+  "google-ai-studio-free": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://ai.google.dev/gemini-api/docs/pricing",
+    "name": "Gemini API 免费层：模型资格与数据使用",
+    "description": "Gemini API 为部分模型提供免费输入输出；并非全部模型可用，免费服务的数据使用条款也需要先确认。",
+    "content": "## 免费层与付费层的区别\nGoogle 的 Gemini Developer API 定价页为部分模型提供免费层，并明确区分免费、付费和企业方案。不能因为某个模型能在 AI Studio 网页中体验，就推断它的 API 免费。\n## 先检查三件事\n1. 在定价表中找到准备使用的精确模型 ID，确认该模型的 Free Tier 是否可用。\n2. 查看项目和模型的速率配额。不同模型、项目与账户级别可能不同，不沿用旧教程中的统一日限额。\n3. 阅读服务条款与数据使用说明。定价页说明免费层内容可能用于改进产品；不要把客户资料、个人身份信息或商业机密作为测试提示词。\n## 建议的接入顺序\n先在 AI Studio 用公开示例验证任务是否适合，再创建项目密钥，由后端读取环境变量。初次调用只发送一段短文本，并记录模型 ID、状态码与实际用量。\n## 防止意外费用\n切换到启用计费的项目、使用不在免费层的模型或增加付费功能前，重新确认价格。预算提醒并不必然等于硬性停机开关。对限流和免费层不可用设置明确的失败提示。\n## 核查依据\n本页核查公开定价文档，未验证任何访客账户的资格或地区可用性。",
+    "en": {
+      "name": "Gemini API free tier: eligibility and data use",
+      "description": "Only certain Gemini API models have a free tier. Check model eligibility, project limits and data-use terms before sending prompts.",
+      "content": "## Check the exact model\nThe pricing page distinguishes free and paid access. Availability in the AI Studio interface does not establish that a model's API is free.\n## Before calling\n1. Find the exact model ID and its Free Tier column.\n2. Inspect your project's rate limits rather than reusing an old universal quota.\n3. Review data-use terms: free-tier content may be used to improve products. Use public or synthetic examples.\n## Practical setup\nStart with a short request, keep the key on your server, and record status and usage. Recheck pricing when switching projects, enabling billing or adding paid features. Handle unavailable free models explicitly.\n## Evidence\nPublic documentation checked; no private account eligibility or live inference test is claimed."
+    }
+  },
+  "groq-cloud-free-api": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://console.groq.com/docs/rate-limits",
+    "name": "Groq 免费 API：按模型核对请求与 Token 配额",
+    "description": "Groq 提供 Free Plan，但请求数、Token 数和音频额度分别限流，实际限制以组织控制台为准。",
+    "content": "## 免费不代表无限吞吐\nGroq 的官方文档单列 Free Plan，并按模型列出配额。RPM、RPD、TPM、TPD 分别表示每分钟请求数、每日请求数、每分钟 Token 数和每日 Token 数；语音任务还可能有音频时长限制。\n## 为什么请求不多也会限流\n一个长上下文请求可能先触发 Token 限制；很多短请求则可能先触发请求数限制。限制在组织层面生效，换 API Key 不代表得到新配额。\n## 接入步骤\n1. 在控制台选择当前可用模型并创建密钥。\n2. 对照 Limits 页面确认本组织的配额，区分免费与 Developer 方案。\n3. 用短文本完成一次小请求，再逐步增加上下文长度和并发。\n4. 记录响应中的剩余请求数、剩余 Token 和重置时间；429 时优先遵循 retry-after。\n## 使用建议\n适合验证低延迟文本任务和小流量原型。语音转录要另查音频秒数限制。生产服务应设置排队、超时和用户可理解的失败提示，不能把旧榜单里的速度当作稳定承诺。\n## 核查依据\n依据官方速率限制说明整理；没有使用站方账户进行性能或可用性实测。",
+    "en": {
+      "name": "Groq free API: request and token limits",
+      "description": "Groq has a Free Plan with model-specific request, token and audio limits. Check the limits for your organization.",
+      "content": "## Read both quotas\nRPM/RPD count requests; TPM/TPD count tokens. Audio tasks can have additional duration limits. Organization-level limits do not multiply when you create another key.\n## Setup checklist\n1. Pick an available model and create a key in the console.\n2. Check your organization Limits page and the correct plan tab.\n3. Start with a short prompt and low concurrency.\n4. Record remaining quota and reset headers; respect retry-after on 429.\n## Practical choice\nUseful for small prototypes. Long contexts may hit token caps before request caps. Add queuing, timeouts and clear failure messages before relying on it for a public app.\n## Evidence\nDocumentation review only; no latency benchmark is claimed."
+    }
+  },
+  "cloudflare-workers-ai-free": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+    "name": "Cloudflare Workers AI：每天 10,000 Neurons 免费额度",
+    "description": "免费分配按天重置，Neurons 不是请求次数或 Token 数；部分模型仍要求付费计费方式。",
+    "content": "## 额度单位与重置时间\nCloudflare 当前定价文档提供每天 10,000 Neurons 的免费分配，按 UTC 00:00 重置。旧版本站“每月 10,000 次”的说法不正确，已更正。Neurons 是计量单位，不是 10,000 次请求，也不能直接换算成所有模型通用的 Token 数。\n## 哪些调用可能收费\n免费与付费 Workers 方案均有免费分配，但部分模型要求付费计费方式。付费方案超出免费分配后会产生费用；部署 Worker 本身以及存储、网络等关联资源也要分别检查。\n## 如何开始\n1. 在 Workers AI 模型目录选择支持当前账户方案的模型。\n2. 决定通过 Worker 的 AI binding 或 REST API 调用。\n3. 为 REST 调用创建最小权限令牌，并把账户 ID 与令牌留在服务端。\n4. 发起短请求后查看控制台 Neuron 用量，不要凭输出字符数估算免费余额。\n## 场景判断\n已经使用 Workers 的小工具可以减少额外服务集成；需要每天固定处理大批量文档时，应先核算模型消耗。免费分配是预算约束，不能作为容量保证。\n## 核查依据\n本页核查公开定价文档，没有使用线上绑定进行模型调用。",
+    "en": {
+      "name": "Cloudflare Workers AI: 10,000 Neurons per day",
+      "description": "The allocation resets daily, not monthly. Neurons are not request counts, and some models require paid billing.",
+      "content": "## Allocation\nThe documented free allocation is 10,000 Neurons daily, resetting at 00:00 UTC. Our old monthly description was incorrect. Neurons are neither requests nor a universal token allowance.\n## Billing boundaries\nSome models require paid billing. Paid-plan overage and associated Worker, storage or networking resources need separate checks.\n## Getting started\nChoose a model available to your plan, then use an AI binding or the REST API. Keep credentials server-side. Start with a short request and inspect actual Neuron usage in the dashboard.\n## Practical choice\nConvenient for tools already on Workers. Estimate model consumption before batch jobs; a free allowance is not a capacity guarantee.\n## Evidence\nPublic pricing documentation reviewed; no live inference run is claimed."
+    }
+  },
+  "mistral-la-plateforme-free": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://docs.mistral.ai/admin/billing-usage/usage-limits",
+    "name": "Mistral API Free mode：月度用量与账户限制",
+    "description": "官方文档提供 Free mode API 访问，具体月度用量和模型限额需要在组织的 Limits 页面确认。",
+    "content": "## 当前方案如何理解\nMistral 当前文档使用 Free mode 描述包含月度用量的 API 访问。不要把旧 Experiment 方案的截图、Vibe 编码计划预算和开发者 API 配额混为一谈。\n## 获取自己的有效限额\n1. 登录 Mistral 控制台，确认当前组织与 Workspace。\n2. 在 API 的 Limits 页面检查目标模型的请求速率与 Token 限制。\n3. 在 Usage 页面查看已消耗用量，确认是否启用了 pay-as-you-go。\n4. 创建用于 API 自动化的密钥，而不是把某个编码计划专用密钥当成通用无限额度。\n## 是否适合长期运行\n更适合评估和原型。月度剩余额度充足时，仍可能先达到每分钟或每秒速率限制。遇到 429，先区分速率窗口与总用量，而不是反复重新建号。\n## 费用与模型变更\n超过包含用量后，启用按量付费会使用预付 credits。模型迁移后也应重新检查限制。本站不把只有登录后才显示的账户数值写成人人适用的统一额度。\n## 核查依据\n来自官方 Usage and limits 文档与官方限流帮助说明；未登录账户进行配额实测。",
+    "en": {
+      "name": "Mistral API Free mode: monthly usage and limits",
+      "description": "Mistral documents included monthly API usage in Free mode. Check model limits and allowance in your organization dashboard.",
+      "content": "## Current terminology\nFree mode includes monthly API usage within the limits shown for your organization. Old Experiment-plan screenshots and Vibe plan budgets are not interchangeable API quotas.\n## Check your account\nOpen the correct organization, inspect API Limits and Usage, then verify whether pay-as-you-go is enabled. Create an API automation key rather than assuming a coding-plan key has unlimited access.\n## Practical choice\nUse it for evaluation and prototypes. Rate windows may be exhausted before monthly usage. Recheck limits after changing models and review billing before extending usage with prepaid credits.\n## Evidence\nOfficial documentation checked; account-specific quota values and live tests are not claimed."
+    }
+  },
+  "cohere-free-trial": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://docs.cohere.com/docs/rate-limits",
+    "name": "Cohere 评估 API：每月 1,000 次调用上限",
+    "description": "Cohere 区分免费评估密钥和付费生产密钥；试用受月调用总量及各端点速率限制。",
+    "content": "## 免费的是评估密钥\nCohere 官方区分 evaluation/trial key 与 production key。评估密钥可用于免费试用，但不能把评估方案理解成生产环境无条件免费。\n## 需要同时检查的上限\n官方文档写明 trial keys 每月最多 1,000 次 API 调用；Chat、Embed、Rerank 等端点还各有速率限制。1,000 次调用不是 1,000 个 Token，也不是每个新密钥各有一份独立额度。\n## 开始步骤\n1. 在官方 Dashboard 创建评估密钥。\n2. 选择 Chat、向量化或重排任务，不要先假定不同端点请求格式相同。\n3. 对相同的一小组公开样本记录输出质量、错误与用量，再决定是否接入应用。\n## 对 RAG 原型的建议\n先固定文档样本与检索结果，再单独比较重排效果；如果每次测试都同时换嵌入模型、分块方式和重排器，就很难判断结果差异来自哪里。先用离线评估减少无效 API 调用。\n## 核查依据\n本页仅依据官方 API key 和速率限制文档，未做账户实测。生产用途与特定模型资格还需要核对服务条款。",
+    "en": {
+      "name": "Cohere evaluation API: monthly call cap",
+      "description": "Free evaluation keys have a 1,000-call monthly limit plus endpoint-specific rate limits; production keys are a separate option.",
+      "content": "## Evaluation versus production\nCohere distinguishes free evaluation keys from paid production keys. Trial keys have a 1,000-call monthly cap; endpoint-specific rates also apply. Calls are not tokens.\n## Start with a controlled task\nCreate an evaluation key, choose the correct Chat, Embed or Rerank endpoint, and test a small fixed public dataset.\n## Practical choice\nFor a retrieval prototype, hold document chunks and retrieved candidates constant before comparing rerankers. Changing every component at once makes results difficult to interpret and wastes trial calls.\n## Evidence\nOfficial key and rate-limit documentation reviewed; no account-level test is claimed. Check terms before production use."
+    }
+  },
+  "modal-free-gpu": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://modal.com/pricing",
+    "name": "Modal 每月 $30 算力赠额：Shared Endpoints 不包含",
+    "description": "Starter 包含每月 $30 计算额度；自 2026-09-01 起，Shared Endpoints 从首次请求计费，不使用这笔额度。",
+    "content": "## 赠额究竟能用在哪里\nModal Starter 当前包含每月 $30 compute credits，可用于相应 GPU、CPU 和内存计算。它不是任意模型 API 的通用余额，使用不同产品前要先核对计费范围。\n## 2026 年的重要变化\n官方定价页说明：自 2026-09-01 起 Shared Endpoints 不包含在 Starter 免费使用范围内，Token 从首次请求开始收费，即使每月计算赠额尚未使用完。不要把“有 $30 额度”当成 Shared Endpoints 免费的依据。\n## 如何避免试验产生意外成本\n1. 明确任务是自己部署的函数计算，还是直接调用 Shared Endpoints。\n2. 在运行前计算 GPU、CPU 与内存组合成本，并检查额外服务价格。\n3. 用很小的批次验证，查看账单后再扩大任务规模。\n4. 清理不再使用的定时任务与持续保活配置。\n## 场景建议\n适合愿意自行部署代码的推理实验与批处理。把模型下载、容器启动和空闲保持的时间纳入估计，不要只用模型生成结果的几秒钟推算整笔费用。\n## 核查依据\n来自官方定价页。本站没有领取赠额、部署收费任务或验证特定账户的支付资格。",
+    "en": {
+      "name": "Modal $30 monthly compute credit: endpoint exclusions",
+      "description": "Starter includes monthly compute credit, but Shared Endpoints have been billed from the first token since September 1, 2026.",
+      "content": "## Scope\nStarter includes $30 in monthly compute credit for eligible GPU, CPU and memory use. It is not a universal balance for every API product.\n## Important exclusion\nSince September 1, 2026, Shared Endpoints are billed from the first request, even when included compute remains unused.\n## Practical choice\nFor self-deployed experiments, estimate startup, model loading, memory and idle time, not only generation time. Start with a small batch, inspect billing, and remove unused scheduled jobs.\n## Evidence\nOfficial pricing reviewed. No credit redemption or billable deployment was performed."
+    }
+  },
+  "cerebras-free-api": {
+    "checked": "2026-11-03",
+    "status": "verified",
+    "source": "https://inference-docs.cerebras.ai/support/rate-limits",
+    "name": "Cerebras 限时试用：$5 credits 与支付验证",
+    "description": "目前是有期限的 Free Trial，并非长期免费层：验证支付方式后获得 $5 credits，发放后 30 天到期。",
+    "content": "## 旧“免费推理”说明已更新\nCerebras 当前官方 FAQ 明确：没有自动续期的永久免费层。新账户添加已验证支付方式后可获得 $5 试用 credits，发放后 30 天到期。跳过支付方式验证时，Playground 与 API 访问不会激活。\n## 谁适合使用\n适合能够完成支付验证、且有明确短期评估计划的开发者。若你的要求是“不绑定支付方式”或“每月自动恢复免费量”，这个试用不符合需求。\n## 试用前的检查\n1. 确认接受支付验证要求，并查看 Billing 与 Limits。\n2. 提前准备一组固定测试用例，避免赠额到期前还在搭环境。\n3. 记录实际用量与模型返回，区分账户余额耗尽和请求速率限制。\n4. 需要继续使用时再自主购买 credits，本站不代用户执行支付操作。\n## 试用结束后\n官方说明试用额度用尽或到期后 API 和 Playground 访问停止，直到购买 credits。项目与密钥保留。不要把限时试用写成永久成本为零的运行方案。\n## 核查依据\n依据官方 Rate Limits 的 Free Trial FAQ 整理，没有绑定卡片或领取试用。",
+    "en": {
+      "name": "Cerebras trial: $5 credits and payment verification",
+      "description": "Cerebras documents a time-limited trial, not an always-free tier: $5 after payment verification, expiring after 30 days.",
+      "content": "## Current offer\nNew accounts need a verified payment method to activate API and Playground access. The documented $5 trial credit expires 30 days after grant; there is no automatically renewing free tier.\n## Practical choice\nSuitable for a planned short evaluation, not a no-card or recurring-free requirement. Prepare a fixed test set before activating, and inspect Billing and Limits.\n## After the trial\nAccess stops when credits run out or expire until credits are purchased; projects and keys remain. Distinguish rate limits from an exhausted balance.\n## Evidence\nOfficial trial FAQ reviewed; no payment method was added or trial redeemed."
+    }
+  },
+  "huggingface-inference-free": {
+    "checked": "2026-11-03",
+    "status": "changed",
+    "source": "https://huggingface.co/docs/inference-providers/pricing",
+    "name": "Hugging Face 推理额度变更：免费账户不再含月赠额",
+    "description": "截至本次核查，Inference Providers 的普通免费账户每月赠额为 None，需要购买 credits 或升级订阅。",
+    "content": "## 当前结论\nHugging Face 官方 Inference Providers 计费表中，Free Users 的 Monthly Credits 已列为 None。旧版本站把它列为普通账户免费推理额度，这一说法已不适用于当前规则。\n## 不要混淆三种服务\n模型文件可下载、社区 Spaces 可以体验、以及托管 API 推理是否免费，是三件不同的事。能浏览或下载开源模型，不意味着平台会免费承担 GPU 推理费用。\n## 继续使用时如何计费\n官方区分由 Hugging Face 路由并在 HF 账户计费，以及使用自己的提供方密钥直接由提供方计费。后者不会凭空获得 HF 的月赠额。订阅包含的 compute credits 也需要结合订阅费用和适用范围评估。\n## 已有项目的迁移检查\n1. 查看当前请求经过 HF 路由还是自己的服务商密钥。\n2. 检查余额、订阅与账单，不沿用旧的免费额度截图。\n3. 如果希望继续做免费层实验，可比较本站其他已核查资源，但要分别确认数据条款和速率上限。\n## 保留此页的原因\n保留原 URL 是为了纠正旧信息，帮助读者避免按过期教程配置。此页不是当前免费 API 推荐，也没有进行付费调用。",
+    "en": {
+      "name": "Hugging Face update: no monthly credit for free users",
+      "description": "The current Inference Providers billing table lists no monthly credits for ordinary free accounts; purchase or a subscription is required.",
+      "content": "## Correction\nThe official pricing table lists Free Users monthly credits as None. Our earlier free-allowance description is outdated.\n## Separate the products\nDownloading model weights, using a community Space and calling a hosted inference API are different services. Free model access does not establish free GPU inference.\n## Migration checklist\nCheck whether billing goes through HF routing or your own provider key, then review your balance and subscription. A provider key does not create an HF allowance.\n## Why retain this URL?\nIt corrects the historical listing and helps readers avoid obsolete setup instructions. This is not a current free API recommendation and no paid request was made."
+    }
+  },
+  "github-models-free": {
+    "checked": "2026-11-03",
+    "status": "changed",
+    "source": "https://docs.github.com/en/github-models",
+    "name": "GitHub Models 已于 2026-07-30 退役",
+    "description": "官方文档确认 GitHub Models 的 Playground、模型目录、推理 API 和 BYOK 均已退役。此页保留迁移提示。",
+    "content": "## 退役状态\nGitHub 官方文档确认：GitHub Models 自 2026-07-30 起完全退役。Playground、模型目录、推理 API 和 BYOK 已不再向任何客户提供。旧教程中的免费试用入口不能继续作为可用资源推荐。\n## 与 GitHub Copilot 的区别\n官方特别说明 GitHub Models 与 GitHub Copilot 是独立服务。GitHub Models 退役不代表 Copilot 同时退役，也不能用 Copilot 的订阅说明推断旧 Models API 仍然有效。\n## 已有调用如何迁移\n1. 搜索代码中旧的 GitHub Models endpoint 和相关环境变量，确认哪些任务仍依赖它。\n2. 选择替代模型服务后，分别核对端点、鉴权方式、模型 ID 和请求字段，不只替换密钥。\n3. 用固定的公开测试样本比较输出结构、错误处理与实际成本。\n4. 清理不再使用的旧凭据与配置，更新团队部署说明。\n## 替代方向\nGitHub 文档建议需要模型访问的项目查看 Azure AI Foundry，但这不表示替代服务免费。也可以从本站已核查目录比较其他免费层或评估方案。\n## 核查依据\n本页依据 GitHub 官方退役公告整理，不提供失效服务的领取按钮。",
+    "en": {
+      "name": "GitHub Models retired on July 30, 2026",
+      "description": "GitHub confirms retirement of its model catalog, playground, inference API and BYOK. This page retains migration guidance.",
+      "content": "## Retirement\nGitHub Models was fully retired on July 30, 2026. Its catalog, playground, inference API and BYOK are no longer available. GitHub Copilot is a separate service.\n## Migration checklist\nFind old endpoint and credential references. For a replacement, check authentication, model IDs and request fields, not only the key. Compare outputs and cost on a fixed public test set, then remove obsolete configuration.\n## Alternatives\nGitHub points model-access projects to Azure AI Foundry, but that is not a promise of free access. Compare pricing and terms independently.\n## Evidence\nOfficial retirement notice reviewed. This page corrects an old listing and has no claim button."
+    }
+  },
+  "100milionseek-free-api": {
+    "checked": "2026-11-26",
+    "status": "verified",
+    "source": "https://100milionseek.top/",
+    "name": "100milionseek：邮箱领 API Key，每天 1 亿 Token（分时段放号）",
+    "description": "第三方推理中转，邮箱加人机验证领取 OpenAI 兼容 Key，基础每账号每天 1 亿 Token（00:00 UTC 重置）；1T 里程碑活动至 2026-12-03 提升至 5 亿/天，当前每小时限 200 个免费注册名额。",
+    "content": "## 免费的是什么\n100milionseek 是一个第三方推理中转服务：注册后拿到一个 `hms-` 前缀的 API Key，就能调用它部署的 `deepseek-v4.1-flash-free`，公开参数是 198K 上下文、64K 最大输出、5 并发，支持流式与工具调用。端点是 OpenAI 兼容的 `https://100milionseek.top/v1`，任何支持自定义 base URL 的客户端都可接入。\n\n## 额度怎么算\n- 基础额度为每账号每 UTC 日 100,000,000 tokens，prompt 和 completion 合并计入，按模型回报的用量计算。\n- 每天 00:00 UTC 重置（北京时间 08:00），不是按注册满 24 小时循环。\n- **里程碑加码（2026-11-26 核查）**：此前的 100B 档（4 亿/天）已于 2026-11-20 结束；站方已于 2026-11-26 02:14 UTC 达成 1T 累计用量，开启 **5 亿 tokens/天 × 7 天** 窗口，至 **2026-12-03 02:14 UTC（北京时间 12-03 10:14）** 结束，届时自动回落至基础 1 亿/天，当天已用部分仍计入。\n- 打满会返回 HTTP 429 并给出重置时间；响应头提供 `x-quota-limit`、`x-quota-used`、`x-quota-remaining`、`x-quota-reset`，可在代码中读取余量。\n\n## 领取步骤与注册状态\n1. 打开 [https://100milionseek.top/signup](https://100milionseek.top/signup)，填写有正常邮件服务器（MX）的真实邮箱；一次性邮箱会被拒，Gmail `+tag` 与加点别名视为同一邮箱，一邮箱一号。\n2. 通过 Cloudflare Turnstile 人机验证并创建 Key（仅展示一次，需立即保存）。\n3. 进后台查看当日剩余额度与状态。\n> **2026-11-26 复查状态**：站方已从完全暂停转为**分时段逐步放号（每小时 200 个免费名额，滚动态释放）**；若当前小时名额已满可等页面提示的下一个释放时间点刷新（站方也提供了免排队的付费 pass，非必需）。同时 `/api/status` 显示当前负载较高、状态为 `degraded`（近 24 小时成功率约 94.6%，首字延迟中位数约 14.5 秒），体验波动较大。\n\n## 接到客户端\n- **OpenAI SDK / Python / TypeScript / curl**：将 `base_url` 设为 `https://100milionseek.top/v1`，`model` 填 `deepseek-v4.1-flash-free`。\n- **Cursor / Cline / Aider / Continue / OpenCode / Roo Code / LibreChat**：在模型设置里选 OpenAI Compatible，填入上述 Base URL 和 Key。\n- **Claude Code**：走 Anthropic Messages 协议，需通过 `claude-code-router` 等转换层接入。\n- 务必将 Key 放入环境变量（如 `export HMS_API_KEY=hms-xxx`），不要写入源码或公开截图。\n\n## 有哪些限制与风险\n- 仅主推 `deepseek-v4.1-flash-free` 单模型，不是多模型聚合平台。\n- **第三方中转隐私边界**：prompt 与响应均经过其服务器（站方声明不落盘、不出售，仅存邮箱、Key 哈希和每日计数器）。**严禁发送客户资料、隐私凭证、内部源码或密钥。**\n- 非 DeepSeek 或 OpenAI 官方（页脚声明 \"Not affiliated with DeepSeek or OpenAI\"）。账号、额度和服务存续完全由第三方控制，随时可能限流、收紧注册或停服。\n- 免费额度无 SLA，当前实时状态为降级（`degraded`）且高负载下偶发失败或长延迟：切勿作为生产唯一依赖，也不要对 429 无限重试。\n\n## 核查依据\n本站于 2026-11-26 复查官方首页、`/signup`、`/docs` 及 `/api/status`：确认 400M 窗口已结束、1T 里程碑 500M/天窗口有效期至 2026-12-03 02:14 UTC、注册已改为每小时 200 名额逐步开放，以及服务当前处于 `degraded` 负载状态。未注册账号、未发起真实调用，实际可用额度以本人后台为准。",
+    "en": {
+      "name": "100milionseek: 100M tokens/day via email (hourly sign-up cap)",
+      "description": "Third-party OpenAI-compatible relay offering 100M base tokens/day (00:00 UTC reset), boosted to 500M/day until 2026-12-03 for the 1T milestone; free sign-ups reopen at 200 slots/hour.",
+      "content": "## What is free\n100milionseek is a third-party inference relay. After signing up with an email and passing Cloudflare Turnstile, you get an `hms-` API key for `deepseek-v4.1-flash-free` (198K context, 64K max output, up to 5 concurrent requests, streaming and tool calls) over the OpenAI-compatible endpoint `https://100milionseek.top/v1`.\n\n## How the quota works\n- Base allowance: 100,000,000 tokens per account per UTC day (prompt + completion combined), resetting at 00:00 UTC.\n- **Milestone bonus (rechecked 2026-11-26)**: The earlier 100B (400M/day) window ended on 2026-11-20. On 2026-11-26 02:14 UTC the site passed 1T served tokens, raising daily allowance to **500M tokens/day for 7 days until 2026-12-03 02:14 UTC**, after which it returns to 100M/day (usage earlier that UTC day still counts).\n- Hitting the cap returns HTTP 429 with reset timing; responses expose `x-quota-limit`, `x-quota-used`, `x-quota-remaining` and `x-quota-reset` headers.\n\n## Getting a key & current sign-up status\n1. Open [https://100milionseek.top/signup](https://100milionseek.top/signup) with a real inbox (MX-checked; disposable domains are rejected; Gmail `+tag` and dot variants count as one inbox).\n2. Pass the Cloudflare Turnstile check and save the generated key immediately (shown only once).\n3. Check remaining daily quota in the dashboard.\n> **2026-11-26 recheck**: Full sign-up pause has shifted to **gradual reopening at 200 free sign-ups per hour** (rolling slots; a paid pass is also offered if the current hour is full, but optional). Meanwhile `/api/status` reports `degraded` under heavy load (~94.6% 24h success rate, ~14.5s median TTFT), so expect intermittent latency or errors.\n\n## Client setup\n- **OpenAI SDK / Python / TypeScript / curl**: set `base_url` to `https://100milionseek.top/v1` and `model` to `deepseek-v4.1-flash-free`.\n- **Cursor / Cline / Aider / Continue / OpenCode / Roo Code / LibreChat**: select OpenAI Compatible and enter the base URL and key.\n- **Claude Code**: uses Anthropic Messages format and requires a translation proxy such as `claude-code-router`.\n- Store the key in an environment variable (`HMS_API_KEY`), never in code or screenshots.\n\n## Limits and risks\n- Single main model (`deepseek-v4.1-flash-free`), not a multi-provider aggregator.\n- Third-party relay: prompts and responses transit its servers (the site states they are not stored or sold). **Never send customer data, credentials, private code or regulated information.**\n- Not affiliated with DeepSeek or OpenAI. Quotas, sign-up caps and availability can change or stop without notice.\n- No SLA and currently `degraded` under load: do not rely on it as a production dependency or hammer 429 responses with retries.\n\n## Evidence\nRechecked official home page, `/signup`, `/docs` and `/api/status` on 2026-11-26: verified the 400M window has ended, the 1T milestone 500M/day window runs until 2026-12-03 02:14 UTC, sign-ups reopened at 200 free slots/hour, and live status is `degraded`. No account was registered and no live call was made; your dashboard is authoritative."
+    }
+  },
+  "doubao-xiaodou-invite-beta": {
+    "checked": "2026-11-25",
+    "status": "verified",
+    "source": "https://www.sina.cn/news/detail/5368723595591761.html",
+    "access": "web",
+    "renewal": "trial",
+    "name": "豆包小豆邀请码怎么找？社区实时收录入口",
+    "description": "豆包旗下小豆开启邀请制公测，凭码可体验并获赠免费额度。社区入口汇总公开分享的码，是否有效以小豆 App 为准。",
+    "content": "## 免费体验需要什么\n[豆包官方公告](https://www.sina.cn/news/detail/5368723595591761.html)于 2026 年 11 月 24 日公布小豆开启邀请制公测，凭邀请码可开启体验并获赠免费额度。具体额度、有效期和功能范围以 App 内显示为准。\n\n## 怎么找邀请码\n1. 打开[小豆邀请码社区收录页](https://freetokenbox.com/xiaodou-codes)，按发布时间查看较新的公开分享。\n2. 点开对应原帖核对来源，然后在小豆 App 内按提示尝试。社区的“可能可用”来自公开信息和状态推测，实际可能已被他人使用。\n3. 需要下载时，从设备应用商店搜索「小豆 豆包旗下」。在 App 内提交登录信息和邀请码。社区页用于查找公开分享。\n\n## 核查范围\nFreeTokenBox 于 2026 年 11 月 25 日核对了公测公告和社区入口。邀请码页由 FreeTokenBox 提供，公开数据由社区维护，邀请码会被领取，当前可用性以实际验证为准。",
+    "en": {
+      "name": "Doubao Xiaodou beta invite codes: community tracker",
+      "description": "Find publicly shared invite codes for Doubao’s Xiaodou beta. An accepted invitation includes free in-app credits, with the amount shown in the app.",
+      "content": "## What is free\n[Doubao’s announcement](https://www.sina.cn/news/detail/5368723595591761.html) describes an invite-only public beta that started on November 24, 2026. Accepted invitations include free in-app credits. Check your app for the amount, expiry and available features.\n\n## Where to look\n1. Open the [community invite tracker](https://freetokenbox.com/xiaodou-codes) and check recent posts for publicly shared codes.\n2. Confirm the source post and try the code in the Xiaodou app. Community availability labels are estimates and codes may already have been used.\n3. If needed, search for Xiaodou by Doubao in your device’s app store. Enter account details and invite codes inside the app.\n\n## Evidence\nFreeTokenBox checked the beta announcement and the community tracker on November 25, 2026. FreeTokenBox hosts the tracker using public community data. Code validity is determined by the app."
+    }
+  }
+}

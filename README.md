@@ -1,17 +1,28 @@
-# 🎁 FreeTokenBox · 免费送 Token 合集
+# 🎁 FreeTokenBox · AI 免费额度核查目录与工程工具箱
 
-收集所有**免费赠送 AI Token / API 额度 / 算力 / 优惠券**的网站与活动。一站式发现免费资源，直达官网领取。
+在线访问：**[https://freetokenbox.com](https://freetokenbox.com)**（中文）· **[https://freetokenbox.com/en](https://freetokenbox.com/en)**（English）
+
+FreeTokenBox 面向 AI 开发者与独立创作者，提供**经过官方来源核查的免费 AI API / 算力 / 多媒体额度目录**、**纯前端交互式工具**与**双语工程实践指南**。所有免费资源均标注核查日期、额度周期、绑卡要求与数据条款，拒绝过期货架与夸大宣传。
 
 > 能免费解决的事情，绝不多花一个 Token！
 
+## 🛠️ 核心交互工具（免登录 · 纯浏览器计算）
+
+| 工具 | 中文入口 | English | 说明 |
+|---|---|---|---|
+| **AI Token & 免费额度估算器** | [`/calculator`](https://freetokenbox.com/calculator) | [`/en/calculator`](https://freetokenbox.com/en/calculator) | 内置多轮上下文膨胀公式与重试倍率，支持粘贴真实文本估算中英文 Token，测算免费层是否够用及付费月预算 |
+| **本地离线免费 AI 模型选型器** | [`/local`](https://freetokenbox.com/local) | [`/en/local`](https://freetokenbox.com/en/local) | 按 8GB / 16GB / 24GB / 32–48GB / 64GB+ 内存或显存与用途（对话/编程/推理/识图）筛选 20 个主流开源权重，一键复制 `ollama run` 命令（同时提供 [`/local.json`](https://freetokenbox.com/local.json) 与 [`/local.md`](https://freetokenbox.com/local.md)） |
+| **双语工程实践指南（10 篇）** | [`/guides`](https://freetokenbox.com/guides) | [`/en/guides`](https://freetokenbox.com/en/guides) | 涵盖 Token 计费数学、Ollama 本地部署、多平台 Fallback 路由、API Key 安全与防刷、Cursor/Cline/Roo Code 接入、零成本 RAG 栈与 429 排查 |
+
 ## ✨ 功能
 
-- **SEO 友好的前台**：首页列表、Token 详情页（JSON-LD 结构化数据 + 相关推荐）、分类页、标签页、站内搜索、面包屑导航、`sitemap.xml`、`robots.txt`、`RSS`，全部服务端渲染。
-- **AI 友好接口**：`/llms.txt`、`/llms-full.txt`（LLM/AI 爬虫索引）、`/ai.json`（结构化 JSON 数据导出），方便 AI 引擎收录。
+- **核查驱动的资源目录**：首页精选 + 详情页（JSON-LD 结构化数据 + 官方来源与核查日期）+ 分类页 + 历史待复核归档（`/directory`），全部服务端渲染（SSR），中英双语。
+- **实用工程工具与深度指南**：内置 `/calculator`、`/local` 与 10 篇原创双语技术指南，覆盖免费 API 选型、本地推理与防刷安全。
+- **AI / GEO 友好接口**：`/llms.txt`、`/llms-full.txt`、`/ai.json`、`/local.json`、`/local.md`、`/tokens.md`、`sitemap.xml`、`robots.txt`、`rss.xml`。
 - **后台录入**：`/admin` 密码登录后手动录入 / 编辑 / 删除 / 精选 / 导入种子数据。
 - **开放 API**：`/api/tokens` 只读公开接口（支持分页 / 分类 / 标签 / 搜索）+ 带鉴权的写接口（`X-API-Key` 或后台 Cookie）。
 - **Agent 录入 Skill**：`skills/freetokenbox-submit/`，让 AI Agent 通过接口自动录入条目。
-- **Google AdSense 预留**：配置 `ADSENSE_CLIENT_ID` / `ADSENSE_AD_UNITS` 后自动在页脚 / 列表 / 文章底部输出真实广告位；未配置时显示占位框，不加载任何外部脚本。
+- **Google AdSense**：发布商 `ca-pub-1530405841616000` 的脚本仅在合适的公开内容页加载；搜索、后台、错误页和未核查历史条目不加载广告。根目录提供 `ads.txt`。审核与 CMP 等账户配置需在 AdSense 后台核对。
 
 ## 🧱 技术栈
 
@@ -91,17 +102,9 @@ npm run deploy
 
 ### 3. 接入 Google AdSense
 
-1. 在 [Google AdSense](https://adsense.google.com) 注册并通过审核。
-2. 创建广告单元，拿到 `ca-pub-...`（client id）和各单元 `data-ad-slot`。
-3. 配置环境变量并重新部署：
+站点在首页、已核查的资源详情、指南和本地模型选型页加载 AdSense 脚本，并在 `/ads.txt` 提供同一个发布商 ID。Token 计算器、搜索结果和普通列表分页不加载广告脚本。
 
-```bash
-npx wrangler secret put ADSENSE_CLIENT_ID     # ca-pub-xxxxxxxx
-npx wrangler secret put ADSENSE_AD_UNITS      # {"footer":"<slot>","home-top":"<slot>","article-bottom":"<slot>"}
-npm run deploy
-```
-
-未配置时站点不会加载任何 AdSense 脚本，纯静态占位。
+在 [Google AdSense](https://adsense.google.com) 提交前，先核对线上首页、Sitemap、内容详情和工具能否打开。详情见 [Google 对网站内容和用户体验的说明](https://support.google.com/adsense/answer/7299563)。
 
 ### 4. 关联 GitHub（可选）
 
@@ -154,3 +157,29 @@ export API_KEY=sk-xxx API_BASE=https://<你的子域>.workers.dev
 ## 📄 License
 
 MIT
+
+## 2026-11-03 内容与 SEO 更新
+
+- `content/reviews.json` 记录十条资源的中英文核查内容，`src/reviews.js` 为运行时内容与状态数据。修改时应同步两者，保留来源与真实核查日期。
+- `src/guides.js` 包含三篇中英文指南；`src/editorial.js` 提供指南、关于、隐私、条款、核查原则和纠错页面。
+- 首页推荐八条当前已核查资源；Hugging Face 和 GitHub Models 原 URL 保留规则更正，其他旧收录保留在 `/directory` 并标记待复核。
+- 公开接口新增 `review`、`checked_at`、`official_source` 和 `content_notice`。不要把 pending 或 changed 当作有效免费活动；公开导出不包含草稿。
+- `npm test` 验证鉴权、草稿隔离、SEO、指南与广告加载范围。`wrangler deploy --dry-run --keep-vars` 做发布检查；正常发布保留远程 secrets。
+- `scripts/prepare-content-update.mjs` 从快照生成带更新时间条件的 D1 内容更新与对应回滚 SQL；不要无条件覆盖线上编辑。
+- 研究依据和限制见 [官方资料核查记录](docs/content-research-2026-11-03.md)。本地代码尚未推送 GitHub。
+
+### 多媒体资源维护（2026-11-03）
+
+`content/media-*-resources.json` 保存图片、语音/音乐、视频、3D 和共享算力条目的中英文内容及核查元数据。新增字段 `access` 区分 `web` / `api` / `web-api`，`renewal` 区分每日、每月、一次性及限时活动。`web-api` 不表示两边钱包互通，正文需分别说明。已知截止日填写 `expiry_date`，到期后从当前资源列表移除。
+
+修改资料后运行 `node scripts/build-reviewed-content.mjs`，生成 `src/reviews.js` 与 `src/media-resources.js`。原有文本/API 资料仍在 `content/reviews.json`。不要直接修改生成文件。
+
+发布前获取完整公开记录快照并备份远程 D1，再运行：
+
+```sh
+node scripts/prepare-media-update.mjs snapshot.json update.sql
+npm test
+wrangler deploy --dry-run --keep-vars
+```
+
+SQL 仅更新对应条目，现有记录用 `updated_at` 防止覆盖并发修改；新记录通过 slug 防重复。脚本同时生成回滚 SQL 和用于本地预览的数据。核对后通过 D1 执行 SQL，再 `wrangler deploy --keep-vars`。发布后逐条核对数量、正文、分类、翻译与 sitemap。研究依据见 `docs/multimedia-*-research-2026-11-03.md`。所有“已核查”均指公开资料核查，不表示注册或生成实测。

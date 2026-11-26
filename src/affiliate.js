@@ -18,8 +18,8 @@ export const AFFILIATE = {
   rewrite: {},
 
   // 2) Amazon Associates 跟踪 ID（形如 'xxx-20'）
-  //    启用后，站内所有 amazon.com / amazon.cn 外链会自动追加 ?tag=你的ID
-  amazonTag: 'freetokenbox-20',
+  //    AdSense 首次审核期间建议留空，避免被判定为薄内容联盟导流站；过审后可恢复为 'freetokenbox-20'。
+  amazonTag: '',
 
   // 3) OpenRouter 官方返佣代码（形如 '你的ref代码'）
   //    启用后，站内 openrouter.ai 外链会自动追加 ?ref=你的代码

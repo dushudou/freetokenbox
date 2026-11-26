@@ -1,3 +1,6 @@
+import { REVIEWS, reviewFor, localizeToken } from './reviews.js'
+import { categoryLabel } from './i18n.js'
+import { GUIDES } from './guides.js'
 // HTML 模板（使用 hono/html 的 html 模板字符串，${} 自动转义）
 // 设计规范：中立 zinc 色板 + 单一 emerald 强调色，目录式列表布局，中英双语（/en 前缀）
 import { html, raw } from 'hono/html'
@@ -14,7 +17,6 @@ import {
   siteTitle,
   siteDescription,
   tokenJsonLd,
-  faqJsonLd,
   websiteJsonLd,
   organizationJsonLd,
   breadcrumbJsonLd,
@@ -41,10 +43,6 @@ const ICON = {
 // favicon 内嵌 prefers-color-scheme：深色浏览器主题下自动换用亮一档的翡翠绿
 const FAVICON = encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><style>.t{fill:#059669}@media (prefers-color-scheme: dark){.t{fill:#10b981}}</style><rect width="32" height="32" rx="8.7" class="t"/><circle cx="16" cy="16" r="9.9" fill="#fff"/><rect x="11.7" y="11.7" width="8.6" height="8.6" rx="1.7" class="t"/></svg>'
-)
-
-const OG_IMAGE = encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#18181b"/><g transform="translate(90,96) scale(3)"><rect width="24" height="24" rx="6.5" fill="#10b981"/><circle cx="12" cy="12" r="7.4" fill="#fff"/><rect x="8.8" y="8.8" width="6.4" height="6.4" rx="1.3" fill="#10b981"/></g><text x="90" y="292" font-size="60" font-weight="700" fill="#fafafa" font-family="-apple-system,Segoe UI,sans-serif">FreeTokenBox</text><text x="90" y="346" font-size="26" fill="#a1a1aa" font-family="-apple-system,Segoe UI,sans-serif">免费送 Token 合集 · Free AI Token Deals</text><rect x="90" y="394" width="56" height="6" fill="#34d399"/><text x="90" y="472" font-size="21" fill="#71717a" font-family="-apple-system,Segoe UI,sans-serif">DeepSeek · OpenRouter · Gemini · Groq · Cloudflare · Mistral</text></svg>'
 )
 
 // JSON-LD 必须以原文注入（${} 会被 hono/html 转义成 &quot;，导致 Google 无法解析结构化数据）
@@ -109,45 +107,53 @@ function breadcrumb(items, lang) {
 }
 
 // ---------- 布局 ----------
-export function layout({ title, description, path, env, body, hero = null, extraHead = '', breadcrumbs = null, jsonLd = null, lang = 'zh' }) {
+export function layout({ title, description, path, env, body, hero = null, extraHead = '', breadcrumbs = null, jsonLd = null, lang = 'zh', noindex = false, allowAds = true, translated = true, ogType = 'website' }) {
   const base = siteUrl(env)
   const t = T(lang)
   const cleanPath = ((path || '/').split('?')[0]) || '/'
-  const canonical = base ? `${base}${lp(lang, cleanPath)}` : ''
+  const params = new URLSearchParams((path || '').split('?')[1] || '')
+  const page = Math.max(1, Math.floor(Number(params.get('page')) || 1))
+  const suffix = page > 1 ? `?page=${page}` : ''
+  const canonical = base ? `${base}${lp(lang, cleanPath)}${suffix}` : ''
+  const hidden = noindex || params.has('q') || cleanPath.startsWith('/admin') || cleanPath.startsWith('/api/') || cleanPath.startsWith('/tags/')
+  const robots = hidden ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+  const adEligible = allowAds && !hidden && ((cleanPath === '/' && page === 1) || cleanPath === '/local' || cleanPath.startsWith('/token/') || cleanPath.startsWith('/guides/'))
   const desc = description || siteDescription(lang)
   return html`<!DOCTYPE html>
 <html lang="${t.htmlLang}">
 <head>
   <meta charset="UTF-8" />
+  ${adEligible ? html`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1530405841616000" crossorigin="anonymous"></script>` : ''}
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)" />
   <title>${title}</title>
   <meta name="description" content="${desc}" />
-  <meta name="keywords" content="免费Token, 免费API, AI API, free token, free API, free AI credits, DeepSeek, OpenRouter, Gemini, Groq, Cloudflare Workers AI, Mistral, 免费AI额度, API免费调用, LLM免费" />
   <meta name="author" content="FreeTokenBox" />
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="robots" content="${robots}" />
+  <meta name="googlebot" content="${robots}" />
   ${canonical ? html`<link rel="canonical" href="${canonical}" />` : ''}
-  ${base ? html`
-  <link rel="alternate" hreflang="zh-CN" href="${base}${cleanPath}" />
-  <link rel="alternate" hreflang="en" href="${base}/en${cleanPath}" />
-  <link rel="alternate" hreflang="x-default" href="${base}${cleanPath}" />` : ''}
+  ${base && translated && !hidden ? html`
+  <link rel="alternate" hreflang="zh-CN" href="${base}${cleanPath}${suffix}" />
+  <link rel="alternate" hreflang="en" href="${base}/en${cleanPath}${suffix}" />
+  <link rel="alternate" hreflang="x-default" href="${base}${cleanPath}${suffix}" />` : ''}
   <link rel="icon" href="data:image/svg+xml,${FAVICON}" />
   <link rel="alternate" type="application/rss+xml" title="${siteTitle(lang)}" href="${base}/rss.xml" />
   <link rel="sitemap" type="application/xml" title="Sitemap" href="${base}/sitemap.xml" />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="${ogType}" />
   <meta property="og:site_name" content="FreeTokenBox" />
   <meta property="og:title" content="${title}" />
   <meta property="og:description" content="${desc}" />
   <meta property="og:url" content="${canonical}" />
   <meta property="og:locale" content="${t.locale}" />
   <meta property="og:locale:alternate" content="${t.altLocale}" />
-  <meta property="og:image" content="data:image/svg+xml,${OG_IMAGE}" />
+  <meta property="og:image" content="${base}/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${title}" />
   <meta name="twitter:description" content="${desc}" />
-  <meta name="twitter:image" content="data:image/svg+xml,${OG_IMAGE}" />
+  <meta name="twitter:image" content="${base}/og.png" />
   <meta name="application-name" content="FreeTokenBox" />
   <meta name="apple-mobile-web-app-title" content="FreeTokenBox" />
   ${extraHead}
@@ -167,9 +173,11 @@ export function layout({ title, description, path, env, body, hero = null, extra
       </form>
       <div class="nav-links">
         <a href="${lp(lang, '/')}">${t.navHome}</a>
+        <a href="${lp(lang, '/calculator')}">${lang === 'en' ? 'Calculator' : 'Token 计算器'}</a>
+        <a href="${lp(lang, '/local')}">${lang === 'en' ? 'Local AI' : '本地模型'}</a>
+        <a href="${lp(lang, '/guides')}">${lang === 'en' ? 'Guides' : '使用指南'}</a>
         <a href="${lp(lang, '/about')}">${t.navAbout}</a>
-        <a href="/api/tokens">API</a>
-        <a class="lang-switch" href="${lang === 'zh' ? '/en' + cleanPath : cleanPath}" hreflang="${lang === 'zh' ? 'en' : 'zh-CN'}">${t.switchLabel}</a>
+        <a class="lang-switch" href="${lang === 'zh' ? '/en' + cleanPath + suffix : cleanPath + suffix}" hreflang="${lang === 'zh' ? 'en' : 'zh-CN'}">${t.switchLabel}</a>
       </div>
     </div>
   </header>
@@ -188,10 +196,13 @@ export function layout({ title, description, path, env, body, hero = null, extra
       <a href="${lp(lang, '/about')}">${t.navAbout}</a>
       <a href="${lp(lang, '/privacy')}">${lang === 'en' ? 'Privacy' : '隐私'}</a>
       <a href="${lp(lang, '/terms')}">${lang === 'en' ? 'Terms' : '条款'}</a>
+      <a href="${lp(lang, '/editorial-policy')}">${lang === 'en' ? 'Editorial policy' : '核查与更正'}</a>
+      <a href="${lp(lang, '/contact')}">${lang === 'en' ? 'Contact' : '联系与纠错'}</a>
       <span class="right">${t.footerNote}</span>
     </div>
+    <p class="trademark-note">${lang === 'en' ? 'Independent editorial resource: FreeTokenBox is not affiliated with, sponsored by, or endorsed by OpenAI, Anthropic, Google, DeepSeek, or any listed provider. All product names, logos, and trademarks are the property of their respective owners and are used solely for identification.' : '独立第三方资料站：FreeTokenBox 与 OpenAI、Anthropic、Google、DeepSeek 及所列任何厂商均无隶属、赞助或官方合作关系；页面中的品牌名称、标识与商标均归各自权利人所有，仅作客观识别与文档说明用途。'}</p>
     ${affiliateActive() ? html`<p class="aff-disclosure">
-      <svg class="aff-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <svg class="aff-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <circle cx="12" cy="12" r="9"></circle>
         <path d="M12 11v5" stroke-linecap="round"></path>
         <circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"></circle>
@@ -272,8 +283,19 @@ function logoImg(t) {
   return src ? html`<img src="${src}" alt="" width="40" height="40" loading="lazy" onerror="this.remove()" />` : ''
 }
 
+
+function allowanceChips(review, lang) {
+  if (!review?.access) return ''
+  const access = {web:['网页 / 应用','Web / app'],api:['API','API'],'web-api':['网页 + API（条件分开）','Web + API (separate terms)']}
+  const cycle = {daily:['每日额度','Daily allowance'],monthly:['每月额度','Monthly allowance'],once:['一次性试用','One-time trial'],mixed:['网页每月 / API 试用','Monthly web / API trial'],trial:['有限次数试用','Limited free runs'],promotion:['限时活动','Dated promotion'],tool:['免费网页工具','Free browser tool']}
+  const i = lang === 'en' ? 1 : 0
+  return html`<span class="chip">${access[review.access]?.[i]}</span>${cycle[review.renewal] ? html`<span class="chip">${cycle[review.renewal][i]}</span>` : ''}`
+}
+
 // ---------- 条目行 ----------
 function entryRow(t, lang, opts = {}) {
+  t = localizeToken(t, lang)
+  const reviewed = reviewFor(t)
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
   const pick = opts.pick || t.is_featured
@@ -285,16 +307,17 @@ function entryRow(t, lang, opts = {}) {
   return html`<article class="entry${pick ? ' pick' : ''}">
     <div class="e-logo">${logoImg(t)}</div>
     <div class="e-main">
-      <h3>${pick ? html`<span class="flag">${s.flag}</span>` : ''}<span class="chip free">${s.free}</span> <a href="${pre}/token/${t.slug}">${t.name}</a></h3>
+      <h3>${pick ? html`<span class="flag">${s.flag}</span>` : ''}<span class="chip free">${reviewed ? (reviewed.status === 'changed' ? (lang === 'en' ? 'Changed' : '规则变更') : (lang === 'en' ? 'Reviewed' : '已核查')) : (lang === 'en' ? 'Historical' : '待复核')}</span> <a href="${pre}/token/${t.slug}">${t.name}</a></h3>
       <p class="e-desc">${excerpt(t.description, 110)}</p>
       <div class="e-meta">
+        ${allowanceChips(reviewed, lang)}
         ${t.provider ? html`<span>${t.provider}</span><span class="sep">·</span>` : ''}
         ${expiryChip}
         ${t.expiry_date ? html`<span class="sep">·</span><span>${s.deadline(formatDate(t.expiry_date))}</span>` : ''}
         ${(t.tags || []).slice(0, 4).map((tag) => html`<a class="tg" href="${pre}/tags/${tag}">#${tag}</a>`)}
       </div>
     </div>
-    <a class="claim${pick ? ' solid' : ''}" href="${withUtm(t.url || `${pre}/token/${t.slug}`, t.slug)}" rel="noopener nofollow" target="_blank">${s.claim}<span class="ic">${raw(ICON.external)}</span></a>
+    <a class="claim${pick ? ' solid' : ''}" href="${pre}/token/${t.slug}">${lang === 'en' ? 'Details' : '查看条件'}<span class="ic">${raw(ICON.external)}</span></a>
   </article>`
 }
 
@@ -335,12 +358,36 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
     </section>
     <script>${raw(CAROUSEL_JS)}</script>`
   const body = html`
+    ${!searchQuery && page === 1 ? html`<section class="editorial-intro">
+      <h2>${lang === 'en' ? 'Free AI quotas, local models & cost tools for builders' : '面向开发者的 AI 免费额度、本地模型与用量估算工具'}</h2>
+      <p>${lang === 'en' ? 'Compare documented free tiers across text APIs, image, speech, music, video and 3D platforms. Use our browser-based token calculator and local hardware picker to estimate real workloads before writing integration code.' : '系统整理文本 API、图片、语音、音乐、视频与 3D 平台的免费层与试用规则，区分网页额度、API 配额、重置周期与商用边界；配合站内 Token 估算器与本地模型选型工具，帮你在接入前算清真实用量与隐私边界。'}</p>
+    </section>
+    <section class="tools-strip" aria-label="${lang === 'en' ? 'Interactive tools and guides' : '站内核心工具与指南'}">
+      <a class="tool-card" href="${lp(lang, '/calculator')}">
+        <span class="tool-kicker">${lang === 'en' ? 'Interactive Tool' : '在线计算工具'}</span>
+        <strong>${lang === 'en' ? 'Token Counter & Free Quota Calculator' : 'AI Token 与免费额度估算器'}</strong>
+        <span class="tool-desc">${lang === 'en' ? 'Estimate tokens in your browser, then compare multi-turn usage with your model’s actual limits and prices.' : '在浏览器内粗估 Token，用模型的实际额度与单价核对多轮用量。'}</span>
+        <span class="tool-cta">${lang === 'en' ? 'Open calculator →' : '打开计算器 →'}</span>
+      </a>
+      <a class="tool-card" href="${lp(lang, '/local')}">
+        <span class="tool-kicker">${lang === 'en' ? 'Hardware Picker' : '本地离线方案'}</span>
+        <strong>${lang === 'en' ? 'Local Free AI Models (8GB–64GB)' : '本地免费开源模型选型器（Ollama）'}</strong>
+        <span class="tool-desc">${lang === 'en' ? 'Match 20+ open-weight Qwen, DeepSeek, Gemma and Llama models to your RAM/VRAM with one-click Ollama commands.' : '按 8GB–64GB 内存/显存与任务筛选 20+ 开源权重模型，一键复制 Ollama 命令零限流运行。'}</span>
+        <span class="tool-cta">${lang === 'en' ? 'Match hardware →' : '按硬件选型 →'}</span>
+      </a>
+      <a class="tool-card" href="${lp(lang, '/guides')}">
+        <span class="tool-kicker">${lang === 'en' ? `${GUIDES.length} Engineering Guides` : `${GUIDES.length} 篇实战指南`}</span>
+        <strong>${lang === 'en' ? 'API Setup, 429 Handling & RAG Architecture' : '选型、接入、路由降级与 RAG 架构手册'}</strong>
+        <span class="tool-desc">${lang === 'en' ? 'Practical engineering checklists covering token billing math, multi-provider fallbacks, key security and IDE setup.' : '涵盖 Token 计费数学、多平台熔断路由、API Key 防刷安全、Cursor/Cline 接入与零成本 RAG。'}</span>
+        <span class="tool-cta">${lang === 'en' ? 'Browse all guides →' : '阅读全部指南 →'}</span>
+      </a>
+    </section>` : ''}
     <div class="layout-grid">
       <div class="col-main" id="list">
         ${categories.length ? html`
           <nav class="cats" aria-label="${lang === 'en' ? 'Categories' : '分类导航'}">
             <a href="${lp(lang, '/')}" class="${!searchQuery ? 'active' : ''}">${s.all}</a>
-            ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${c.name}<span class="n">${c.count}</span></a>`)}
+            ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${categoryLabel(c.name, lang)}<span class="n">${c.count}</span></a>`)}
           </nav>
         ` : ''}
 
@@ -375,11 +422,12 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
         ${categories.length ? html`<section class="widget">
           <h3>${s.sidebarCats}</h3>
           <div class="w-cats">
-            ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${c.name}<span class="n">${c.count}</span></a>`)}
+            ${categories.map((c) => html`<a href="${pre}/category/${c.name}">${categoryLabel(c.name, lang)}<span class="n">${c.count}</span></a>`)}
           </div>
         </section>` : ''}
       </aside>
     </div>
+    ${!searchQuery && page === 1 ? html`<section class="guide-cards"><h2>${lang === 'en' ? 'Practical Engineering Guides' : '深度实战指南：从选型、计费到高可用接入'}</h2>${GUIDES.slice(0, 6).map(g => html`<article><span class="g-date">${g.date || ''}</span><h3><a href="${lp(lang, `/guides/${g.slug}`)}">${g[lang].title}</a></h3><p>${g[lang].description}</p></article>`)}</section>` : ''}
     ${books.length ? html`
     <section class="bookshelf">
       <div class="sec">
@@ -402,19 +450,21 @@ export function homePage({ featured, items, categories, page, totalPages, env, q
     </section>` : ''}
   `
   return layout({
-    title: searchQuery ? s.searchTitleFor(searchQuery) : s.homeTitle,
+    title: (searchQuery ? s.searchTitleFor(searchQuery) : s.homeTitle) + (page > 1 ? ` · ${s.pageOf(page, totalPages)}` : ''),
+    noindex: !!searchQuery,
     description: searchQuery ? s.searchDescFor(searchQuery) : s.homeDesc,
     path: query ? `/?${query}` : '/',
     env,
     lang,
     hero,
     body,
-    jsonLd: [organizationJsonLd(env, lang), itemListJsonLd(featured.length ? [...featured, ...items] : items, env, lang)],
+    jsonLd: [organizationJsonLd(env, lang), itemListJsonLd(items.map(t => localizeToken(t, lang)), env, lang)],
   })
 }
 
 /** 侧边栏紧凑条目（rank 可选：热门精选显示排名序号） */
 function sideItem(t, lang, pre, rank) {
+  t = localizeToken(t, lang)
   const s = T(lang)
   return html`<div class="w-item">
     ${rank ? html`<span class="w-rank${rank <= 3 ? ' top' : ''}">${String(rank).padStart(2, '0')}</span>` : ''}
@@ -427,7 +477,7 @@ function sideItem(t, lang, pre, rank) {
 }
 
 // ---------- 列表页（分类/标签/搜索共用） ----------
-export function listPage({ title, description, items, categories, page, totalPages, env, path, badge, breadcrumbs, query, searchQuery, lang = 'zh' }) {
+export function listPage({ title, description, items, categories, page, totalPages, env, path, badge, breadcrumbs, query, searchQuery, noindex = false, lang = 'zh' }) {
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
   const body = html`
@@ -444,8 +494,9 @@ export function listPage({ title, description, items, categories, page, totalPag
     </nav>` : ''}
   `
   return layout({
-    title,
+    title: title + (page > 1 ? ` · ${s.pageOf(page, totalPages)}` : ''),
     description,
+    noindex,
     path: query ? `${path}?${query}` : path,
     env,
     lang,
@@ -457,22 +508,23 @@ export function listPage({ title, description, items, categories, page, totalPag
 
 // ---------- Token 详情页 ----------
 export function tokenPage(token, env, related = [], lang = 'zh') {
+  const reviewed = reviewFor(token)
+  token = localizeToken(token, lang)
   const s = T(lang)
   const pre = lang === 'en' ? '/en' : ''
   const base = siteUrl(env)
   const canonical = `${base}${lp(lang, `/token/${token.slug}`)}`
   const provider = token.provider || s.providerFallback
   const jsonLd = tokenJsonLd(token, env, lang)
-  const faqLd = faqJsonLd(token, lang)
   const crumbs = [
     { name: s.crumbHome, url: '/' },
-    { name: token.category || s.allEntries, url: token.category ? `/category/${token.category}` : '/' },
+    { name: categoryLabel(token.category, lang) || s.allEntries, url: token.category ? `/category/${token.category}` : '/' },
     { name: token.name },
   ]
   const body = html`
     <article class="article">
       <div class="meta">
-        ${token.category ? html`<a class="tg" href="${pre}/category/${token.category}">${token.category}</a>` : ''}
+        ${token.category ? html`<a class="tg" href="${pre}/category/${token.category}">${categoryLabel(token.category, lang)}</a>` : ''}
         ${(token.tags || []).map((t) => html`<a class="tg" href="${pre}/tags/${t}">#${t}</a>`)}
         ${token.provider ? html`<span class="sep">·</span><span>${token.provider}</span>` : ''}
         ${token.expiry_date ? html`<span class="sep">·</span><span>${s.deadline(formatDate(token.expiry_date))}</span>` : ''}
@@ -484,50 +536,55 @@ export function tokenPage(token, env, related = [], lang = 'zh') {
         <p class="standfirst">${token.description}</p></div>
       </div>
       <div class="article-chips">
-        <span class="chip free">${s.free}</span>
+        ${allowanceChips(reviewed, lang)}
+        <span class="chip free">${reviewed?.status === 'verified' ? (lang === 'en' ? 'Tier / trial' : '免费层 / 试用') : (lang === 'en' ? 'Historical' : '历史信息')}</span>
         ${daysUntil(token.expiry_date) !== null && daysUntil(token.expiry_date) < 0 ? html`<span class="chip danger">${s.expired}</span>` : ''}
         ${daysUntil(token.expiry_date) !== null && daysUntil(token.expiry_date) >= 0 && daysUntil(token.expiry_date) <= 7 ? html`<span class="chip warn">${s.expiresIn(daysUntil(token.expiry_date))}</span>` : ''}
       </div>
+      <aside class="review-note"><strong>${reviewed ? (reviewed.status === 'changed' ? (lang === 'en' ? 'Policy update notice' : '规则变更说明') : (lang === 'en' ? 'Editorial documentation summary' : '官方公开条款整理')) : (lang === 'en' ? 'Historical archive — recheck required' : '历史归档条目 · 当前条件待复核')}</strong>
+      <p>${reviewed ? (lang === 'en' ? `Last verified against official documentation on ${reviewed.checked}. Quotas, regional eligibility and billing policies can change; confirm limits in your provider console before production use.` : `最近一次核对官方公开文档日期：${reviewed.checked}。平台配额、地区资格与计费条款可能随时调整，投入正式项目前请在控制台核对当前账户限额。`) : (lang === 'en' ? 'This historical entry is kept for reference and may no longer reflect current free availability. Always check the provider pricing page first.' : '下方保留历史收录说明，可能已不适用，请先查阅提供方最新计费与免费层政策。')}</p>
+      ${reviewed ? html`<a href="${reviewed.source}" rel="noopener" target="_blank">${lang === 'en' ? 'Official documentation' : '查看官方文档依据'}</a>` : ''} · <a href="${lp(lang, '/editorial-policy')}">${lang === 'en' ? 'Editorial methodology' : '核查原则'}</a> · <a href="${lp(lang, '/contact')}">${lang === 'en' ? 'Report an update' : '反馈变动'}</a></aside>
+      ${reviewed ? html`<table class="spec-table" aria-label="${lang === 'en' ? 'Resource quick summary' : '条目核心参数速查'}">
+        <tbody>
+          <tr><th>${lang === 'en' ? 'Provider' : '服务提供方'}</th><td>${provider}</td></tr>
+          <tr><th>${lang === 'en' ? 'Category' : '所属分类'}</th><td><a href="${pre}/category/${token.category}">${categoryLabel(token.category, lang)}</a></td></tr>
+          ${reviewed.access ? html`<tr><th>${lang === 'en' ? 'Access Channel' : '适用入口'}</th><td>${allowanceChips(reviewed, lang)}</td></tr>` : ''}
+          <tr><th>${lang === 'en' ? 'Status & Checked' : '核查状态与日期'}</th><td>${reviewed.status === 'changed' ? (lang === 'en' ? 'Policy changed' : '规则已变更') : (lang === 'en' ? 'Active documented tier' : '有效公开条款')} · ${reviewed.checked}</td></tr>
+          <tr><th>${lang === 'en' ? 'Next Tools' : '配套工具'}</th><td><a href="${lp(lang, '/calculator')}">${lang === 'en' ? 'Estimate token budget' : '估算 Token 与额度消耗'}</a> · <a href="${lp(lang, '/local')}">${lang === 'en' ? 'Compare offline local models' : '对比本地离线免费模型'}</a></td></tr>
+        </tbody>
+      </table>` : ''}
       <div class="body">${raw(renderMarkdown(token.content))}</div>
       <div class="cta">
-        <a class="btn" href="${withUtm(token.url, token.slug) || canonical}" rel="noopener nofollow" target="_blank">${s.goClaim(provider)}<span class="ic">${raw(ICON.external)}</span></a>
+        <a class="btn" href="${reviewed?.source || withUtm(token.url, token.slug) || canonical}" rel="noopener nofollow" target="_blank">${lang === 'en' ? 'Check current official terms' : '查看当前官方条件'}<span class="ic">${raw(ICON.external)}</span></a>
+        <a class="btn btn-quiet" href="${lp(lang, '/calculator')}">${lang === 'en' ? 'Estimate quota usage' : '测算所需额度'}</a>
         <a class="btn btn-quiet" href="${lp(lang, '/')}">${s.back}</a>
       </div>
+      <nav class="related-guides" aria-label="${lang === 'en' ? 'Recommended engineering guides' : '配套接入与省额指南'}">
+        <p><strong>${lang === 'en' ? 'Recommended guides before integration:' : '接入前推荐阅读：'}</strong></p>
+        <ul>
+          <li><a href="${lp(lang, '/guides/choose-free-ai-api')}">${GUIDES[0][lang].title}</a></li>
+          <li><a href="${lp(lang, '/guides/first-api-request')}">${GUIDES[1][lang].title}</a></li>
+          <li><a href="${lp(lang, '/guides/rate-limits-and-budget')}">${GUIDES[2][lang].title}</a></li>
+          <li><a href="${lp(lang, '/guides/token-pricing-and-context-math')}">${GUIDES[4][lang].title}</a></li>
+        </ul>
+      </nav>
     </article>
 
     ${related.length ? html`
     <section class="related" style="max-width:780px;margin:44px auto 0">
       <h2>${s.related}</h2>
       <div class="related-list">
-        ${related.map((t) => html`<article class="entry">
+        ${related.map((original) => { const t = localizeToken(original, lang); return html`<article class="entry">
           <div class="e-main">
             <h3><a href="${pre}/token/${t.slug}">${t.name}</a></h3>
             <p class="e-desc">${excerpt(t.description, 80)}</p>
           </div>
           <a class="claim" href="${pre}/token/${t.slug}">${s.view}</a>
-        </article>`)}
+        </article>` })}
       </div>
     </section>` : ''}
 
-    <section class="faq">
-      <h2>${s.faqTitle}</h2>
-      <details>
-        <summary>${s.faqQ1(token.name)}</summary>
-        <div class="answer">${s.faqA1(token.name, provider)}</div>
-      </details>
-      <details>
-        <summary>${s.faqQ2}</summary>
-        <div class="answer">${s.faqA2(provider)}</div>
-      </details>
-      ${token.expiry_date ? html`<details>
-        <summary>${s.faqQ3}</summary>
-        <div class="answer">${s.faqA3(formatDate(token.expiry_date))}</div>
-      </details>` : ''}
-      <details>
-        <summary>${s.faqQ4}</summary>
-        <div class="answer">${s.faqA4} <a href="${lp(lang, '/')}">${lang === 'en' ? 'Browse all offers' : '浏览全部条目'}</a></div>
-      </details>
-    </section>
+
   `
   return layout({
     title: s.tokenTitle(token.name),
@@ -537,10 +594,12 @@ export function tokenPage(token, env, related = [], lang = 'zh') {
     lang,
     body,
     breadcrumbs: crumbs,
-    jsonLd: [jsonLd, faqLd, breadcrumbJsonLd(crumbs, env, lang)],
+    jsonLd: [jsonLd, breadcrumbJsonLd(crumbs, env, lang)],
+    noindex: !reviewed || reviewed.status === 'changed' || !!reviewed.noAds,
+    allowAds: !!reviewed && reviewed.status !== 'changed' && !reviewed.noAds,
+    translated: !!reviewed,
+    ogType: 'article',
     extraHead: html`
-      <meta property="og:type" content="article" />
-      <meta property="og:url" content="${canonical}" />
       <meta property="article:published_time" content="${token.created_at}" />
       <meta property="article:modified_time" content="${token.updated_at}" />
       <meta property="article:author" content="FreeTokenBox" />
@@ -635,7 +694,7 @@ export function adminFormPage({ token, flash, env, isNew }) {
       ${formField('slug', 'Slug（留空自动生成，用于 /token/:slug）', t.slug, { placeholder: 'deepseek-v4-flash-free' })}
       ${formField('provider', '提供方 / 公司名', t.provider)}
       ${formField('url', '领取地址（官方链接）', t.url, { placeholder: 'https://...' })}
-      ${formField('category', '分类', t.category || 'free-api', { type: 'select', options: ['free-api', 'free-plan', 'giveaways', 'coupons', 'other'] })}
+      ${formField('category', '分类', t.category || 'free-api', { type: 'select', options: ['free-api', 'free-plan', 'image', 'audio', 'video', '3d', 'giveaways', 'coupons', 'other'] })}
       ${formField('tags', '标签（逗号分隔，如 api, llm, free-token）', (t.tags || []).join(', '))}
       ${formField('expiry_date', '活动截止日期（可选，YYYY-MM-DD）', t.expiry_date)}
       ${formField('status', '状态', t.status || 'published', { type: 'select', options: ['published', 'draft'] })}

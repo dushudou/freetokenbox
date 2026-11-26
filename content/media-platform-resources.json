@@ -1,0 +1,81 @@
+[
+  {
+    "slug": "replicate-free-credit",
+    "provider": "Replicate",
+    "category": "image",
+    "name": "Replicate 免费模型体验：图片、视频与修复",
+    "description": "官方 Try for Free 集合提供有限次数试跑，不是固定美元赠额，也不是全部模型或 API 永久免费。",
+    "content": "## 哪些内容免费\nReplicate 的 Try for Free 集合收录可在注册后、购买额度前运行的模型，覆盖生图、短视频与图片修复。每个模型的免费次数有限；官方未在该集合承诺统一金额或固定次数，也未承诺每月重置。\n## 怎么试\n1. 打开官方集合，按任务选择模型，检查页面是否仍在免费集合内。\n2. 在网页输入一段短提示词或上传自己有权使用的小样本。\n3. 保存模型版本、输入和结果，判断是否符合用途后再决定是否开通计费。\n## API 与账单边界\n本条确认的是官方集合的免费试跑流程，不承诺网页资格可转为任意模型的 API 免费额度。达到上限后需设置计费并购买额度；部署实例的待机与启动也可能计费，不能把一次试跑的预算当成上线成本。\n## 下载与商用\n按具体模型卡片查看许可证。免费运行不代表全部输出都能商用；生成素材还可能涉及输入图片与人物授权。\n## 核查来源\n[免费体验集合](https://replicate.com/collections/try-for-free)；[计费规则](https://replicate.com/docs/topics/billing)。公开资料核查，未注册账户实测。",
+    "en": {
+      "name": "Replicate free model trials: images, video and restoration",
+      "description": "Selected models have limited free runs before buying credit. No universal dollar grant or monthly reset is promised.",
+      "content": "## Scope\nThe official Try for Free collection lets registered users run selected image, video and restoration models before purchasing credit. Runs are limited; no universal dollar grant, run count or monthly renewal is stated.\n## Workflow\nChoose a model in the current collection, use a small authorized input and record its version and result. Evaluate quality before enabling billing.\n## Billing and licensing\nThis listing confirms the collection workflow, not unrestricted free API access. More runs require billing and purchased credit. Deployments can also charge for startup and idle time. Check the individual model card for output and commercial-use restrictions.\n## Sources\n[Collection](https://replicate.com/collections/try-for-free) and [billing](https://replicate.com/docs/topics/billing). Public-document review, not an account test."
+    },
+    "source": "https://replicate.com/collections/try-for-free",
+    "url": "https://replicate.com/collections/try-for-free",
+    "tags": [
+      "image",
+      "video",
+      "trial",
+      "web"
+    ],
+    "checked": "2026-11-03",
+    "status": "verified",
+    "sort_weight": 70,
+    "access": "web",
+    "renewal": "trial"
+  },
+  {
+    "slug": "fal-ai-free-credit",
+    "provider": "fal",
+    "category": "image",
+    "name": "fal 免费网页图片工具：与付费 API 分开",
+    "description": "官方工具页的免费图片工具无需登录、下载无水印；视频生成和开发者 API 按用量计费，不是免费 API 赠额。",
+    "content": "## 免费的具体范围\nfal 官方工具页将免费网页图片工具与付费视频工具分开标注。FAQ 说明免费图片工具可在浏览器使用、无需注册，下载无水印；不要据此推断整个平台的模型都免费。\n## 怎么选择工具\n1. 在工具页寻找 Free 标记，按图片生成、背景处理或放大等实际需要选择入口。\n2. 用自己有权上传的单个文件先试，查看输出格式与尺寸是否满足要求。\n3. 下载并检查边缘、文字、人物和细节，再用于后续设计。\n## 视频与 API 需要付费\n视频入口会进入 fal playground，需要登录并按计算用量付费。相同模型的 API 适合自动化，但也按用量计费。本条不确认旧教程提到的注册美元赠额，不承诺免费 API Key 或无限并发。\n## 商用与隐私\n无水印不等于已经核实全部模型的商业授权；提交商业素材前仍需查看工具及模型适用条款。本站未验证数据保留策略或账户地区资格。\n## 来源\n[fal 官方工具页和 FAQ](https://fal.ai/tools)。公开资料核查，未实测输出。",
+    "en": {
+      "name": "fal free browser image tools, separate from paid APIs",
+      "description": "Free image tools need no sign-in and advertise watermark-free downloads. Video tools and developer APIs are billed separately.",
+      "content": "## Free scope\nThe official tools page labels browser image tools separately from paid video generators. Its FAQ states the image tools are free, require no sign-up and have no download watermark. This does not make the full model catalog free.\n## Workflow\nChoose a Free-labelled tool for the required image task, upload one authorized sample and inspect dimensions, edges and text before using the result.\n## Paid boundaries\nVideo links open the billed playground. Developer API usage is metered separately. This listing does not confirm old sign-up credit claims or free API access.\n## Usage terms\nA watermark-free download is not proof of commercial rights for every model. Check the applicable terms and data policy before uploading client assets.\n## Source\n[Official tools and FAQ](https://fal.ai/tools). No generation test claimed."
+    },
+    "source": "https://fal.ai/tools",
+    "url": "https://fal.ai/tools",
+    "tags": [
+      "image",
+      "web",
+      "no-watermark"
+    ],
+    "checked": "2026-11-03",
+    "status": "verified",
+    "sort_weight": 70,
+    "access": "web",
+    "renewal": "tool"
+  },
+  {
+    "slug": "huggingface-zerogpu-spaces",
+    "provider": "Hugging Face",
+    "category": "free-plan",
+    "name": "Hugging Face ZeroGPU：每天共享 GPU 时间体验多模态模型",
+    "description": "免费账户每天 5 分钟 GPU 配额；在支持的 Spaces 体验图片、音频或 3D 模型，按 GPU 时间计量并受队列限制。",
+    "content": "## 免费的是什么\nZeroGPU 为支持的 Hugging Face Spaces 按需分配共享 GPU。当前文档列出未登录用户每天 2 分钟、免费账户每天 5 分钟 GPU 配额，首次使用后 24 小时重置；不是午夜清零，也不是每个 Space 都有一份独立额度。\n## 适合哪些任务\n到 Spaces 查找带 ZeroGPU 标记的图像、音频或 3D 演示，具体能力取决于各个 Space 的模型与作者。GPU 分钟不是生成视频的分钟数，也不等于固定图片数量。共享硬件需要排队，演示还可能休眠、维护或调整。\n## 使用步骤\n1. 登录账户并选择仍在运行的 ZeroGPU Space。\n2. 阅读模型卡与说明，用短提示词或小样本测试。\n3. 检查剩余 GPU 配额，减少无意义重复生成；耗尽后等待重置。\n## API 与自建边界\nGradio API 调用也消耗个人 GPU 配额，不是独立的 Inference Providers 免费预算。自建 ZeroGPU Space 当前要求免费个人账户已验证邮箱、注册超过 30 天且状态良好，最多 2 个；普通付费 GPU 硬件不在此免费范围内。\n## 许可与输出\n模型许可、下载格式、商用与输入保留方式按每个 Space 单独核对。平台的免费计算额度不能替代模型授权。\n## 官方依据\n[ZeroGPU 文档](https://huggingface.co/docs/hub/spaces-zerogpu)；[配额查询与管理](https://huggingface.co/docs/huggingface_hub/guides/manage-spaces)。未进行模型运行实测。",
+    "en": {
+      "name": "Hugging Face ZeroGPU: daily shared GPU time",
+      "description": "Free accounts receive 5 GPU minutes daily for compatible Spaces. Images, audio and 3D depend on the chosen demo and queue capacity.",
+      "content": "## Allowance\nThe official table lists 2 GPU minutes for unauthenticated users and 5 for free accounts. Quota resets 24 hours after first use, rather than at midnight. It is shared across Spaces, not a separate allowance per demo.\n## Useful tasks\nFind running ZeroGPU Spaces for images, audio or 3D. GPU time does not equal output duration or a fixed number of assets. Demos may queue, sleep or change.\n## Start\nSign in, read the model card and test a small authorized sample. Inspect remaining quota before repeating a task.\n## API and hosting\nGradio API calls consume the same personal quota; this is not an Inference Providers credit grant. Free hosting currently requires verified email, an account older than 30 days and good standing, with a two-Space limit. Paid dedicated GPUs are separate.\n## Rights and evidence\nCheck every Space and model for licenses, downloads and data handling. [ZeroGPU documentation](https://huggingface.co/docs/hub/spaces-zerogpu), [quota management](https://huggingface.co/docs/huggingface_hub/guides/manage-spaces). Not a generation benchmark."
+    },
+    "source": "https://huggingface.co/docs/hub/spaces-zerogpu",
+    "url": "https://huggingface.co/docs/hub/spaces-zerogpu",
+    "tags": [
+      "gpu",
+      "image",
+      "audio",
+      "3d",
+      "web",
+      "api"
+    ],
+    "checked": "2026-11-03",
+    "status": "verified",
+    "sort_weight": 70,
+    "access": "web-api",
+    "renewal": "daily"
+  }
+]

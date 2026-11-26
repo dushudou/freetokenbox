@@ -1,0 +1,153 @@
+[
+  {
+    "slug": "meshy-free-3d",
+    "provider": "Meshy",
+    "url": "https://www.meshy.ai/",
+    "category": "3d",
+    "tags": [
+      "3D生成",
+      "月度免费",
+      "需署名"
+    ],
+    "name": "Meshy：每月 100 积分，免费下载限基础模型",
+    "description": "网页免费层每月 100 积分；每月可下载 10 个未贴图 Meshy 6 Lite 模型，商用需按 CC BY 4.0 署名。",
+    "content": "## 免费额度与重置\nMeshy 网页免费层提供每月 100 积分，无需信用卡。每月 1 日 UTC 00:00 重置，未用积分不结转。积分是生成预算，不等于可以下载 100 个模型。\n## 获取步骤\n1. 注册并进入 Meshy 网页工作区，检查 Free 方案与本月积分。\n2. 如果目标是免费导出，先选择 Meshy 6 Lite，并保持模型未贴图。\n3. 用一张自己有使用权的物品照片或简短描述生成，检查几何结果后再下载。\n4. 下载前查看模型所用版本、贴图状态和剩余下载次数，避免做完后才发现需要订阅。\n## 下载与商用\n免费层每月提供 10 次未贴图 Meshy 6 Lite 模型下载，同样在每月 1 日 UTC 00:00 重置。Meshy 6、Meshy 7、T2.5、贴图模型和 3D Agent 模型不在此范围。购买积分本身不解锁订阅下载权益。免费作品使用 CC BY 4.0，可以商用，但需要署名 Meshy。免费层仅适用于网页，不含 API 访问。\n## 适用建议\n适合低成本验证物体轮廓、学习 Blender 工作流和制作基础原型。需要贴图、特定模型版本、私有资产或无署名交付时，应先核算付费权益。\n## 官方来源\n[免费层明细](https://help.meshy.ai/en/articles/15696428-what-is-included-on-the-free-plan)、[下载限制](https://help.meshy.ai/en/articles/10421033-why-can-t-i-download-my-model)、[定价说明](https://docs.meshy.ai/en/webapp/pricing)。本页核查公开文档，未登录账户生成实测。",
+    "en": {
+      "name": "Meshy: 100 monthly credits with limited free downloads",
+      "description": "The web tier includes 100 credits/month and 10 untextured Meshy 6 Lite downloads. Commercial use requires CC BY 4.0 attribution.",
+      "content": "## Allowance\nThe free web tier includes 100 credits/month without a credit card. Credits reset at 00:00 UTC on the first day of each month and do not roll over.\n## Getting started\nCreate an account and inspect the Free balance. For a free export, choose Meshy 6 Lite and leave the model untextured. Generate a simple object, inspect its geometry and check the download counter before continuing.\n## Downloads and commercial use\nOnly 10 untextured Meshy 6 Lite downloads per month are included. Meshy 6/7, T2.5, textured assets and 3D Agent outputs require a subscription to download. Buying credits does not unlock subscription download rights. Free outputs use CC BY 4.0: commercial use is permitted with Meshy attribution. API access is excluded.\n## Best fit\nUseful for basic shapes, Blender practice and prototypes. Check paid rights before promising textured or attribution-free deliverables.\n## Sources\n[Free plan](https://help.meshy.ai/en/articles/15696428-what-is-included-on-the-free-plan), [download rules](https://help.meshy.ai/en/articles/10421033-why-can-t-i-download-my-model), [pricing](https://docs.meshy.ai/en/webapp/pricing). Public documentation review; no account-level generation test."
+    },
+    "source": "https://help.meshy.ai/en/articles/15696428-what-is-included-on-the-free-plan",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "access": "web",
+    "sort_weight": 85,
+    "renewal": "monthly"
+  },
+  {
+    "slug": "tripo-free-3d",
+    "provider": "Tripo",
+    "url": "https://www.tripo3d.ai/",
+    "category": "3d",
+    "tags": [
+      "3D生成",
+      "月度免费",
+      "非商用",
+      "API试用"
+    ],
+    "name": "Tripo：网页每月 200 积分，API 试用另计",
+    "description": "Tripo Studio 免费层每月 200 积分，作品公开且仅限非商用；API 文档另列 300 积分入门额度。",
+    "content": "## 网页免费额度\n当前 Studio 定价页列出每月 200 积分、1 个并发任务和普通队列。免费模型公开，仅限非商用。不要把旧教程中的额度或付费私有模型权益用于免费方案。\n## 获取步骤\n1. 从官网进入 Tripo Studio，注册后确认当前 Free 方案。\n2. 用文本或图片创建一个简单物体，先核对界面显示的积分消耗。\n3. 如果需要免费导出，确认当前模型与 H2.5 导出资格匹配，再检查剩余次数。\n4. 及时保存符合导出条件的成果，免费层存储和编辑历史都有限。\n## 导出与商用\n定价比较表列出 15 次导出，限定 H2.5；页面没有明确说明该计数的重置周期，因此不能承诺每月 15 次。免费层存储上限为 10 个模型，编辑历史为 1 天。商业项目需要另行取得相应方案权益。\n## API 与网页不同\n[API 定价文档](https://docs.tripo3d.ai/get-started/pricing.html)列出 300 免费积分，并使用“Get started with 300 free credits in 2 weeks”的表述。它是单独的开发者平台入门资格，不能当作网页每月追加额度；精确有效期和 API 试用作品商用权需以账户条款确认。\n## 适用建议与来源\n适合非商业建模练习、资产概念验证和测试 3D 生成接口。[Studio 定价](https://www.tripo3d.ai/pricing)、[API 鉴权教程](https://docs.tripo3d.ai/get-started/quick-start.html)。公开文档核查，未进行账户调用。",
+    "en": {
+      "name": "Tripo: 200 monthly web credits and a separate API trial",
+      "description": "Studio provides 200 monthly credits for public, non-commercial models. API documentation separately advertises 300 introductory credits.",
+      "content": "## Web allowance\nStudio Free includes 200 monthly credits, one concurrent task and the standard queue. Models are public and non-commercial.\n## Getting started\nRegister in Studio, check the displayed generation cost and try a simple object. Confirm H2.5 export eligibility before spending the allowance. Save eligible results promptly.\n## Exports and rights\nThe comparison table lists 15 exports for H2.5 only, without clearly stating a reset cadence. Do not assume 15/month. Free storage holds 10 models and edit history lasts one day. Commercial projects require appropriate paid rights.\n## Separate API offer\n[API pricing](https://docs.tripo3d.ai/get-started/pricing.html) states “Get started with 300 free credits in 2 weeks.” Treat this as introductory developer access, not an addition to the monthly Studio balance. Exact expiry and commercial rights for API trial outputs need account-level confirmation.\n## Best fit and sources\nUseful for non-commercial practice and 3D API evaluation. [Studio pricing](https://www.tripo3d.ai/pricing), [API setup](https://docs.tripo3d.ai/get-started/quick-start.html). Public documentation checked; no live generation test."
+    },
+    "source": "https://www.tripo3d.ai/pricing",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "access": "web-api",
+    "sort_weight": 85,
+    "renewal": "mixed"
+  },
+  {
+    "slug": "runway-free-video",
+    "provider": "Runway",
+    "url": "https://runwayml.com/",
+    "category": "video",
+    "tags": [
+      "视频生成",
+      "一次性额度",
+      "有水印"
+    ],
+    "name": "Runway：一次性 125 积分的视频试用",
+    "description": "免费账户有一次性 125 积分，不刷新也不过期；免费生成视频有水印，可用模型以账户界面为准。",
+    "content": "## 免费额度\nRunway Free 提供一次性 125 积分和 5 GB 素材存储。积分不会过期，但用完不会按月或按天补充。官方未承诺免费层永久包含某个模型，看到升级提示的工具可能不属于当前免费方案。\n## 获取步骤\n1. 注册免费账户，先检查积分余额和可用模型。\n2. 选择一个当前可用的视频工具，使用自己的图片或简短提示词。\n3. 开始前核对分辨率、时长和积分预算，不用固定“可生成多少秒”估算所有模型。\n4. 生成后检查画面和水印，再下载适合用途的版本。\n## 水印、商用与 API\n免费生成的视频带 Runway 水印。官方 Usage rights 页面说明用户保留生成内容的权利，可以商用，不要求额外署名；仍应确保输入素材和人物肖像具有相应授权。免费方案不能购买额外积分，继续使用需要升级。此处核实的是网页/应用方案，不能推断开发者 API 也获得 125 积分。\n## 适用建议\n适合比较视频生成效果、验证镜头运动和制作一次性概念演示。需要持续月度产出或无水印交付时，先检查订阅成本。\n## 官方来源\n[免费方案](https://help.runwayml.com/hc/en-us/articles/50404627334547-Free-plan-details)、[积分规则](https://help.runwayml.com/hc/en-us/articles/15124877443219-How-do-credits-work)、[作品使用权](https://help.runwayml.com/hc/en-us/articles/18927776141715-Usage-rights)。本页为公开文档核查。",
+    "en": {
+      "name": "Runway: a one-time 125-credit video trial",
+      "description": "Free accounts receive 125 credits that never expire or renew. Free videos have a watermark; available models can change.",
+      "content": "## Allowance\nFree includes a one-time 125 credits and 5 GB storage. Credits never expire but do not renew. The selection of free models can change.\n## Getting started\nRegister, check the balance and choose a currently included tool. Review the displayed cost for your model, resolution and duration before generating. Inspect the result and watermark before downloading.\n## Watermark and commercial rights\nFree videos carry a Runway watermark. The official usage-rights page permits commercial use and requires no attribution, subject to rights in your inputs. Free accounts cannot buy more credits without upgrading. The web allowance does not establish an API grant.\n## Best fit\nA limited evaluation of motion and visual quality, or a one-off concept clip. Check subscription costs for recurring output or watermark-free delivery.\n## Sources\n[Free plan](https://help.runwayml.com/hc/en-us/articles/50404627334547-Free-plan-details), [credits](https://help.runwayml.com/hc/en-us/articles/15124877443219-How-do-credits-work), [usage rights](https://help.runwayml.com/hc/en-us/articles/18927776141715-Usage-rights). Public documentation review, not a live generation test."
+    },
+    "source": "https://help.runwayml.com/hc/en-us/articles/50404627334547-Free-plan-details",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "access": "web",
+    "sort_weight": 75,
+    "renewal": "once"
+  },
+  {
+    "slug": "luma-dream-machine-free",
+    "provider": "Luma",
+    "url": "https://lumalabs.ai/dream-machine",
+    "category": "video",
+    "tags": [
+      "视频生成",
+      "有限免费",
+      "个人使用"
+    ],
+    "name": "Luma Dream Machine：有限免费草稿视频",
+    "description": "官方提供有限月度积分的 Draft Mode 视频体验，未公开统一数额；免费用途和 API 计费需分开看。",
+    "content": "## 免费范围\n官方 Ray3 FAQ 明确，免费账户可以使用有限月度积分体验 Draft Mode 视频生成。公开页面未给出可靠的人人通用积分数额，因此本页不写“每月多少个视频”。较新的 Agents FAQ 也提供免费体验说明，但未量化试用额度。\n## 获取步骤\n1. 进入 Dream Machine 注册账户，查看当前免费工具和可用积分。\n2. 选择免费账户当前开放的 Draft Mode，先试一个短镜头。\n3. 每次生成前检查模型、输出规格和预计消耗；不要把草稿权限当成全分辨率生成权限。\n4. 在账户页面确认剩余额度和是否启用了额外付费预算。\n## 下载、商用和 API\n官方支付指南将免费方案定位为个人项目体验，列出带水印的 720p 图片及 Ray3.14 草稿分辨率视频。不同模型的下载规格以当前界面为准；本页不承诺无水印或商业授权。Dream Machine 订阅与 API 是独立计费，积分不能相互转移，月度积分不结转。\n## 适用建议\n适合用低成本草稿验证构图、运动和镜头方向。需要商用成片前，应重新检查当前方案的许可和导出规格。\n## 官方来源\n[Ray3 FAQ](https://lumalabs.ai/learning-hub/ray3-faqs)、[支付与订阅](https://lumalabs.ai/learning-hub/payments-subscriptions)、[积分系统](https://lumalabs.ai/learning-hub/dream-machine-credit-system)、[Agents FAQ](https://lumalabs.ai/learning-hub/frequently-asked-questions-about-the-new-luma-agents-app)。仅核查公开资料，未领取额度实测。",
+    "en": {
+      "name": "Luma Dream Machine: limited free draft video access",
+      "description": "Official documentation offers limited monthly Draft Mode credits without a reliable universal number. Web and API billing are separate.",
+      "content": "## Free access\nThe Ray3 FAQ confirms limited monthly credits for free Draft Mode video generation. A newer Agents FAQ also offers a free trial without specifying its size. No universal credit or video count is claimed here.\n## Getting started\nRegister, inspect the current free tools and balance, then try a short draft. Check the selected model, output specification and estimated cost before each generation. Inspect any optional paid spending setting.\n## Output and rights\nThe payment guide positions Free for personal projects, describing watermarked 720p images and draft-resolution Ray3.14 video. Current download options depend on the model and account. Do not assume watermark-free output or commercial permission. Dream Machine subscriptions and API credits are separate and cannot be transferred; monthly credits do not roll over.\n## Best fit\nTesting composition, motion and shot direction before committing to final production.\n## Sources\n[Ray3 FAQ](https://lumalabs.ai/learning-hub/ray3-faqs), [payments](https://lumalabs.ai/learning-hub/payments-subscriptions), [credits](https://lumalabs.ai/learning-hub/dream-machine-credit-system), [Agents FAQ](https://lumalabs.ai/learning-hub/frequently-asked-questions-about-the-new-luma-agents-app). Public-source review; no grant was redeemed."
+    },
+    "source": "https://lumalabs.ai/learning-hub/ray3-faqs",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "access": "web",
+    "sort_weight": 75,
+    "renewal": "monthly"
+  },
+  {
+    "slug": "hailuo-free-video",
+    "provider": "Hailuo AI",
+    "url": "https://hailuoai.video/",
+    "category": "video",
+    "tags": [
+      "视频生成",
+      "新用户试用",
+      "有水印"
+    ],
+    "name": "Hailuo AI：新用户一次性视频积分",
+    "description": "官方条款提供新用户欢迎积分，发放后 3 天过期；额度数量随活动确认，免费视频下载有水印。",
+    "content": "## 免费资格与有效期\nHailuo AI Video 订阅服务条款说明，2025 年 6 月 18 日及之后注册的新用户可获得一次性欢迎积分，每人限一份，发放后 3 天过期。条款没有写统一的积分数量，具体活动以产品显示为准，不沿用旧教程中的每日或注册积分数额。\n## 获取步骤\n1. 从 Hailuo 官网注册，先查看是否符合新用户欢迎活动。\n2. 立即检查积分发放时间、有效期和当前模型的生成消耗。\n3. 在过期前用自有图片或提示词尝试一个短视频，先确认镜头需求再消耗剩余额度。\n4. 下载前检查视频水印，避免将体验成果误当作付费成片规格。\n## 下载与商用\n免费用户下载包含水印。条款明确说明付费订阅期间生成并下载内容的商业使用权，但没有在同一条款中明确赋予免费作品相同许可，因此本页不承诺免费成片可商用。这里核实的是消费者网页/应用活动，未核实开发者 API 的免费资格。\n## 适用建议\n适合在短时间内比较图生视频、运动连贯性和不同提示词。欢迎积分有效期很短，不适合先注册后长期搁置。\n## 官方来源\n[Hailuo AI Video 订阅服务条款](https://hailuoai.video/doc/payment-policy.html)第 2、7、8、9 节。本文仅核查公开条款，没有注册或调用实测；欢迎活动是否仍向具体账户发放应先查看产品提示。",
+    "en": {
+      "name": "Hailuo AI: one-time welcome video credits",
+      "description": "New-user welcome credits expire three days after issue. The amount depends on the current offer, and free downloads carry a watermark.",
+      "content": "## Eligibility and expiry\nThe subscription terms offer a one-time welcome package to accounts registered on or after June 18, 2025, limited to one per user. Credits expire three days after issue. The terms do not specify a universal amount; inspect the current product offer.\n## Getting started\nRegister through the official site, confirm eligibility and check the issue time, expiry and generation cost. Try a short clip with your own material before committing the remaining balance.\n## Downloads and rights\nFree downloads include a watermark. The terms explicitly describe commercial rights for content generated and downloaded during a paid subscription; equivalent rights for free output are not established here. This consumer offer does not establish API credits.\n## Best fit\nA short evaluation of image-to-video and motion consistency. Do not claim a recurring daily allowance or leave welcome credits unused for weeks.\n## Source\n[Subscription terms](https://hailuoai.video/doc/payment-policy.html), sections 2 and 7–9. Public terms reviewed; registration and credit redemption were not tested. Confirm whether the current promotion applies to your account."
+    },
+    "source": "https://hailuoai.video/doc/payment-policy.html",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "access": "web",
+    "sort_weight": 75,
+    "renewal": "once"
+  },
+  {
+    "slug": "hunyuan-3d-global-free",
+    "provider": "Tencent Hunyuan",
+    "url": "https://3d.hunyuanglobal.com/",
+    "category": "3d",
+    "tags": [
+      "3D生成",
+      "每日免费",
+      "网页工具"
+    ],
+    "name": "腾讯 Hunyuan 3D Global：每日 20 次免费生成",
+    "description": "腾讯官方全球发布公告列出每天 20 次免费生成；这是 Global 网页额度，不能与云 API 或本地模型混用。",
+    "content": "## 免费额度与产品范围\n腾讯官方全球发布公告列出，Hunyuan 3D Global 网页用户每天获得 20 次免费生成。它支持文字、图片和草图生成 3D 资产；不同入口、地区和模型的实际账户资格仍以产品界面为准。这里的次数不是云 API 积分。\n## 获取步骤\n1. 从腾讯官方公告链接进入 Hunyuan 3D Global，确认网址和地区可用性。\n2. 登录后检查当日免费剩余次数，再选择文字、图片或草图输入。\n3. 先生成一个简单物体，检查比例、几何和材质表现。\n4. 查看当前模型的导出选项和许可，再决定是否用于后续项目。\n## 下载与商用\n官方公告说明平台支持 OBJ、GLB 等常用输出，可接入 Blender、Unity 和 Unreal。公告没有明确当前免费导出次数、商用许可、水印、免费次数重置时区或结转规则，本页不补造这些条件。商业资产交付前应在当前服务协议确认授权。\n## API 与本地模型\n同一全球公告曾列企业 API 用户 200 免费积分；大陆 TokenHub 页面当前列 HY-3D-3.1 新用户 100 积分。这是不同渠道，不能相加或承诺给所有人。本地开放权重也不等于免费托管，仍需算力且不同版本许可可能不同。\n## 适用建议与来源\n适合每天小规模尝试游戏道具、商品概念和 3D 建模原型。[腾讯官方公告](https://www.tencent.com/en-us/articles/2202235.html)、[Global 网页](https://3d.hunyuanglobal.com/)、[大陆 TokenHub](https://cloud.tencent.com/product/tokenhub)。本页公开资料核查，未进行生成实测。",
+    "en": {
+      "name": "Tencent Hunyuan 3D Global: 20 free generations daily",
+      "description": "Tencent’s official Global launch announcement lists 20 daily generations. This hosted web offer is separate from cloud API grants.",
+      "content": "## Allowance and scope\nTencent’s official announcement offers Global web users 20 free generations daily, using text, images or sketches. Confirm current availability and the counter in your account. These are web generations, not API credits.\n## Getting started\nFollow the app link from Tencent’s announcement, sign in and inspect your daily balance. Generate a simple object, review geometry and materials, then inspect the current export options and terms.\n## Exports and rights\nThe announcement lists OBJ/GLB support and integration with Blender, Unity and Unreal. It does not establish current free export counts, commercial rights, watermarks, reset timezone or rollover. Check current terms before commercial delivery.\n## Separate channels\nThe Global announcement offered enterprise API users 200 credits; mainland TokenHub currently advertises 100 HY-3D-3.1 new-user credits. These are distinct offers. Downloadable model weights require your own compute and have version-specific licenses.\n## Best fit and sources\nSmall daily experiments with props and 3D concepts. [Tencent announcement](https://www.tencent.com/en-us/articles/2202235.html), [Global app](https://3d.hunyuanglobal.com/), [mainland TokenHub](https://cloud.tencent.com/product/tokenhub). Public-source review; no live generation test."
+    },
+    "source": "https://www.tencent.com/en-us/articles/2202235.html",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "access": "web",
+    "sort_weight": 85,
+    "renewal": "daily"
+  }
+]

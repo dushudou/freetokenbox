@@ -1,0 +1,278 @@
+[
+  {
+    "slug": "elevenlabs-free-audio",
+    "provider": "ElevenLabs",
+    "url": "https://elevenlabs.io/pricing",
+    "category": "audio",
+    "tags": [
+      "TTS",
+      "STT",
+      "monthly",
+      "web",
+      "API",
+      "non-commercial"
+    ],
+    "name": "ElevenLabs：每月 10,000 免费音频 credits",
+    "description": "免费计划每月提供 10,000 credits，可探索语音合成、转写和音效；不同模型消耗不同。",
+    "content": "## 免费范围与边界\n免费计划每月提供 10,000 credits，可探索语音合成、转写和音效；不同模型消耗不同。\n免费生成内容仅限非商业用途，并需署名。API 与网页端存在功能差异，免费用户不能通过 API 使用 Voice Library。商业许可从付费计划开始；不要把 credits 直接当作固定分钟数。\n## 建议的使用顺序\n先选语音合成、转写或音效任务，再在面板检查对应模型的 credits 消耗。配音可先试一段包含数字、英文缩写和停顿的短稿；转写先试一段包含实际背景噪声的样本。确认发音或识别结果后再处理完整文件，避免一次长任务耗尽月度额度。\n## 官方依据\n[官方资料 1](https://elevenlabs.io/docs/overview/administration/billing)、[官方资料 2](https://elevenlabs.io/pricing)、[官方资料 3](https://elevenlabs.io/pricing/api)、[官方资料 4](https://elevenlabs.io/use-policy)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "ElevenLabs: 10,000 monthly audio credits",
+      "description": "Free includes 10,000 monthly credits for exploring speech, transcription and sound effects; consumption varies by model.",
+      "content": "## Scope and limits\nFree includes 10,000 monthly credits for exploring speech, transcription and sound effects; consumption varies by model.\nFree output is non-commercial and requires attribution. Free users cannot access Voice Library through the API. A paid plan is needed for commercial licensing. Credits are not a fixed duration.\n## Suggested workflow\nChoose speech, transcription or sound effects and inspect the selected model’s credit cost. For narration, test a short script with numbers and pauses; for transcription, use a realistic noisy sample. Inspect the output before submitting a full file.\n## Official references\n[Source 1](https://elevenlabs.io/docs/overview/administration/billing), [Source 2](https://elevenlabs.io/pricing), [Source 3](https://elevenlabs.io/pricing/api), [Source 4](https://elevenlabs.io/use-policy). Public-document review, not an account or generation test."
+    },
+    "source": "https://elevenlabs.io/docs/overview/administration/billing",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "web-api",
+    "renewal": "monthly"
+  },
+  {
+    "slug": "deepgram-free-credit",
+    "provider": "Deepgram",
+    "url": "https://deepgram.com/pricing",
+    "category": "audio",
+    "tags": [
+      "STT",
+      "TTS",
+      "API",
+      "trial",
+      "no-card"
+    ],
+    "name": "Deepgram：一次性 $200 API 试用额度",
+    "description": "注册可获 $200 免费额度，官方称不设到期时间且无需信用卡；额度用完后按量付费。",
+    "content": "## 免费范围与边界\n注册可获 $200 免费额度，官方称不设到期时间且无需信用卡；额度用完后按量付费。\n这是注册试用，不是每月赠送 $200。转写、语音合成和语音 Agent 使用不同计费单位，能处理多少音频取决于模型和功能。公开定价复核不等于账户实测，商业输出和水印条款需单独确认。\n## 建议的使用顺序\n创建开发者账户后核对赠额余额，再为测试项目创建独立 API Key。先选文件转录或实时流，不要同时启用所有附加功能。用一分钟以内的授权样本检查语言、标点与说话人识别，记录模型和实际消耗；将 API Key 留在服务端。\n## 官方依据\n[官方资料 1](https://deepgram.com/pricing)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Deepgram: $200 introductory API credit",
+      "description": "Sign up for $200 in free credit, with no credit card and no expiration stated on the current pricing page.",
+      "content": "## Scope and limits\nSign up for $200 in free credit, with no credit card and no expiration stated on the current pricing page.\nThis is a signup allowance, not a monthly grant. Speech recognition, speech synthesis and voice agents use different billing units. Effective duration varies by product. Commercial-output and watermark terms need separate review.\n## Suggested workflow\nCheck the signup balance, create a dedicated server-side key and choose file or live transcription. Test a short authorized clip with the needed language and optional features. Record the model and actual credit consumption before processing a batch.\n## Official references\n[Source 1](https://deepgram.com/pricing). Public-document review, not an account or generation test."
+    },
+    "source": "https://deepgram.com/pricing",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "api",
+    "renewal": "once"
+  },
+  {
+    "slug": "assemblyai-free-trial",
+    "provider": "AssemblyAI",
+    "url": "https://www.assemblyai.com/pricing/",
+    "category": "audio",
+    "tags": [
+      "STT",
+      "API",
+      "trial",
+      "no-card"
+    ],
+    "name": "AssemblyAI：$50 一次性转写试用",
+    "description": "官方支持文档确认 $50 免费 API 试用，覆盖预录音频和流式转写，开始时无需信用卡。",
+    "content": "## 免费范围与边界\n官方支持文档确认 $50 免费 API 试用，覆盖预录音频和流式转写，开始时无需信用卡。\n该试用额度不按月恢复。定价页还提供最高 185 小时预录转写和 333 小时流式转写示例，实际时长受模型与功能影响，不应相加为独立余额。免费层不支持 LLM Gateway，额度耗尽后需升级。\n## 建议的使用顺序\n从预录文件转写或流式转写中选择符合项目的接口。先提交小文件，等待任务完成后检查文字、时间戳和所需附加功能。不要把音频下载地址设为包含密钥的公开 URL；扩大任务前检查账户剩余试用额度。\n## 官方依据\n[官方资料 1](https://support.assemblyai.com/articles/5370767329-can-i-sign-up-for-free)、[官方资料 2](https://www.assemblyai.com/pricing/)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "AssemblyAI: $50 transcription trial",
+      "description": "Official support documents a $50 API trial for prerecorded and streaming transcription; pricing says no card is required to start.",
+      "content": "## Scope and limits\nOfficial support documents a $50 API trial for prerecorded and streaming transcription; pricing says no card is required to start.\nThe trial does not renew monthly. Pricing advertises model-dependent hour examples, which must not be treated as separate additive pools. LLM Gateway is excluded. Upgrade is required when the free allowance is exhausted.\n## Suggested workflow\nChoose prerecorded or streaming transcription. Submit a small file, inspect the completed transcript and timestamps, then check remaining trial credit before scaling. Keep credentials server-side and avoid exposing them in media URLs.\n## Official references\n[Source 1](https://support.assemblyai.com/articles/5370767329-can-i-sign-up-for-free), [Source 2](https://www.assemblyai.com/pricing/). Public-document review, not an account or generation test."
+    },
+    "source": "https://support.assemblyai.com/articles/5370767329-can-i-sign-up-for-free",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "api",
+    "renewal": "once"
+  },
+  {
+    "slug": "speechmatics-free-credit",
+    "provider": "Speechmatics",
+    "url": "https://www.speechmatics.com/pricing",
+    "category": "audio",
+    "tags": [
+      "STT",
+      "TTS",
+      "API",
+      "trial",
+      "no-card"
+    ],
+    "name": "Speechmatics：$100 注册额度与 TTS 体验",
+    "description": "官方定价提供无需绑卡的 $100 注册额度，注册奖励有效期 12 个月；TTS 另列首 100 万字符免费。",
+    "content": "## 免费范围与边界\n官方定价提供无需绑卡的 $100 注册额度，注册奖励有效期 12 个月；TTS 另列首 100 万字符免费。\n注册奖励不是每月额度。语音合成首 100 万字符活动也不应描述为周期性赠送。免费层 credits 用尽后 API 暂停；额度折算的时长随模型变化。商业许可和水印要求请查对应产品条款。\n## 建议的使用顺序\n先在 Portal 检查注册赠额和到期日，然后选择预录文件或实时转写。混合语言、多人讲话和专业词汇建议各保留一个短样本。分别记录转写与 TTS 的用量，不要用语音合成的免费字符数估算可转录的音频时长。\n## 官方依据\n[官方资料 1](https://www.speechmatics.com/pricing)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Speechmatics: $100 signup credit",
+      "description": "Current pricing offers $100 signup credit without a card, valid for 12 months, plus a separately advertised first million TTS characters free.",
+      "content": "## Scope and limits\nCurrent pricing offers $100 signup credit without a card, valid for 12 months, plus a separately advertised first million TTS characters free.\nSignup credit is not monthly. Do not describe the TTS introductory allowance as recurring. Free API access pauses when credits run out. Effective duration varies by model; commercial and watermark terms require separate review.\n## Suggested workflow\nInspect the signup balance and expiry in the Portal. Test short samples of mixed languages, multiple speakers or domain vocabulary using the intended model. Track transcription and synthesis separately; TTS characters do not measure audio transcription time.\n## Official references\n[Source 1](https://www.speechmatics.com/pricing). Public-document review, not an account or generation test."
+    },
+    "source": "https://www.speechmatics.com/pricing",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "web-api",
+    "renewal": "once"
+  },
+  {
+    "slug": "cartesia-free-audio",
+    "provider": "Cartesia",
+    "url": "https://www.cartesia.ai/pricing",
+    "category": "audio",
+    "tags": [
+      "TTS",
+      "STT",
+      "API",
+      "monthly",
+      "non-commercial"
+    ],
+    "name": "Cartesia：每月 20,000 语音 credits",
+    "description": "Free 计划每月提供 20,000 credits，TTS 与 STT 共享；另有 $1/月的语音 Agent 预付余额。",
+    "content": "## 免费范围与边界\nFree 计划每月提供 20,000 credits，TTS 与 STT 共享；另有 $1/月的语音 Agent 预付余额。\n模型 credits 与 Agent 美元余额是不同资源，不能相加。Agent 分钟估算不包含电话费用。商业使用许可从 Pro 开始，免费计划应优先用于个人学习与原型。当前公开定价未明确本次研究需要的绑卡条件。\n## 建议的使用顺序\n在 playground 先验证一小段配音的发音、语速与停顿，再创建后端 API Key。做转录则先测试真实语音样本。查看共享模型 credits 的扣减；语音 Agent 的余额和电话接入成本单独记录，避免误以为全部费用都由语音积分覆盖。\n## 官方依据\n[官方资料 1](https://www.cartesia.ai/pricing)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Cartesia: 20,000 monthly voice credits",
+      "description": "Free provides a shared monthly pool of 20,000 TTS/STT credits and a separate $1 monthly prepaid voice-agent balance.",
+      "content": "## Scope and limits\nFree provides a shared monthly pool of 20,000 TTS/STT credits and a separate $1 monthly prepaid voice-agent balance.\nModel credits and agent dollars are separate. Agent-minute estimates exclude telephony. Commercial licensing starts at Pro, so Free suits personal exploration and prototypes. Card requirements were not established by the reviewed pricing page.\n## Suggested workflow\nTest pronunciation, pace and pauses in the playground before integrating a server-side key. For STT, use realistic audio. Track the shared model balance separately from agent dollars and telephony charges.\n## Official references\n[Source 1](https://www.cartesia.ai/pricing). Public-document review, not an account or generation test."
+    },
+    "source": "https://www.cartesia.ai/pricing",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "web-api",
+    "renewal": "monthly"
+  },
+  {
+    "slug": "fish-audio-free-api",
+    "provider": "Fish Audio",
+    "url": "https://fish.audio/developers/",
+    "category": "audio",
+    "tags": [
+      "TTS",
+      "API",
+      "promotion",
+      "no-card"
+    ],
+    "name": "Fish Audio：S2.1 Pro 免费 API 限时开放",
+    "description": "官方 `s2.1-pro-free` API 活动当前延长至 2026 年 11 月 30 日，无需信用卡，受公平使用政策约束。",
+    "content": "## 免费范围与边界\n官方 `s2.1-pro-free` API 活动当前延长至 2026 年 11 月 30 日，无需信用卡，受公平使用政策约束。\n这是有截止日期的活动，不是永久不限量承诺。官方表示无硬性字符上限，但可能限流；不提供 SLA 或延迟保证，请求可能用于改善模型。部分商业场景受限，年经常性收入超过 $100 万的产品应先联系厂商。网页端另有每月 8,000 credits 的个人非商业免费计划，不应混同。\n## 建议的使用顺序\n在开发者页确认活动仍有效，再创建 API Key 并使用精确模型名 s2.1-pro-free。先发送不包含隐私的一句文本，检查音频格式和语音效果。集成时为限流和活动结束设置明确停止提示，不自动切换到未设置预算的付费模型。\n## 官方依据\n[官方资料 1](https://fish.audio/blog/s2-1-pro-free-api/)、[官方资料 2](https://fish.audio/developers/)、[官方资料 3](https://fish.audio/ai-voice-generator/)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Fish Audio: temporary free S2.1 Pro API",
+      "description": "The s2.1-pro-free promotion currently runs through November 30, 2026, without a card and subject to Fair Use.",
+      "content": "## Scope and limits\nThe s2.1-pro-free promotion currently runs through November 30, 2026, without a card and subject to Fair Use.\nThis is a dated promotion, not permanent unlimited access. There is no hard character cap, but throttling is possible; no SLA or latency guarantee applies and requests may improve models. Some commercial scenarios are restricted; products above $1M ARR should contact Fish Audio. Consumer credits are separate.\n## Suggested workflow\nConfirm the promotion is active, create a key and use the exact s2.1-pro-free model name. Send a short non-sensitive sentence first and inspect its audio format. Handle throttling and promotion expiry explicitly instead of silently falling back to a paid model.\n## Official references\n[Source 1](https://fish.audio/blog/s2-1-pro-free-api/), [Source 2](https://fish.audio/developers/), [Source 3](https://fish.audio/ai-voice-generator/). Public-document review, not an account or generation test."
+    },
+    "source": "https://fish.audio/blog/s2-1-pro-free-api/",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "expiry_date": "2026-11-30",
+    "access": "api",
+    "renewal": "promotion"
+  },
+  {
+    "slug": "suno-free-music",
+    "provider": "Suno",
+    "url": "https://suno.com",
+    "category": "audio",
+    "tags": [
+      "music",
+      "daily",
+      "web",
+      "non-commercial",
+      "export-limited"
+    ],
+    "name": "Suno：每日 50 音乐生成 credits",
+    "description": "免费计划每日补充 50 生成 credits，可在站内尝试歌曲创作；新账号免费导出不作保证。",
+    "content": "## 免费范围与边界\n免费计划每日补充 50 生成 credits，可在站内尝试歌曲创作；新账号免费导出不作保证。\n免费作品仅限个人非商业用途。2026 年 9 月 3 日起注册的新免费用户，仅可能偶尔获得试用下载；不要把每日生成 credits 写成每日免费歌曲下载。之后订阅也不会默认追溯授予免费作品商业权利。未验证官方免费 API。\n## 建议的使用顺序\n在网页或应用登录后检查当日生成额度，先用短描述说明曲风、节奏和希望出现的乐器。比较结果时把生成次数与下载资格分开记录。若最终需要可下载、可商用的配乐，在创作前就先核对方案，不要等完成歌曲才确认版权。\n## 官方依据\n[官方资料 1](https://help.suno.com/en/articles/13876865)、[官方资料 2](https://suno.com)、[官方资料 3](https://help.suno.com/en/articles/2410049)、[官方资料 4](https://help.suno.com/en/articles/9601601)、[官方资料 5](https://help.suno.com/en/articles/2425729)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Suno: 50 daily music-generation credits",
+      "description": "Free replenishes 50 generation credits daily for in-app song creation. Free downloads are not guaranteed for new accounts.",
+      "content": "## Scope and limits\nFree replenishes 50 generation credits daily for in-app song creation. Free downloads are not guaranteed for new accounts.\nFree songs are personal and non-commercial. Accounts joining on or after September 3, 2026 may only occasionally receive trial downloads. Generation credits are not download credits. A later subscription does not automatically license earlier Free songs commercially. No official free API was verified.\n## Suggested workflow\nCheck daily generation credit in the app. Start with a short description of genre, tempo and instruments. Track creation and download eligibility separately. If the goal is a downloadable commercial soundtrack, check those rights before creating the final song.\n## Official references\n[Source 1](https://help.suno.com/en/articles/13876865), [Source 2](https://suno.com), [Source 3](https://help.suno.com/en/articles/2410049), [Source 4](https://help.suno.com/en/articles/9601601), [Source 5](https://help.suno.com/en/articles/2425729). Public-document review, not an account or generation test."
+    },
+    "source": "https://help.suno.com/en/articles/13876865",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "web",
+    "renewal": "daily"
+  },
+  {
+    "slug": "leonardo-free-tokens",
+    "provider": "Leonardo.Ai",
+    "url": "https://leonardo.ai/pricing",
+    "category": "image",
+    "tags": [
+      "image",
+      "daily",
+      "web",
+      "public"
+    ],
+    "name": "Leonardo.Ai：每日 150 fast tokens",
+    "description": "免费消费者计划每日提供 150 fast tokens，支持图片及部分创意工具体验；当前免费模型选择受限。",
+    "content": "## 免费范围与边界\n免费消费者计划每日提供 150 fast tokens，支持图片及部分创意工具体验；当前免费模型选择受限。\n免费作品公开，当前定价列出 Auto Only 模型访问。官方说明免费作品由 Leonardo 持有，但授予用户商业使用许可；公开作品不等于独占或私密。API 单独计费，不应把网页每日 tokens 视作 API 额度，也不要承诺所有视频或音频模型均免费。\n## 建议的使用顺序\n登录后检查今日 token 余额与 Free 可选模型，用低成本的草图任务测试构图和风格。免费作品公开，不上传未发布的客户设计或保密产品照片。先检查尺寸、文字和细节，再决定是否继续消耗额度生成变体。\n## 官方依据\n[官方资料 1](https://leonardo.ai/ai-music-generator)、[官方资料 2](https://leonardo.ai/pricing)、[官方资料 3](https://leonardo.ai/terms-of-service)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Leonardo.Ai: 150 daily fast tokens",
+      "description": "The consumer Free plan provides 150 fast tokens daily for image creation and selected creative tools, with restricted model access.",
+      "content": "## Scope and limits\nThe consumer Free plan provides 150 fast tokens daily for image creation and selected creative tools, with restricted model access.\nFree creations are public and pricing lists Auto Only model access. Official guidance says Leonardo owns free outputs while granting a commercial-use license. Public outputs are not private or exclusive. API pricing is separate; not every advertised multimedia model is guaranteed on Free.\n## Suggested workflow\nCheck today’s token balance and models available to Free. Test composition and style with a small draft. Since free creations are public, avoid confidential client work. Inspect dimensions, text and detail before generating more variants.\n## Official references\n[Source 1](https://leonardo.ai/ai-music-generator), [Source 2](https://leonardo.ai/pricing), [Source 3](https://leonardo.ai/terms-of-service). Public-document review, not an account or generation test."
+    },
+    "source": "https://leonardo.ai/ai-music-generator",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "web",
+    "renewal": "daily"
+  },
+  {
+    "slug": "krea-free-compute",
+    "provider": "Krea",
+    "url": "https://www.krea.ai/pricing",
+    "category": "image",
+    "tags": [
+      "image",
+      "daily",
+      "web",
+      "no-card"
+    ],
+    "name": "Krea：每日 100 免费 compute units",
+    "description": "免费网页计划每日恢复 100 compute units，无需信用卡；不同模型和操作消耗不同。",
+    "content": "## 免费范围与边界\n免费网页计划每日恢复 100 compute units，无需信用卡；不同模型和操作消耗不同。\n没有固定免费出图或视频条数，实际可用模型与功能受免费层限制。官方定价 FAQ 仅为付费计划列出商业许可，因此不要将 Free 描述为可商用。消费者订阅与 API 余额分开计费，每日网页额度不能直接用于 API。\n## 建议的使用顺序\n进入网页工作区后查看当日 units，选择明确属于免费层的图片任务。用一张有权使用的参考图或短提示词先生成草稿。比较前后余额，记录所选模型的实际消耗；需要视频、高清或商用交付时，逐项核对该功能和许可证。\n## 官方依据\n[官方资料 1](https://www.krea.ai/pricing)、[官方资料 2](https://www.krea.ai/app/api/pricing)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Krea: 100 daily compute units",
+      "description": "The free consumer plan refills 100 compute units daily, without a credit card. Different models and operations consume different amounts.",
+      "content": "## Scope and limits\nThe free consumer plan refills 100 compute units daily, without a credit card. Different models and operations consume different amounts.\nThere is no fixed guaranteed image or video count. Free access is limited by model and feature. The pricing FAQ lists commercial licenses for paid plans, so do not promise commercial rights on Free. API balances are billed separately from consumer subscriptions.\n## Suggested workflow\nInspect daily units and choose a tool included in Free. Generate one draft from an authorized image or short prompt, then compare the balance before and after. Check video, high-resolution and commercial requirements separately.\n## Official references\n[Source 1](https://www.krea.ai/pricing), [Source 2](https://www.krea.ai/app/api/pricing). Public-document review, not an account or generation test."
+    },
+    "source": "https://www.krea.ai/pricing",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "web",
+    "renewal": "daily"
+  },
+  {
+    "slug": "clipdrop-free-editing",
+    "provider": "Clipdrop",
+    "url": "https://clipdrop.co/pricing",
+    "category": "image",
+    "tags": [
+      "editing",
+      "daily",
+      "web"
+    ],
+    "name": "Clipdrop：免费图片编辑工具额度",
+    "description": "背景移除、x2 放大、Cleanup 与 Relight 各列出 20 次/24 小时；文字移除列出 50 次/24 小时。",
+    "content": "## 免费范围与边界\n背景移除、x2 放大、Cleanup 与 Relight 各列出 20 次/24 小时；文字移除列出 50 次/24 小时。\n这是网页工具额度，API 另按量计费。免费 Cleanup 导出上限为 720px。定价页面未给出可靠的免费文生图数值，不应编造。绑卡条件、商业使用和水印权利未由本次查阅页面明确，需要用户按具体工具确认。\n## 建议的使用顺序\n先选择背景移除、清理或放大等具体工具，用一张不含敏感信息的图片测试。下载后检查边缘、透明通道与实际像素尺寸。各工具分别列出配额，不把它们合并成一笔可自由兑换的生成额度；批量自动化需要另查 API 价格。\n## 官方依据\n[官方资料 1](https://clipdrop.co/pricing?openSubscriptionModal=true)、[官方资料 2](https://clipdrop.co/pricing)、[官方资料 3](https://clipdrop.co/en-US/cleanup)。核查公开资料，未注册账户或完成生成实测。",
+    "en": {
+      "name": "Clipdrop: free daily image-editing allowances",
+      "description": "Background removal, x2 upscaling, Cleanup and Relight each list 20 operations per 24 hours; text removal lists 50.",
+      "content": "## Scope and limits\nBackground removal, x2 upscaling, Cleanup and Relight each list 20 operations per 24 hours; text removal lists 50.\nThese are web allowances; API usage is billed separately. Free Cleanup exports are limited to 720px. No reliable numeric free text-to-image quota appeared. Card requirements, commercial rights and watermark terms were not established by the reviewed pages.\n## Suggested workflow\nChoose a specific editing tool and test one non-sensitive image. Inspect edges, transparency and downloaded dimensions. Per-tool quotas are not an interchangeable wallet; batch automation requires a separate API pricing check.\n## Official references\n[Source 1](https://clipdrop.co/pricing?openSubscriptionModal=true), [Source 2](https://clipdrop.co/pricing), [Source 3](https://clipdrop.co/en-US/cleanup). Public-document review, not an account or generation test."
+    },
+    "source": "https://clipdrop.co/pricing?openSubscriptionModal=true",
+    "checked": "2026-11-03",
+    "status": "verified",
+    "verificationScope": "public-documentation-only",
+    "sort_weight": 80,
+    "access": "web",
+    "renewal": "daily"
+  }
+]
